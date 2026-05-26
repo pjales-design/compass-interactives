@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Bio Booster — Practice</title>
+<style>
+  /* ============================================================
+     Thumbtack Rise font family
+     Font files must be deployed alongside this HTML in /fonts/
+     ============================================================ */
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Italic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Heavy.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Thumbtack Brand Palette */
+    --blue-100: #EAF6FA;
+    --blue-200: #B2EBFF;
+    --blue-300: #79D2F2;
+    --blue:     #009FD9;
+    --blue-500: #007FAD;
+    --blue-600: #005979;
+
+    --green-100: #E1FDF3;
+    --green-200: #C6F7DA;
+    --green:     #2DB783;
+    --green-500: #16855B;
+    --green-600: #054E33;
+
+    --yellow:     #FEBE14;
+    --yellow-500: #A77005;
+
+    --red-100: #FFEFF0;
+    --red-200: #FFD9D9;
+    --red:     #FF5A5F;
+    --red-500: #B22D31;
+    --red-600: #7D0D10;
+
+    --purple:     #8D56EB;
+
+    --ink: #1A1A1A;
+    --ink-soft: #4A4A4A;
+    --ink-mute: #8A8A85;
+    --line: #E8E6E0;
+    --line-strong: #D4D2CB;
+    --surface: #FFFFFF;
+    --bg: #F5F4EF;
+
+    --shadow-card: 0 2px 16px rgba(20, 20, 18, 0.06), 0 1px 3px rgba(20, 20, 18, 0.04);
+    --shadow-sm: 0 1px 2px rgba(20, 20, 18, 0.05);
+    --shadow-blue: 0 2px 8px rgba(0, 159, 217, 0.18);
+
+    --sans: 'Thumbtack Rise', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 20px 60px;
+  }
+
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* ============================================================
+     STEP / PAGE TRANSITIONS
+     The sim has three "pages" that swap in place
+     ============================================================ */
+  .page { display: none; }
+  .page.active { display: block; animation: pageIn 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================================
+     PERSISTENT HEADER (visible across all pages)
+     ============================================================ */
+  .top-header {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .brand-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .step-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--blue);
+  }
+
+  /* ============================================================
+     PAGE 1 — Identity + pro profile
+     ============================================================ */
+  .page-1-title {
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .page-1-title em {
+    font-style: normal;
+    color: var(--blue-500);
+  }
+  .page-1-sub {
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin-bottom: 24px;
+    max-width: 620px;
+  }
+
+  /* --- Identity card --- */
+  .identity-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .identity-card .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .identity-card .card-title svg {
+    width: 16px; height: 16px;
+    color: var(--blue);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .field input {
+    border: 1.5px solid var(--line-strong);
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .field input::placeholder { color: var(--ink-mute); opacity: 0.7; }
+  .field input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0, 159, 217, 0.15);
+  }
+  .field input.valid {
+    border-color: var(--green-200);
+    background: var(--green-100);
+  }
+  .field input.invalid {
+    border-color: var(--red);
+    background: var(--red-100);
+  }
+  .field .field-hint {
+    font-size: 11.5px;
+    color: var(--ink-mute);
+    min-height: 14px;
+  }
+  .field .field-hint.error { color: var(--red-500); font-weight: 500; }
+  .field .field-hint.success { color: var(--green-500); font-weight: 500; }
+
+  /* Subtle shake animation for nudge */
+  .nudge { animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-3px); }
+  }
+
+  /* ============================================================
+     PRO PROFILE CARD — styled like Freedom Cleaning reference
+     ============================================================ */
+  .pro-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 28px 30px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    transition: padding 0.3s ease, transform 0.3s ease;
+  }
+
+  .pro-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .pro-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--blue-200);
+    box-shadow: 0 2px 6px rgba(20, 20, 18, 0.08);
+  }
+  .pro-avatar svg { display: block; width: 100%; height: 100%; }
+
+  .pro-info { flex: 1; min-width: 0; }
+  .pro-name {
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+  .pro-location {
+    color: var(--ink-mute);
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .pro-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--green-500);
+  }
+  .pro-rating .star { width: 14px; height: 14px; fill: currentColor; }
+  .pro-rating .review-count {
+    color: var(--ink-mute);
+    font-size: 13px;
+    margin-left: 6px;
+  }
+
+  .pro-section-label {
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .pro-intro-text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+
+  .pro-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 18px;
+  }
+  .pro-stat {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .pro-stat svg {
+    width: 14px; height: 14px;
+    color: var(--ink-mute);
+    flex-shrink: 0;
+  }
+
+  .pro-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .pro-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--blue-300);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--blue-500);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: default;
+    user-select: none;
+  }
+  .pro-action svg { width: 14px; height: 14px; }
+
+  .pro-services-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .pro-service-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pro-service-pills .pill {
+    background: #fff;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    padding: 6px 12px;
+    border-radius: 16px;
+  }
+
+  /* Compact pro card — shown in steps 2 & 3 */
+  .pro-card.compact {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .pro-card.compact .pro-header { margin-bottom: 0; }
+  .pro-card.compact .pro-avatar { width: 44px; height: 44px; }
+  .pro-card.compact .pro-name { font-size: 16px; margin-bottom: 0; }
+  .pro-card.compact .pro-location { font-size: 12.5px; margin-bottom: 4px; }
+  .pro-card.compact .pro-rating { display: none; }
+  .pro-card.compact .pro-section-label,
+  .pro-card.compact .pro-stats,
+  .pro-card.compact .pro-actions,
+  .pro-card.compact .pro-services-label,
+  .pro-card.compact .pro-service-pills { display: none; }
+  .pro-card.compact .pro-intro-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 6px 0 0;
+    max-height: 3em;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease;
+  }
+  .pro-card.compact.expanded .pro-intro-text { max-height: 200px; }
+  .pro-card.compact .toggle-intro {
+    background: none;
+    border: none;
+    color: var(--blue-500);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 0 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .pro-card.compact .toggle-intro:hover { color: var(--blue-600); }
+
+  /* ============================================================
+     RUN BUTTON
+     ============================================================ */
+  .cta-section {
+    text-align: center;
+    margin-top: 8px;
+  }
+  .run-btn {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-blue);
+  }
+  .run-btn:not(.disabled):hover {
+    background: var(--blue-500);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 159, 217, 0.28);
+  }
+  .run-btn.disabled {
+    background: #C8CDD0;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #fff;
+  }
+  .run-btn.disabled .sparkle { opacity: 0.6; }
+  .run-btn .sparkle { display: inline-block; width: 15px; height: 15px; }
+  .run-hint {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--ink-mute);
+    font-style: italic;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    min-height: 20px;
+  }
+  .run-hint.urgent {
+    color: var(--red-500);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* ============================================================
+     PAGE 2 — AI output, editor, checklist
+     ============================================================ */
+  .step-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .ai-output {
+    margin-bottom: 22px;
+  }
+  .ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 20px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ai-header .gem-name { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+  .ai-header .gem-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--purple);
+    animation: pulse-purple 2s infinite;
+  }
+  @keyframes pulse-purple {
+    0%   { box-shadow: 0 0 0 0 rgba(141, 86, 235, 0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(141, 86, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(141, 86, 235, 0); }
+  }
+
+  .ai-body {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 26px 28px;
+  }
+
+  .ai-section { margin-bottom: 22px; }
+  .ai-section:last-child { margin-bottom: 0; }
+  .ai-section h4 {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .ai-section h4::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+  .ai-section p, .ai-section li {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .ai-section ul { padding-left: 22px; }
+  .ai-section li { margin-bottom: 5px; }
+
+  .ai-draft {
+    background: var(--blue-100);
+    border: 1px solid var(--blue-200);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+  .ai-draft .services-list {
+    font-size: 14px;
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+
+  .challenge {
+    background: var(--surface);
+    border: 1px solid var(--blue-200);
+    border-radius: 12px;
+    padding: 26px 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .challenge::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--blue);
+  }
+  .challenge h3 {
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .challenge .lede {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin-bottom: 20px;
+    line-height: 1.55;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 6px 18px;
+    margin: 0 0 22px 0;
+    background: var(--blue-100);
+    border-radius: 8px;
+  }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(178, 235, 255, 0.5);
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: color 0.3s ease;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li .check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--blue-300);
+    background: #fff;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+  }
+  .checklist li.checked .check {
+    background: var(--green);
+    border-color: var(--green);
+    transform: scale(1.05);
+  }
+  .checklist li.checked .check::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .checklist li.checked { color: var(--ink); }
+  .checklist li strong { color: var(--ink); font-weight: 600; }
+
+  .editor-wrap label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .editor {
+    width: 100%;
+    min-height: 200px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: #fff;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 14px 16px;
+    resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .editor:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0, 159, 217, 0.15);
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: var(--shadow-blue);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--blue-500);
+    box-shadow: 0 4px 12px rgba(0, 159, 217, 0.25);
+  }
+  .btn-primary:disabled {
+    background: var(--ink-mute);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--blue-500);
+    border-color: var(--blue-300);
+  }
+  .btn-secondary:hover {
+    background: var(--blue-100);
+    border-color: var(--blue);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-mute);
+    font-size: 12.5px;
+    padding: 11px 12px;
+    font-weight: 500;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .submit-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .submit-status.success { color: var(--green-500); }
+  .submit-status.error { color: var(--red-500); }
+  .submit-status .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+  }
+  .submit-status .spin {
+    width: 12px; height: 12px;
+    border: 2px solid var(--line-strong);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================================================
+     PAGE 3 — Feedback
+     ============================================================ */
+  .feedback {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 28px 30px;
+    box-shadow: var(--shadow-sm);
+  }
+  .feedback h3 {
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .feedback .summary {
+    color: var(--ink-mute);
+    font-size: 14px;
+    margin-bottom: 22px;
+  }
+
+  .submission-confirm {
+    background: var(--green-100);
+    border: 1px solid var(--green-200);
+    border-left: 3px solid var(--green-500);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    font-size: 13.5px;
+    color: var(--green-600);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .submission-confirm.error {
+    background: var(--red-100);
+    border-color: var(--red-200);
+    border-left-color: var(--red-500);
+    color: var(--red-600);
+  }
+  .submission-confirm svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .issue-card {
+    border: 1px solid var(--red-200);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background: var(--red-100);
+  }
+  .issue-card .issue-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .issue-card .issue-header .badge {
+    background: #fff;
+    border: 1px solid var(--red-200);
+    color: var(--red-600);
+    padding: 4px 9px;
+    border-radius: 4px;
+  }
+  .issue-card .issue-quote {
+    color: var(--ink);
+    font-size: 14.5px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .issue-card .issue-quote .marker {
+    background: #fff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--red-200);
+    font-style: italic;
+    color: var(--red-600);
+  }
+  .issue-card .issue-explain {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+
+  .takeaway {
+    margin-top: 22px;
+    padding: 20px 22px;
+    background: var(--blue-100);
+    border-radius: 8px;
+    border-left: 3px solid var(--blue);
+  }
+  .takeaway h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue-600);
+    margin-bottom: 8px;
+  }
+  .takeaway p {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 18px 14px 50px; }
+    .page-1-title { font-size: 22px; }
+    .field-row { grid-template-columns: 1fr; }
+    .pro-card { padding: 20px; }
+    .pro-name { font-size: 20px; }
+    .pro-actions { grid-template-columns: 1fr; }
+    .pro-stats { gap: 14px; }
+    .ai-body, .challenge, .feedback { padding: 18px 18px; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .submit-status { margin-left: 0; margin-top: 8px; }
+    .btn { width: 100%; }
+    .top-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ============================================================
+       PERSISTENT HEADER
+       ============================================================ -->
+  <div class="top-header">
+    <div class="brand-lockup">
+      <div class="logo-mark">T</div>
+      <div class="brand-text">Compass · AI Bio Booster</div>
+    </div>
+    <div class="step-pill" id="step-pill">
+      <span class="dot"></span>
+      <span id="step-pill-text">Step 1 of 3 · Review the pro</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PAGE 1 — Identity + Pro profile
+       ============================================================ -->
+  <div class="page active" id="page-1">
+
+    <h1 class="page-1-title">Meet James. <em>Your turn to coach.</em></h1>
+    <p class="page-1-sub">
+      Before you run the AI Bio Booster, let us know who's doing the practice — then take a moment with James's profile as a client would see it today.
+    </p>
+
+    <!-- Identity card -->
+    <section class="identity-card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Your details
+      </div>
+      <div class="field-row">
+        <div class="field" id="field-name-wrap">
+          <label for="learner-name">Your name</label>
+          <input type="text" id="learner-name" placeholder="e.g. Avery Chen" autocomplete="off" />
+          <div class="field-hint" id="hint-name"></div>
+        </div>
+        <div class="field" id="field-email-wrap">
+          <label for="learner-email">Thumbtack email</label>
+          <input type="email" id="learner-email" placeholder="you@thumbtack.com" autocomplete="off" />
+          <div class="field-hint" id="hint-email"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pro profile card (full) -->
+    <section class="pro-card" id="pro-card-full">
+      <div class="pro-header">
+        <div class="pro-avatar">
+          <!-- Illustrated handyman avatar — intentionally illustrated, not pretending to be a real photo -->
+          <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="avatarClip"><circle cx="38" cy="38" r="38"/></clipPath>
+            </defs>
+            <g clip-path="url(#avatarClip)">
+              <!-- background -->
+              <rect width="76" height="76" fill="#B2EBFF"/>
+              <!-- shirt / shoulders -->
+              <path d="M 0 76 Q 0 56 16 50 L 28 47 L 38 56 L 48 47 L 60 50 Q 76 56 76 76 Z" fill="#005979"/>
+              <!-- shirt collar v -->
+              <path d="M 28 47 L 38 56 L 48 47 L 44 50 L 38 51 L 32 50 Z" fill="#003B52"/>
+              <!-- neck -->
+              <rect x="32" y="42" width="12" height="8" fill="#D9A574"/>
+              <!-- head -->
+              <ellipse cx="38" cy="32" rx="14" ry="16" fill="#E6B584"/>
+              <!-- hair -->
+              <path d="M 24 26 Q 24 16 38 14 Q 52 16 52 26 Q 52 22 48 21 Q 46 19 38 19 Q 30 19 28 21 Q 24 22 24 26 Z" fill="#3A2418"/>
+              <!-- eyebrows -->
+              <rect x="30" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <rect x="41" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <!-- eyes -->
+              <circle cx="32.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <circle cx="43.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <!-- smile -->
+              <path d="M 33 39 Q 38 42 43 39" stroke="#5C3A20" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+              <!-- small wrench badge on shirt -->
+              <circle cx="50" cy="62" r="5" fill="#009FD9"/>
+              <path d="M 48.5 60 L 51.5 60 M 50 60 L 50 64 M 48.5 64 L 51.5 64" stroke="#fff" stroke-width="0.8" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="pro-info">
+          <div class="pro-name">James Reyes</div>
+          <div class="pro-location">Sacramento, CA</div>
+          <div class="pro-rating">
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <span class="review-count">(12)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pro-section-label">About this pro</div>
+      <div class="pro-intro-text" id="pro-intro-text">
+        Hi, my name is James and I do handyman work. I have been doing this for a while and can help with different things around the house. I like helping people and do good work. Contact me if you need help. Thanks.
+      </div>
+
+      <div class="pro-stats">
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          New on Thumbtack
+        </div>
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+          12 hires on Thumbtack
+        </div>
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          Background checked
+        </div>
+      </div>
+
+      <div class="pro-actions">
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message
+        </div>
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Check availability
+        </div>
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Request a call
+        </div>
+      </div>
+
+      <div class="pro-services-label">Services offered</div>
+      <div class="pro-service-pills">
+        <span class="pill">General home repairs</span>
+        <span class="pill">Drywall &amp; painting</span>
+        <span class="pill">Furniture assembly</span>
+      </div>
+    </section>
+
+    <!-- Run button -->
+    <div class="cta-section">
+      <button class="run-btn disabled" id="run-btn">
+        <svg class="sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>
+        </svg>
+        Run AI Bio Booster
+      </button>
+      <div class="run-hint" id="run-hint">Enter your name and Thumbtack email above to continue.</div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       PAGE 2 — AI output + edit
+       ============================================================ -->
+  <div class="page" id="page-2">
+
+    <div class="step-section-label">The pro you're coaching</div>
+    <section class="pro-card compact" id="pro-card-compact">
+      <div class="pro-header">
+        <div class="pro-avatar">
+          <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="avatarClip2"><circle cx="38" cy="38" r="38"/></clipPath>
+            </defs>
+            <g clip-path="url(#avatarClip2)">
+              <rect width="76" height="76" fill="#B2EBFF"/>
+              <path d="M 0 76 Q 0 56 16 50 L 28 47 L 38 56 L 48 47 L 60 50 Q 76 56 76 76 Z" fill="#005979"/>
+              <path d="M 28 47 L 38 56 L 48 47 L 44 50 L 38 51 L 32 50 Z" fill="#003B52"/>
+              <rect x="32" y="42" width="12" height="8" fill="#D9A574"/>
+              <ellipse cx="38" cy="32" rx="14" ry="16" fill="#E6B584"/>
+              <path d="M 24 26 Q 24 16 38 14 Q 52 16 52 26 Q 52 22 48 21 Q 46 19 38 19 Q 30 19 28 21 Q 24 22 24 26 Z" fill="#3A2418"/>
+              <rect x="30" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <rect x="41" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <circle cx="32.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <circle cx="43.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <path d="M 33 39 Q 38 42 43 39" stroke="#5C3A20" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+            </g>
+          </svg>
+        </div>
+        <div class="pro-info">
+          <div class="pro-name">James Reyes</div>
+          <div class="pro-location">Sacramento, CA · Handyman</div>
+          <div class="pro-intro-text">
+            Hi, my name is James and I do handyman work. I have been doing this for a while and can help with different things around the house. I like helping people and do good work. Contact me if you need help. Thanks.
+          </div>
+          <button type="button" class="toggle-intro" id="toggle-intro">Show full intro</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="step-section-label">What the Gem generated</div>
+    <section class="ai-output">
+      <div class="ai-header">
+        <span class="gem-name">
+          <span class="gem-dot"></span>
+          AI Bio Booster · Gemini Gem
+        </span>
+        <span id="stream-status">Generating…</span>
+      </div>
+      <div class="ai-body" id="ai-body"></div>
+    </section>
+
+    <div class="step-section-label">Your turn — clean it up</div>
+    <section class="challenge">
+      <h3>Now you're the specialist.</h3>
+      <p class="lede">
+        The AI gave you a draft. It looks polished — but it isn't ready to ship.
+        Before you'd send this to James, find what needs to come out.
+      </p>
+
+      <ul class="checklist" id="checklist">
+        <li data-issue="invented">
+          <span class="check"></span>
+          <span>Find <strong>one fact the AI invented</strong> that isn't in James's original intro.</span>
+        </li>
+        <li data-issue="unverifiable">
+          <span class="check"></span>
+          <span>Find <strong>one unverifiable claim</strong> James can't back up.</span>
+        </li>
+        <li data-issue="exaggeration">
+          <span class="check"></span>
+          <span>Find <strong>one phrase that overstates</strong> what James does.</span>
+        </li>
+        <li data-issue="voice">
+          <span class="check"></span>
+          <span>Find <strong>one phrase that doesn't sound like James</strong> — too polished or too corporate.</span>
+        </li>
+      </ul>
+
+      <div class="editor-wrap">
+        <label for="editor">Your edited version — what you'd actually send</label>
+        <textarea id="editor" class="editor" placeholder="Edit the AI's draft directly here. Remove what shouldn't stay. Keep what's grounded. Adjust anything that doesn't sound like James."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="submit-btn">Submit &amp; reveal feedback</button>
+        <button class="btn btn-secondary" id="copy-draft-btn">Reset to AI draft</button>
+        <button class="btn btn-ghost" id="reset-btn">Start over</button>
+        <span class="submit-status" id="submit-status"></span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================================
+       PAGE 3 — Feedback
+       ============================================================ -->
+  <div class="page" id="page-3">
+
+    <div class="step-section-label">The pro you coached</div>
+    <section class="pro-card compact">
+      <div class="pro-header">
+        <div class="pro-avatar">
+          <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="avatarClip3"><circle cx="38" cy="38" r="38"/></clipPath>
+            </defs>
+            <g clip-path="url(#avatarClip3)">
+              <rect width="76" height="76" fill="#B2EBFF"/>
+              <path d="M 0 76 Q 0 56 16 50 L 28 47 L 38 56 L 48 47 L 60 50 Q 76 56 76 76 Z" fill="#005979"/>
+              <path d="M 28 47 L 38 56 L 48 47 L 44 50 L 38 51 L 32 50 Z" fill="#003B52"/>
+              <rect x="32" y="42" width="12" height="8" fill="#D9A574"/>
+              <ellipse cx="38" cy="32" rx="14" ry="16" fill="#E6B584"/>
+              <path d="M 24 26 Q 24 16 38 14 Q 52 16 52 26 Q 52 22 48 21 Q 46 19 38 19 Q 30 19 28 21 Q 24 22 24 26 Z" fill="#3A2418"/>
+              <rect x="30" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <rect x="41" y="29" width="5" height="1.5" rx="0.75" fill="#3A2418"/>
+              <circle cx="32.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <circle cx="43.5" cy="33" r="1.2" fill="#1A1A1A"/>
+              <path d="M 33 39 Q 38 42 43 39" stroke="#5C3A20" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+            </g>
+          </svg>
+        </div>
+        <div class="pro-info">
+          <div class="pro-name">James Reyes</div>
+          <div class="pro-location">Sacramento, CA · Handyman</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feedback">
+      <div class="submission-confirm" id="submission-confirm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span id="confirm-text">Your submission has been recorded.</span>
+      </div>
+
+      <h3>Here's what was wrong with that draft.</h3>
+      <p class="summary">Four issues — each one is the kind of thing that quietly costs a pro client trust.</p>
+
+      <div class="issue-card">
+        <div class="issue-header"><span class="badge">Fabricated fact</span></div>
+        <div class="issue-quote">"<span class="marker">15 years of experience</span>"</div>
+        <div class="issue-explain">
+          James's original intro says only "I have been doing this for a while." The AI invented a specific number.
+          This is the most dangerous AI failure mode — confident, specific, and completely made up.
+          Always check numbers, certifications, and credentials against what the pro actually told you.
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-header"><span class="badge">Unverifiable claim</span></div>
+        <div class="issue-quote">"<span class="marker">Hundreds of satisfied homeowners</span>"</div>
+        <div class="issue-explain">
+          James never mentioned a review count or client volume. Unless you can confirm this from his account data,
+          it has to come out. A real number you can verify ("40+ five-star reviews") builds trust;
+          a vague large-sounding claim quietly erodes it the moment a client checks his profile.
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-header"><span class="badge">Overstated</span></div>
+        <div class="issue-quote">"<span class="marker">premium craftsmanship</span>" / "<span class="marker">unmatched attention to detail</span>"</div>
+        <div class="issue-explain">
+          These phrases promise more than a general handyman service can deliver, and they set client expectations
+          that James will be judged against on every job. The bar should be honest, not aspirational.
+          Trade "premium craftsmanship" for something concrete — what does James actually do well?
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-header"><span class="badge">Voice mismatch</span></div>
+        <div class="issue-quote">"<span class="marker">It would be my distinct pleasure to serve your home improvement needs</span>"</div>
+        <div class="issue-explain">
+          James's original voice is plain and direct — "I like helping people and do good work."
+          The AI's closing line sounds like a corporate hospitality script. Clients hiring a handyman
+          want to feel like they're talking to a person, not a brochure. Keep James's plainness;
+          just give it more specifics to stand on.
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <h4>The pattern to remember</h4>
+        <p>
+          AI output sounds confident whether it's accurate or not.
+          Your job isn't to polish what it produces — it's to be the fact-check and voice-check layer
+          the AI can't be. When in doubt: if the pro didn't say it, it doesn't go in.
+        </p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" id="try-again-btn">Try again with a clean draft</button>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
+  const SUBMISSION_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwkv0saoMSJgetN_u0yhVO_1LUNI2AmhmyREDHEQ0KurgMouA8SyeKH8OmRYqc5wiIn/exec';
+
+  // ============================================================
+
+  const aiOutputHTML = `
+    <div class="ai-section">
+      <h4>Strengths</h4>
+      <ul>
+        <li>Warm, approachable opener — James clearly wants to help</li>
+        <li>Friendly tone that doesn't feel transactional</li>
+      </ul>
+    </div>
+    <div class="ai-section">
+      <h4>Weaknesses</h4>
+      <ul>
+        <li>No specific services — clients can't tell what James actually does</li>
+        <li>No location mentioned — clients in his area can't connect</li>
+        <li>No credibility signals — no reviews, certifications, or experience cited</li>
+      </ul>
+    </div>
+    <div class="ai-section">
+      <h4>Recommendations</h4>
+      <ul>
+        <li>Lead with location and specific services</li>
+        <li>Add credibility — experience, reviews, or specialties</li>
+        <li>Close with a clear next step for the client</li>
+      </ul>
+    </div>
+    <div class="ai-section">
+      <h4>Draft Improved Version</h4>
+      <div class="ai-draft">
+        Hi, I'm James — a Sacramento-based handyman with 15 years of experience bringing premium craftsmanship to homes across the area. From minor repairs to full room refreshes, I take pride in doing the job right the first time, with unmatched attention to detail.
+        <div style="margin-top: 12px;">Services I offer:</div>
+        <ul class="services-list">
+          <li>General home repairs</li>
+          <li>Drywall patching &amp; painting</li>
+          <li>Furniture assembly &amp; mounting</li>
+          <li>Small plumbing &amp; electrical fixes</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          Hundreds of satisfied homeowners have trusted me with their projects.
+          It would be my distinct pleasure to serve your home improvement needs — request a quote today and let's get started! 🔧
+        </div>
+      </div>
+    </div>
+    <div class="ai-section" style="border-top: 1px solid var(--line); padding-top: 16px; margin-top: 6px;">
+      <p style="font-size: 13px; color: var(--ink-mute); font-style: italic;">
+        Nice work running the Gem! Remember, you know James better than I do — adjust the draft so it sounds like him.
+      </p>
+    </div>
+  `;
+
+  const aiDraftText = `Hi, I'm James — a Sacramento-based handyman with 15 years of experience bringing premium craftsmanship to homes across the area. From minor repairs to full room refreshes, I take pride in doing the job right the first time, with unmatched attention to detail.
+
+Services I offer:
+• General home repairs
+• Drywall patching & painting
+• Furniture assembly & mounting
+• Small plumbing & electrical fixes
+
+Hundreds of satisfied homeowners have trusted me with their projects. It would be my distinct pleasure to serve your home improvement needs — request a quote today and let's get started! 🔧`;
+
+  // ---------- Element refs ----------
+  const page1 = document.getElementById('page-1');
+  const page2 = document.getElementById('page-2');
+  const page3 = document.getElementById('page-3');
+  const runBtn = document.getElementById('run-btn');
+  const runHint = document.getElementById('run-hint');
+  const learnerNameEl = document.getElementById('learner-name');
+  const learnerEmailEl = document.getElementById('learner-email');
+  const fieldNameWrap = document.getElementById('field-name-wrap');
+  const fieldEmailWrap = document.getElementById('field-email-wrap');
+  const hintName = document.getElementById('hint-name');
+  const hintEmail = document.getElementById('hint-email');
+  const aiOutput = document.querySelector('.ai-output');
+  const aiBody = document.getElementById('ai-body');
+  const streamStatus = document.getElementById('stream-status');
+  const editor = document.getElementById('editor');
+  const submitBtn = document.getElementById('submit-btn');
+  const copyDraftBtn = document.getElementById('copy-draft-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const tryAgainBtn = document.getElementById('try-again-btn');
+  const stepPillText = document.getElementById('step-pill-text');
+  const submitStatusEl = document.getElementById('submit-status');
+  const submissionConfirm = document.getElementById('submission-confirm');
+  const confirmText = document.getElementById('confirm-text');
+  const toggleIntro = document.getElementById('toggle-intro');
+  const proCardCompact = document.getElementById('pro-card-compact');
+
+  let taskStartTime = null;
+
+  // ---------- Page navigation ----------
+  function goToPage(n) {
+    [page1, page2, page3].forEach(p => p.classList.remove('active'));
+    if (n === 1) { page1.classList.add('active'); stepPillText.textContent = 'Step 1 of 3 · Review the pro'; }
+    if (n === 2) { page2.classList.add('active'); stepPillText.textContent = 'Step 2 of 3 · Edit the draft'; }
+    if (n === 3) { page3.classList.add('active'); stepPillText.textContent = 'Step 3 of 3 · Coaching feedback'; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- Toggle compact intro ----------
+  toggleIntro.addEventListener('click', () => {
+    const expanded = proCardCompact.classList.toggle('expanded');
+    toggleIntro.textContent = expanded ? 'Hide full intro' : 'Show full intro';
+  });
+
+  // ---------- URL param prefill (Compass can pass ?learner=Name&email=foo@thumbtack.com) ----------
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('learner')) learnerNameEl.value = urlParams.get('learner');
+  if (urlParams.get('email')) learnerEmailEl.value = urlParams.get('email');
+
+  // ---------- Validation ----------
+  function isValidName(v) {
+    return v.trim().length >= 2;
+  }
+  function isValidEmail(v) {
+    const trimmed = v.trim().toLowerCase();
+    // Basic email shape + must be @thumbtack.com
+    return /^[^\s@]+@thumbtack\.com$/.test(trimmed);
+  }
+
+  function updateValidation(showErrors) {
+    const nameVal = learnerNameEl.value;
+    const emailVal = learnerEmailEl.value;
+    const nameOk = isValidName(nameVal);
+    const emailOk = isValidEmail(emailVal);
+
+    // Name field state
+    learnerNameEl.classList.remove('valid', 'invalid');
+    hintName.classList.remove('error', 'success');
+    hintName.textContent = '';
+    if (nameVal.trim().length > 0) {
+      if (nameOk) {
+        learnerNameEl.classList.add('valid');
+      } else if (showErrors) {
+        learnerNameEl.classList.add('invalid');
+        hintName.textContent = 'Please enter your name.';
+        hintName.classList.add('error');
+      }
+    } else if (showErrors) {
+      learnerNameEl.classList.add('invalid');
+      hintName.textContent = 'Required.';
+      hintName.classList.add('error');
+    }
+
+    // Email field state
+    learnerEmailEl.classList.remove('valid', 'invalid');
+    hintEmail.classList.remove('error', 'success');
+    hintEmail.textContent = '';
+    if (emailVal.trim().length > 0) {
+      if (emailOk) {
+        learnerEmailEl.classList.add('valid');
+      } else {
+        learnerEmailEl.classList.add('invalid');
+        hintEmail.textContent = 'Please use your @thumbtack.com email.';
+        hintEmail.classList.add('error');
+      }
+    } else if (showErrors) {
+      learnerEmailEl.classList.add('invalid');
+      hintEmail.textContent = 'Required.';
+      hintEmail.classList.add('error');
+    }
+
+    // Button state
+    if (nameOk && emailOk) {
+      runBtn.classList.remove('disabled');
+      runHint.classList.remove('urgent');
+      runHint.textContent = "You're set — let's see what the AI suggests.";
+    } else {
+      runBtn.classList.add('disabled');
+      if (!showErrors) {
+        runHint.classList.remove('urgent');
+        runHint.textContent = 'Enter your name and Thumbtack email above to continue.';
+      }
+    }
+
+    return nameOk && emailOk;
+  }
+
+  learnerNameEl.addEventListener('input', () => updateValidation(false));
+  learnerEmailEl.addEventListener('input', () => updateValidation(false));
+  learnerNameEl.addEventListener('blur', () => updateValidation(false));
+  learnerEmailEl.addEventListener('blur', () => updateValidation(false));
+
+  // Initial validation pass for any prefilled values
+  updateValidation(false);
+
+  // ---------- Streaming simulation ----------
+  function streamHTML(html, target, onComplete) {
+    target.innerHTML = html;
+    const children = Array.from(target.children);
+    children.forEach(c => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(4px)';
+      c.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    });
+    let i = 0;
+    const revealNext = () => {
+      if (i >= children.length) { onComplete && onComplete(); return; }
+      const c = children[i];
+      c.style.opacity = '1';
+      c.style.transform = 'translateY(0)';
+      i++;
+      const delay = i === 3 ? 800 : (i === 4 ? 400 : 350);
+      setTimeout(revealNext, delay);
+    };
+    setTimeout(revealNext, 200);
+  }
+
+  // ---------- Run button click ----------
+  runBtn.addEventListener('click', () => {
+    // If disabled, do the nudge
+    if (runBtn.classList.contains('disabled')) {
+      // Show errors
+      const valid = updateValidation(true);
+      if (valid) return; // edge case
+
+      // Shake the empty/invalid field
+      if (!isValidName(learnerNameEl.value)) {
+        fieldNameWrap.classList.remove('nudge');
+        void fieldNameWrap.offsetWidth; // restart animation
+        fieldNameWrap.classList.add('nudge');
+        learnerNameEl.focus();
+      } else if (!isValidEmail(learnerEmailEl.value)) {
+        fieldEmailWrap.classList.remove('nudge');
+        void fieldEmailWrap.offsetWidth;
+        fieldEmailWrap.classList.add('nudge');
+        learnerEmailEl.focus();
+      }
+      runHint.classList.add('urgent');
+      runHint.textContent = 'Please fill out both fields with your Thumbtack details.';
+      return;
+    }
+
+    // Proceed
+    goToPage(2);
+
+    // Reset AI output area and start streaming
+    aiBody.innerHTML = '';
+    streamStatus.textContent = 'Generating…';
+    editor.value = '';
+    document.querySelectorAll('.checklist li').forEach(li => li.classList.remove('checked'));
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit & reveal feedback';
+    submitStatusEl.innerHTML = '';
+    submitStatusEl.className = 'submit-status';
+
+    setTimeout(() => {
+      streamHTML(aiOutputHTML, aiBody, () => {
+        streamStatus.textContent = 'Complete';
+        setTimeout(() => {
+          editor.value = aiDraftText;
+          taskStartTime = Date.now();
+          updateChecklist();
+          // Smooth scroll the editor into view
+          document.querySelector('.challenge').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+      });
+    }, 200);
+  });
+
+  // ---------- Editor / checklist ----------
+  copyDraftBtn.addEventListener('click', () => {
+    editor.value = aiDraftText;
+    editor.focus();
+    updateChecklist();
+  });
+
+  function getCaughtIssues() {
+    const userText = editor.value.toLowerCase();
+    return {
+      invented: !userText.includes('15 years'),
+      unverifiable: !userText.includes('hundreds of satisfied') && !userText.includes('hundreds of homeowner'),
+      exaggeration: !userText.includes('premium craftsmanship') && !userText.includes('unmatched attention'),
+      voice: !userText.includes('distinct pleasure')
+    };
+  }
+  function updateChecklist() {
+    const checks = getCaughtIssues();
+    document.querySelectorAll('.checklist li').forEach(li => {
+      if (checks[li.dataset.issue]) li.classList.add('checked');
+      else li.classList.remove('checked');
+    });
+  }
+  editor.addEventListener('input', updateChecklist);
+
+  // ---------- Reset ----------
+  function fullReset() {
+    runBtn.classList.add('disabled');
+    runHint.classList.remove('urgent');
+    runHint.textContent = 'Enter your name and Thumbtack email above to continue.';
+    // Do NOT clear identity — learner shouldn't have to re-enter
+    updateValidation(false);
+    aiBody.innerHTML = '';
+    editor.value = '';
+    document.querySelectorAll('.checklist li').forEach(li => li.classList.remove('checked'));
+    submitStatusEl.innerHTML = '';
+    submitStatusEl.className = 'submit-status';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit & reveal feedback';
+    taskStartTime = null;
+    goToPage(1);
+  }
+  resetBtn.addEventListener('click', fullReset);
+  tryAgainBtn.addEventListener('click', fullReset);
+
+  // ---------- Submission ----------
+  async function sendSubmission(payload) {
+    if (!SUBMISSION_ENDPOINT) return { skipped: true };
+    const response = await fetch(SUBMISSION_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    return await response.json();
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    updateChecklist();
+    const caught = getCaughtIssues();
+    const timeOnTask = taskStartTime ? Math.round((Date.now() - taskStartTime) / 1000) : null;
+
+    const payload = {
+      learnerName: learnerNameEl.value.trim(),
+      learnerId: learnerEmailEl.value.trim(),  // sheet column is "Learner ID" but we now send email
+      issuesCaught: caught,
+      finalText: editor.value,
+      timeOnTask: timeOnTask,
+      userAgent: navigator.userAgent
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    submitStatusEl.innerHTML = '<span class="spin"></span> Saving';
+    submitStatusEl.className = 'submit-status';
+
+    let submissionOk = true;
+    let submissionMessage = 'Your submission has been recorded.';
+
+    try {
+      const result = await sendSubmission(payload);
+      if (result.skipped) {
+        submissionMessage = 'Preview mode — submission not recorded (no endpoint configured).';
+        submissionOk = false;
+      } else if (result.status !== 'ok') {
+        throw new Error(result.message || 'Unknown error');
+      }
+    } catch (err) {
+      submissionOk = false;
+      submissionMessage = "We couldn't save your submission, but you can still review the feedback below. (" + err.message + ")";
+      console.error('Submission error:', err);
+    }
+
+    if (submissionOk) {
+      submitStatusEl.innerHTML = '<span class="status-dot"></span> Saved';
+      submitStatusEl.className = 'submit-status success';
+      submissionConfirm.classList.remove('error');
+    } else {
+      submitStatusEl.innerHTML = '<span class="status-dot"></span> Not saved';
+      submitStatusEl.className = 'submit-status error';
+      submissionConfirm.classList.add('error');
+    }
+    confirmText.textContent = submissionMessage;
+    submitBtn.textContent = 'Submitted';
+
+    goToPage(3);
+  });
+
+</script>
+</body>
+</html>
