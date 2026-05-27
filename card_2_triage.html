@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card 2 — Triage</title>
+<style>
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Heavy.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-100: #EAF6FA; --blue-200: #B2EBFF; --blue-300: #79D2F2;
+    --blue: #009FD9; --blue-500: #007FAD; --blue-600: #005979;
+    --green-100: #E1FDF3; --green-200: #C6F7DA; --green: #2DB783; --green-500: #16855B; --green-600: #054E33;
+    --yellow-100: #FDF7E7; --yellow-200: #FFEBB3; --yellow: #FEBE14; --yellow-500: #A77005; --yellow-600: #714601;
+    --red-100: #FFEFF0; --red-200: #FFD9D9; --red: #FF5A5F; --red-500: #B22D31; --red-600: #7D0D10;
+    --ink: #1A1A1A; --ink-soft: #4A4A4A; --ink-mute: #8A8A85;
+    --line: #E8E6E0; --line-strong: #D4D2CB; --surface: #FFFFFF; --bg: #F5F4EF;
+    --shadow-card: 0 2px 16px rgba(20,20,18,0.06), 0 1px 3px rgba(20,20,18,0.04);
+    --shadow-sm: 0 1px 2px rgba(20,20,18,0.05);
+    --shadow-blue: 0 2px 8px rgba(0,159,217,0.18);
+    --sans: 'Thumbtack Rise', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--sans); background: var(--bg); color: var(--ink);
+    line-height: 1.5; font-size: 15px; -webkit-font-smoothing: antialiased;
+    padding: 28px 20px 60px;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .top-header {
+    margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand-lockup { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  .brand-text { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); font-weight: 500; }
+  .step-pill {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 500; background: var(--surface); border: 1px solid var(--line);
+    padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .step-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+  /* Title */
+  .page-title { font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .page-title em { font-style: normal; color: var(--blue-500); }
+  .page-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 28px; max-width: 640px; }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .progress-bar {
+    flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--blue); border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .progress-count {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-mute); font-weight: 500; white-space: nowrap;
+  }
+
+  /* Account snapshot card */
+  .snapshot {
+    background: var(--surface); border-radius: 14px; padding: 26px 28px;
+    box-shadow: var(--shadow-card); margin-bottom: 18px;
+    animation: pageIn 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .snapshot-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--line);
+  }
+  .snapshot-avatar {
+    width: 46px; height: 46px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  }
+  .snapshot-avatar svg { display: block; width: 100%; height: 100%; }
+  .snapshot-name { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .snapshot-trade { color: var(--ink-mute); font-size: 13px; }
+
+  /* Metrics grid */
+  .metrics {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px;
+  }
+  .metric {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .metric-label {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-mute); font-weight: 500; margin-bottom: 5px;
+  }
+  .metric-value {
+    font-weight: 600; font-size: 14.5px; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .metric-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .metric-dot.ok { background: var(--green); }
+  .metric-dot.warn { background: var(--yellow); }
+  .metric-dot.bad { background: var(--red); }
+  .metric-note {
+    font-size: 11.5px; color: var(--ink-mute); margin-top: 3px; font-weight: 400;
+  }
+
+  /* Binary choice buttons */
+  .choice-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .choice-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: #fff; border: 2px solid var(--line-strong); border-radius: 10px;
+    padding: 18px 16px; cursor: pointer; text-align: center;
+    font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink);
+    line-height: 1.4; transition: all 0.2s ease; width: 100%;
+  }
+  .choice-btn:hover:not(.locked) {
+    border-color: var(--blue-300); background: var(--blue-100); transform: translateY(-1px);
+  }
+  .choice-btn .choice-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 2px;
+  }
+  .choice-btn[data-choice="profile"] .choice-icon { background: var(--blue-100); }
+  .choice-btn[data-choice="other"] .choice-icon { background: var(--yellow-100); }
+
+  .choice-btn.locked { cursor: default; }
+  .choice-btn.correct { border-color: var(--green); background: var(--green-100); }
+  .choice-btn.wrong { border-color: var(--red-200); background: var(--red-100); opacity: 0.6; }
+
+  /* Feedback bar */
+  .feedback-bar {
+    display: none; margin-top: 14px; padding: 14px 18px; border-radius: 8px;
+    font-size: 14px; line-height: 1.55; color: var(--ink-soft);
+    animation: pageIn 0.35s ease;
+  }
+  .feedback-bar.visible { display: block; }
+  .feedback-bar.correct {
+    background: var(--green-100); border-left: 3px solid var(--green);
+  }
+  .feedback-bar.correct .fb-label { color: var(--green-600); font-weight: 600; }
+  .feedback-bar.wrong {
+    background: var(--red-100); border-left: 3px solid var(--red);
+  }
+  .feedback-bar.wrong .fb-label { color: var(--red-600); font-weight: 600; }
+  .fb-label { display: block; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+
+  .next-btn {
+    display: none; margin-top: 16px; background: var(--blue); color: #fff; border: none;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    padding: 12px 24px; border-radius: 8px; cursor: pointer;
+    box-shadow: var(--shadow-blue); transition: all 0.2s ease; width: 100%;
+  }
+  .next-btn.visible { display: block; animation: pageIn 0.35s ease; }
+  .next-btn:hover { background: var(--blue-500); }
+
+  /* Summary */
+  .summary-card {
+    background: var(--surface); border-radius: 14px; padding: 28px 30px;
+    box-shadow: var(--shadow-card); animation: pageIn 0.4s ease;
+  }
+  .summary-card h2 { font-weight: 700; font-size: 22px; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .summary-score {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 18px;
+  }
+  .summary-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .result-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    border-radius: 8px; font-size: 14px;
+  }
+  .result-row.was-correct { background: var(--green-100); }
+  .result-row.was-wrong { background: var(--red-100); }
+  .result-icon {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }
+  .result-icon.correct-icon { background: var(--green); }
+  .result-icon.wrong-icon { background: var(--red); }
+  .result-name { font-weight: 600; color: var(--ink); }
+  .result-detail { color: var(--ink-soft); font-size: 13px; }
+
+  .takeaway-box {
+    background: var(--blue-100); border-radius: 8px; border-left: 3px solid var(--blue);
+    padding: 18px 20px;
+  }
+  .takeaway-box h4 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--blue-600); margin-bottom: 8px;
+  }
+  .takeaway-box p { font-size: 14px; color: var(--ink); line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    body { padding: 18px 14px 50px; }
+    .page-title { font-size: 22px; }
+    .metrics { grid-template-columns: 1fr; }
+    .choice-row { grid-template-columns: 1fr; }
+    .top-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="top-header">
+    <div class="brand-lockup">
+      <div class="logo-mark">T</div>
+      <div class="brand-text">Compass · Profile Optimization</div>
+    </div>
+    <div class="step-pill">
+      <span class="dot"></span>
+      <span>Card 2 · Triage</span>
+    </div>
+  </div>
+
+  <h1 class="page-title">Four pros. <em>One question each.</em></h1>
+  <p class="page-sub">Not every weak profile is the right thing to fix first. For each account snapshot, decide: is profile optimization the priority right now, or does something else need attention first?</p>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
+    <span class="progress-count" id="progress-count">0 / 4</span>
+  </div>
+
+  <div id="exercise-area"></div>
+
+</div>
+
+<script>
+  // ============================================================
+  // SCENARIO DATA
+  // ============================================================
+  const scenarios = [
+    {
+      name: 'Marcus Chen',
+      trade: 'Interior Painter · Portland, OR',
+      avatarBg: '#B2EBFF',
+      avatarShirt: '#005979',
+      avatarShirtDark: '#003B52',
+      avatarSkin: '#E6B584',
+      avatarSkinLight: '#D9A574',
+      avatarHair: '#1A1A1A',
+      metrics: [
+        { label: 'Profile intro', value: 'Generic — no specialties or location', dot: 'bad' },
+        { label: 'Response rate', value: '78%', dot: 'ok', note: 'Threshold is 50%' },
+        { label: 'Budget', value: 'Adequate for market', dot: 'ok' },
+        { label: 'Background check', value: 'Complete', dot: 'ok' },
+      ],
+      correct: 'profile',
+      feedbackCorrect: "The account is healthy across the board — response rate, budget, and compliance are all in good shape. The intro is the weak link. This is exactly when profile optimization makes sense: when the rest of the account can support the conversions a better intro would generate.",
+      feedbackWrong: "His response rate (78%) is well above threshold, his budget is adequate, and his background check is complete. There's nothing else blocking conversions here — the generic intro is the dominant constraint. This is the right time for profile optimization.",
+      resultLine: 'Account healthy — intro was the weak link'
+    },
+    {
+      name: 'Priya Sharma',
+      trade: 'Personal Trainer · Miami, FL',
+      avatarBg: '#DFCCFF',
+      avatarShirt: '#6637B6',
+      avatarShirtDark: '#492782',
+      avatarSkin: '#C4956A',
+      avatarSkinLight: '#B5845C',
+      avatarHair: '#1A1A1A',
+      metrics: [
+        { label: 'Profile intro', value: 'Vague — no credentials or approach', dot: 'bad' },
+        { label: 'Response rate', value: '29%', dot: 'bad', note: 'Threshold is 50%' },
+        { label: 'Budget', value: 'Adequate for market', dot: 'ok' },
+        { label: 'Background check', value: 'Complete', dot: 'ok' },
+      ],
+      correct: 'other',
+      feedbackCorrect: "The intro is weak, but a better intro won't help if Priya isn't responding to the clients who already reach out. At 29%, she's losing more than half her leads before a conversation even starts. Fix the response rate first, then come back to the profile.",
+      feedbackWrong: "Her intro does need work — but at a 29% response rate, Priya is losing most of the clients who already try to contact her. Driving more contacts with a better intro would just mean more unanswered messages. Response rate is the dominant constraint here.",
+      resultLine: '29% response rate — fix that first'
+    },
+    {
+      name: 'Carlos Gutierrez',
+      trade: 'Licensed Electrician · Denver, CO',
+      avatarBg: '#C6F7DA',
+      avatarShirt: '#16855B',
+      avatarShirtDark: '#054E33',
+      avatarSkin: '#D4A67A',
+      avatarSkinLight: '#C4956A',
+      avatarHair: '#2A1A0E',
+      metrics: [
+        { label: 'Profile intro', value: 'Generic — mentions license but nothing else', dot: 'warn' },
+        { label: 'Response rate', value: '64%', dot: 'ok', note: 'Threshold is 50%' },
+        { label: 'Budget', value: 'Significantly below market rate', dot: 'bad', note: 'Pricing conversation needed' },
+        { label: 'Background check', value: 'Complete', dot: 'ok' },
+      ],
+      correct: 'other',
+      feedbackCorrect: "Carlos's intro could be stronger, but his pricing is the bigger issue. A budget significantly below market rate either means he's undervaluing his work (which hurts long-term sustainability) or clients are filtering him out as suspiciously cheap. The pricing conversation comes first.",
+      feedbackWrong: "The intro is mediocre, but Carlos has a more urgent problem: his budget is significantly below market rate. A polished intro might bring more eyes to his profile — but if his pricing is off, those contacts won't convert into good jobs. Address the pricing first.",
+      resultLine: 'Budget too low — pricing conversation first'
+    },
+    {
+      name: 'Diane Okafor',
+      trade: 'House Cleaner · Atlanta, GA',
+      avatarBg: '#FFEBB3',
+      avatarShirt: '#A77005',
+      avatarShirtDark: '#714601',
+      avatarSkin: '#8B5E3C',
+      avatarSkinLight: '#7A5030',
+      avatarHair: '#1A1A1A',
+      metrics: [
+        { label: 'Profile intro', value: 'Weak — reads like a default template', dot: 'bad' },
+        { label: 'Response rate', value: '48%', dot: 'warn', note: 'Threshold is 50% — just below' },
+        { label: 'Budget', value: 'Adequate for market', dot: 'ok' },
+        { label: 'Background check', value: 'Complete', dot: 'ok' },
+      ],
+      correct: 'other',
+      feedbackCorrect: "This one's close — and that's the point. Diane's intro is clearly weak, but her response rate is 48%, just under the 50% threshold. That two-point gap matters: clients are reaching out and not hearing back. Even a small bump in responsiveness would convert more of her existing traffic. Address the response rate first, then optimize the intro as a follow-up.",
+      feedbackWrong: "This is the tricky one. The intro is clearly weak — but Diane's response rate is 48%, just under the 50% threshold. That means clients are already reaching out and she's not converting them. A stronger intro would drive more contacts, but they'd hit the same responsiveness wall. Nudge the response rate above threshold first, then come back to the profile.",
+      resultLine: '48% response rate — borderline, but fix first'
+    },
+  ];
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let current = 0;
+  let score = 0;
+  const results = [];
+  const area = document.getElementById('exercise-area');
+  const progressFill = document.getElementById('progress-fill');
+  const progressCount = document.getElementById('progress-count');
+
+  // ============================================================
+  // AVATAR SVG BUILDER
+  // ============================================================
+  function buildAvatar(s, id) {
+    return `<svg viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg">
+      <defs><clipPath id="ac${id}"><circle cx="23" cy="23" r="23"/></clipPath></defs>
+      <g clip-path="url(#ac${id})">
+        <rect width="46" height="46" fill="${s.avatarBg}"/>
+        <path d="M 0 46 Q 0 34 10 30 L 17 28 L 23 34 L 29 28 L 36 30 Q 46 34 46 46 Z" fill="${s.avatarShirt}"/>
+        <path d="M 17 28 L 23 34 L 29 28 L 27 30 L 23 31 L 19 30 Z" fill="${s.avatarShirtDark}"/>
+        <rect x="19" y="25" width="8" height="5" fill="${s.avatarSkinLight}"/>
+        <ellipse cx="23" cy="19" rx="8.5" ry="10" fill="${s.avatarSkin}"/>
+        <path d="M 14.5 16 Q 14.5 9 23 8 Q 31.5 9 31.5 16 Q 31.5 13 29 12 Q 27.5 10.5 23 10.5 Q 18.5 10.5 17 12 Q 14.5 13 14.5 16 Z" fill="${s.avatarHair}"/>
+        <rect x="18" y="17.5" width="3.2" height="0.9" rx="0.45" fill="${s.avatarHair}"/>
+        <rect x="24.8" y="17.5" width="3.2" height="0.9" rx="0.45" fill="${s.avatarHair}"/>
+        <circle cx="19.5" cy="20" r="0.8" fill="#1A1A1A"/>
+        <circle cx="26.5" cy="20" r="0.8" fill="#1A1A1A"/>
+        <path d="M 20 23.5 Q 23 25.5 26 23.5" stroke="#5C3A20" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+      </g>
+    </svg>`;
+  }
+
+  // ============================================================
+  // RENDER SCENARIO
+  // ============================================================
+  function renderScenario(idx) {
+    const s = scenarios[idx];
+    const metricsHTML = s.metrics.map(m => `
+      <div class="metric">
+        <div class="metric-label">${m.label}</div>
+        <div class="metric-value">
+          <span class="metric-dot ${m.dot}"></span>
+          ${m.value}
+        </div>
+        ${m.note ? `<div class="metric-note">${m.note}</div>` : ''}
+      </div>
+    `).join('');
+
+    area.innerHTML = `
+      <div class="snapshot" id="snapshot">
+        <div class="snapshot-header">
+          <div class="snapshot-avatar">${buildAvatar(s, idx)}</div>
+          <div>
+            <div class="snapshot-name">${s.name}</div>
+            <div class="snapshot-trade">${s.trade}</div>
+          </div>
+        </div>
+
+        <div class="metrics">${metricsHTML}</div>
+
+        <div class="choice-row" id="choices">
+          <button class="choice-btn" data-choice="profile" onclick="choose('profile', ${idx})">
+            <span class="choice-icon">✏️</span>
+            Optimize the profile
+          </button>
+          <button class="choice-btn" data-choice="other" onclick="choose('other', ${idx})">
+            <span class="choice-icon">⚠️</span>
+            Something else first
+          </button>
+        </div>
+
+        <div class="feedback-bar" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="advance()">${idx < scenarios.length - 1 ? 'Next account →' : 'See your results'}</button>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // HANDLE CHOICE
+  // ============================================================
+  function choose(choice, idx) {
+    const s = scenarios[idx];
+    const btns = document.querySelectorAll('.choice-btn');
+    const fb = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Lock buttons
+    btns.forEach(b => {
+      b.classList.add('locked');
+      if (b.dataset.choice === s.correct) b.classList.add('correct');
+      if (b.dataset.choice === choice && choice !== s.correct) b.classList.add('wrong');
+    });
+
+    const isCorrect = choice === s.correct;
+    if (isCorrect) score++;
+    results.push({ name: s.name, correct: isCorrect, line: s.resultLine });
+
+    fb.className = `feedback-bar visible ${isCorrect ? 'correct' : 'wrong'}`;
+    fb.innerHTML = `
+      <span class="fb-label">${isCorrect ? '✓ Correct' : '✗ Not quite'}</span>
+      ${isCorrect ? s.feedbackCorrect : s.feedbackWrong}
+    `;
+
+    nextBtn.classList.add('visible');
+
+    // Update progress
+    progressFill.style.width = `${((current + 1) / scenarios.length) * 100}%`;
+    progressCount.textContent = `${current + 1} / ${scenarios.length}`;
+  }
+
+  // ============================================================
+  // ADVANCE TO NEXT OR SUMMARY
+  // ============================================================
+  function advance() {
+    current++;
+    if (current < scenarios.length) {
+      renderScenario(current);
+    } else {
+      renderSummary();
+    }
+  }
+
+  function renderSummary() {
+    const resultsHTML = results.map((r, i) => `
+      <div class="result-row ${r.correct ? 'was-correct' : 'was-wrong'}">
+        <span class="result-icon ${r.correct ? 'correct-icon' : 'wrong-icon'}">${r.correct ? '✓' : '✗'}</span>
+        <div>
+          <div class="result-name">${r.name}</div>
+          <div class="result-detail">${r.line}</div>
+        </div>
+      </div>
+    `).join('');
+
+    let summaryMessage;
+    if (score === 4) {
+      summaryMessage = "You read all four correctly — you've got the triage instinct. The pattern to hold onto: always check whether the rest of the account can support the conversions a better intro would generate. If something upstream is broken, fix that first.";
+    } else if (score >= 2) {
+      summaryMessage = "You caught most of them. The ones that tripped you up are worth reviewing — especially Diane's borderline response rate, which is the kind of close call that comes up often in real accounts. The principle stays the same: a strong intro only converts when the account behind it is healthy enough to follow through.";
+    } else {
+      summaryMessage = "A few of these were tricky — especially the borderline cases. The key takeaway: before reaching for profile optimization, scan the full account for anything that would block conversions even if the intro were perfect. Response rate, pricing, and compliance issues all take priority over intro quality.";
+    }
+
+    area.innerHTML = `
+      <div class="summary-card">
+        <h2>Your triage results</h2>
+        <div class="summary-score">${score} of 4 correct</div>
+
+        <div class="summary-results">${resultsHTML}</div>
+
+        <div class="takeaway-box">
+          <h4>The triage principle</h4>
+          <p>${summaryMessage}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  renderScenario(0);
+</script>
+</body>
+</html>
