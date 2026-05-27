@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card 1 — Spot the Gap</title>
+<style>
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Regular.otf') format('opentype');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Medium.otf') format('opentype');
+    font-weight: 500; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Bold.otf') format('opentype');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Thumbtack Rise';
+    src: url('fonts/ThumbtackRise-Heavy.otf') format('opentype');
+    font-weight: 900; font-style: normal; font-display: swap;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-100: #EAF6FA; --blue-200: #B2EBFF; --blue-300: #79D2F2;
+    --blue: #009FD9; --blue-500: #007FAD; --blue-600: #005979;
+    --green-100: #E1FDF3; --green-200: #C6F7DA; --green: #2DB783; --green-500: #16855B; --green-600: #054E33;
+    --yellow-100: #FDF7E7; --yellow-200: #FFEBB3; --yellow: #FEBE14; --yellow-500: #A77005;
+    --red-100: #FFEFF0; --red-200: #FFD9D9; --red: #FF5A5F; --red-500: #B22D31; --red-600: #7D0D10;
+    --purple-100: #F5EFFF; --purple: #8D56EB;
+    --ink: #1A1A1A; --ink-soft: #4A4A4A; --ink-mute: #8A8A85;
+    --line: #E8E6E0; --line-strong: #D4D2CB; --surface: #FFFFFF; --bg: #F5F4EF;
+    --shadow-card: 0 2px 16px rgba(20,20,18,0.06), 0 1px 3px rgba(20,20,18,0.04);
+    --shadow-sm: 0 1px 2px rgba(20,20,18,0.05);
+    --shadow-blue: 0 2px 8px rgba(0,159,217,0.18);
+    --sans: 'Thumbtack Rise', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 20px 60px;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* Page transitions */
+  .page { display: none; }
+  .page.active { display: block; animation: pageIn 0.45s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .top-header {
+    margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand-lockup { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  .brand-text {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-mute); font-weight: 500;
+  }
+  .step-pill {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft); font-weight: 500;
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 6px 12px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .step-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+  /* Title */
+  .page-title { font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .page-title em { font-style: normal; color: var(--blue-500); }
+  .page-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 24px; max-width: 640px; }
+
+  /* Pro profile card */
+  .pro-card {
+    background: var(--surface); border-radius: 16px; padding: 28px 30px;
+    box-shadow: var(--shadow-card); margin-bottom: 24px;
+  }
+  .pro-header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .pro-avatar {
+    width: 76px; height: 76px; border-radius: 50%; overflow: hidden;
+    flex-shrink: 0; background: var(--purple-100);
+    box-shadow: 0 2px 6px rgba(20,20,18,0.08);
+  }
+  .pro-avatar svg { display: block; width: 100%; height: 100%; }
+  .pro-info { flex: 1; min-width: 0; }
+  .pro-name { font-weight: 700; font-size: 24px; letter-spacing: -0.015em; margin-bottom: 2px; line-height: 1.2; }
+  .pro-location { color: var(--ink-mute); font-size: 14px; margin-bottom: 8px; }
+  .pro-rating { display: flex; align-items: center; gap: 4px; color: var(--green-500); }
+  .pro-rating .star { width: 14px; height: 14px; fill: currentColor; }
+  .pro-rating .star.empty { fill: var(--line-strong); }
+  .pro-rating .review-count { color: var(--ink-mute); font-size: 13px; margin-left: 6px; }
+
+  .pro-section-label { font-weight: 700; font-size: 14.5px; margin-bottom: 8px; }
+  .pro-intro-text { font-size: 14.5px; line-height: 1.65; color: var(--ink-soft); margin-bottom: 18px; }
+
+  .pro-stats {
+    display: flex; flex-wrap: wrap; gap: 22px; padding: 14px 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 18px;
+  }
+  .pro-stat { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-soft); }
+  .pro-stat svg { width: 14px; height: 14px; color: var(--ink-mute); flex-shrink: 0; }
+
+  .pro-actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+  .pro-action {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 12px; border: 1.5px solid var(--blue-300); border-radius: 8px;
+    background: #fff; color: var(--blue-500); font-size: 13px; font-weight: 500;
+    cursor: default; user-select: none;
+  }
+  .pro-action svg { width: 14px; height: 14px; }
+
+  .pro-services-label { font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+  .pro-service-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    background: #fff; border: 1px solid var(--line-strong); color: var(--ink-soft);
+    font-size: 12.5px; padding: 6px 12px; border-radius: 16px;
+  }
+
+  /* Prompt / question area */
+  .question-panel {
+    background: var(--surface); border: 1px solid var(--blue-200); border-radius: 12px;
+    padding: 26px 28px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+  }
+  .question-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--blue);
+  }
+  .question-panel h3 { font-weight: 700; font-size: 19px; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .question-panel .lede { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
+
+  /* Answer options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: #fff; border: 1.5px solid var(--line-strong); border-radius: 10px;
+    padding: 16px 18px; cursor: pointer; text-align: left;
+    font-family: var(--sans); font-size: 14.5px; color: var(--ink); line-height: 1.5;
+    transition: all 0.2s ease; width: 100%;
+  }
+  .option-btn:hover:not(.selected):not(.locked) {
+    border-color: var(--blue-300); background: var(--blue-100);
+  }
+  .option-btn .radio {
+    width: 20px; height: 20px; border: 2px solid var(--line-strong); border-radius: 50%;
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .option-btn.selected .radio {
+    border-color: var(--blue); background: var(--blue);
+  }
+  .option-btn.selected .radio::after {
+    content: ''; width: 7px; height: 7px; background: #fff; border-radius: 50%;
+  }
+  .option-btn.selected { border-color: var(--blue); background: var(--blue-100); }
+  .option-btn.locked { cursor: default; }
+  .option-btn.correct.locked { border-color: var(--green); background: var(--green-100); }
+  .option-btn.correct.locked .radio { border-color: var(--green); background: var(--green); }
+  .option-btn.wrong.locked { border-color: var(--red-200); background: var(--red-100); opacity: 0.7; }
+
+  .confirm-btn {
+    margin-top: 16px; background: var(--blue); color: #fff; border: none;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    padding: 12px 24px; border-radius: 8px; cursor: pointer;
+    box-shadow: var(--shadow-blue); transition: all 0.2s ease;
+  }
+  .confirm-btn:hover:not(:disabled) { background: var(--blue-500); }
+  .confirm-btn:disabled { background: var(--line-strong); color: var(--ink-mute); cursor: not-allowed; box-shadow: none; }
+
+  /* Feedback reveal */
+  .reveal-panel {
+    display: none; margin-top: 20px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 26px 28px; box-shadow: var(--shadow-sm);
+  }
+  .reveal-panel.visible { display: block; animation: pageIn 0.4s ease; }
+  .reveal-panel h3 { font-weight: 700; font-size: 19px; margin-bottom: 12px; }
+
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .signal-card {
+    background: var(--yellow-100); border: 1px solid var(--yellow-200); border-radius: 8px;
+    padding: 14px 16px; border-left: 3px solid var(--yellow);
+  }
+  .signal-card .signal-name {
+    font-weight: 600; font-size: 13px; color: var(--yellow-500); margin-bottom: 5px;
+    letter-spacing: 0.01em;
+  }
+  .signal-card .signal-quote {
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; font-style: italic;
+  }
+  .signal-card .signal-quote .mark {
+    background: rgba(254,190,20,0.2); padding: 1px 3px; border-radius: 2px;
+  }
+
+  .framework-box {
+    background: var(--blue-100); border-radius: 8px; border-left: 3px solid var(--blue);
+    padding: 18px 20px;
+  }
+  .framework-box h4 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--blue-600); margin-bottom: 8px;
+  }
+  .framework-box p { font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .framework-list {
+    margin-top: 10px; padding-left: 18px; font-size: 14px; color: var(--ink-soft); line-height: 1.7;
+  }
+  .framework-list li { margin-bottom: 4px; }
+  .framework-list li strong { color: var(--ink); font-weight: 600; }
+
+  @media (max-width: 640px) {
+    body { padding: 18px 14px 50px; }
+    .page-title { font-size: 22px; }
+    .pro-card { padding: 20px; }
+    .pro-name { font-size: 20px; }
+    .pro-actions { grid-template-columns: 1fr; }
+    .signal-grid { grid-template-columns: 1fr; }
+    .top-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="top-header">
+    <div class="brand-lockup">
+      <div class="logo-mark">T</div>
+      <div class="brand-text">Compass · Profile Optimization</div>
+    </div>
+    <div class="step-pill">
+      <span class="dot"></span>
+      <span>Card 1 · Spot the gap</span>
+    </div>
+  </div>
+
+  <!-- ======================== PAGE 1: Profile + Question ======================== -->
+  <div class="page active" id="page-1">
+    <h1 class="page-title">A client is looking at this profile. <em>What do you see?</em></h1>
+    <p class="page-sub">Before we talk about tools or templates, take a look at this pro's profile the way a potential client would.</p>
+
+    <section class="pro-card">
+      <div class="pro-header">
+        <div class="pro-avatar">
+          <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">
+            <defs><clipPath id="ac"><circle cx="38" cy="38" r="38"/></clipPath></defs>
+            <g clip-path="url(#ac)">
+              <rect width="76" height="76" fill="#DFCCFF"/>
+              <!-- shirt / shoulders -->
+              <path d="M 0 76 Q 0 56 16 50 L 28 47 L 38 56 L 48 47 L 60 50 Q 76 56 76 76 Z" fill="#6637B6"/>
+              <path d="M 28 47 L 38 56 L 48 47 L 44 50 L 38 51 L 32 50 Z" fill="#492782"/>
+              <!-- neck -->
+              <rect x="32" y="42" width="12" height="8" fill="#C4956A"/>
+              <!-- head -->
+              <ellipse cx="38" cy="32" rx="14" ry="16" fill="#D4A67A"/>
+              <!-- hair — longer, swept -->
+              <path d="M 22 28 Q 22 14 38 12 Q 54 14 54 28 Q 54 22 50 19 Q 46 15 38 15 Q 28 15 24 20 Q 22 22 22 28 Z" fill="#2A1A0E"/>
+              <path d="M 22 28 Q 20 32 20 36 Q 21 34 22 31 Q 22 29 22 28 Z" fill="#2A1A0E"/>
+              <path d="M 54 28 Q 56 32 56 36 Q 55 34 54 31 Q 54 29 54 28 Z" fill="#2A1A0E"/>
+              <!-- eyebrows -->
+              <rect x="29" y="28.5" width="5.5" height="1.3" rx="0.65" fill="#2A1A0E"/>
+              <rect x="41.5" y="28.5" width="5.5" height="1.3" rx="0.65" fill="#2A1A0E"/>
+              <!-- eyes -->
+              <circle cx="32" cy="32.5" r="1.3" fill="#1A1A1A"/>
+              <circle cx="44" cy="32.5" r="1.3" fill="#1A1A1A"/>
+              <!-- smile -->
+              <path d="M 33 38.5 Q 38 41.5 43 38.5" stroke="#7A5533" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+              <!-- small sparkle badge -->
+              <circle cx="50" cy="62" r="5" fill="#8D56EB"/>
+              <path d="M 50 59 L 50.7 61 L 53 61 L 51.2 62.2 L 51.7 64.2 L 50 63 L 48.3 64.2 L 48.8 62.2 L 47 61 L 49.3 61 Z" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+        <div class="pro-info">
+          <div class="pro-name">Sofia Martinez</div>
+          <div class="pro-location">Austin, TX</div>
+          <div class="pro-rating">
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <svg class="star empty" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+            <span class="review-count">(8)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pro-section-label">About this pro</div>
+      <div class="pro-intro-text">
+        Hello! I'm Sofia and I love what I do. I provide quality cleaning services and always make sure my clients are happy. I'm very detail-oriented and take pride in my work. If you're looking for someone reliable, look no further! Feel free to reach out anytime.
+      </div>
+
+      <div class="pro-stats">
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          3 years in business
+        </div>
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          34 hires on Thumbtack
+        </div>
+        <div class="pro-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Background checked
+        </div>
+      </div>
+
+      <div class="pro-actions">
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message
+        </div>
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Check availability
+        </div>
+        <div class="pro-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.88.37 1.76.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.93.29 1.93.53 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Request a call
+        </div>
+      </div>
+
+      <div class="pro-services-label">Services offered</div>
+      <div class="pro-service-pills">
+        <span class="pill">Standard cleaning</span>
+        <span class="pill">Deep cleaning</span>
+        <span class="pill">Move out cleaning</span>
+      </div>
+    </section>
+
+    <!-- Question -->
+    <section class="question-panel">
+      <h3>You're reviewing Sofia's account. What's the first thing you'd flag?</h3>
+      <p class="lede">Read her intro the way a potential client would — then pick the issue that matters most.</p>
+
+      <div class="options" id="options">
+        <button class="option-btn" data-answer="a" onclick="selectOption(this)">
+          <span class="radio"></span>
+          <span>Her intro is warm but vague — a client can't tell what she specializes in, where she serves, or why she's the right choice.</span>
+        </button>
+        <button class="option-btn" data-answer="b" onclick="selectOption(this)">
+          <span class="radio"></span>
+          <span>Her response rate or budget needs to be checked first — the intro doesn't matter until the rest of the account is healthy.</span>
+        </button>
+        <button class="option-btn" data-answer="c" onclick="selectOption(this)">
+          <span class="radio"></span>
+          <span>The profile looks fine — she has reviews, a background check, and three years in business. No major issues.</span>
+        </button>
+      </div>
+
+      <button class="confirm-btn" id="confirm-btn" disabled onclick="confirmAnswer()">Lock in your answer</button>
+    </section>
+  </div>
+
+  <!-- ======================== PAGE 2: Reveal + Framework ======================== -->
+  <div class="page" id="page-2">
+    <h1 class="page-title">Good eye. <em>Here's the full picture.</em></h1>
+    <p class="page-sub" id="reveal-intro"></p>
+
+    <section class="reveal-panel visible">
+      <h3>What a client sees — and doesn't see — in Sofia's intro</h3>
+
+      <div class="signal-grid">
+        <div class="signal-card">
+          <div class="signal-name">Generic language</div>
+          <div class="signal-quote">"<span class="mark">quality cleaning services</span>" and "<span class="mark">detail-oriented</span>" — every cleaner says this. It doesn't help Sofia stand out.</div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-name">Unclear services</div>
+          <div class="signal-quote">Does she do standard cleans? Deep cleans? Move-outs? Post-construction? The intro doesn't say — the client has to guess from the pills below.</div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-name">Weak credibility</div>
+          <div class="signal-quote">Three years in business and 34 hires appear in the stats — but none of that shows up <em>in the intro itself</em>, which is often all a client reads.</div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-name">Missing differentiator</div>
+          <div class="signal-quote">"<span class="mark">Look no further!</span>" is a placeholder where a real reason to choose Sofia should be — eco-friendly products, same-day booking, specific neighborhoods served.</div>
+        </div>
+      </div>
+
+      <div class="framework-box">
+        <h4>The four warning signals you're looking for</h4>
+        <p>When reviewing a pro's profile intro, these are the patterns that quietly suppress conversion:</p>
+        <ul class="framework-list">
+          <li><strong>Generic language</strong> — phrases any pro in any category could use</li>
+          <li><strong>Unclear services</strong> — the client can't tell what the pro actually does</li>
+          <li><strong>Weak credibility</strong> — no years, reviews, certifications, or results in the intro</li>
+          <li><strong>Placeholder descriptions</strong> — text that reads like a default template that was never updated</li>
+        </ul>
+        <p style="margin-top: 14px;">Sofia's profile has warmth — that's worth preserving. What it's missing is specifics. A client reading this intro has no reason to choose Sofia over the next cleaner in the list. That's the gap you'll learn to close.</p>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+  let selectedAnswer = null;
+  let locked = false;
+
+  function selectOption(btn) {
+    if (locked) return;
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedAnswer = btn.dataset.answer;
+    document.getElementById('confirm-btn').disabled = false;
+  }
+
+  function confirmAnswer() {
+    if (!selectedAnswer || locked) return;
+    locked = true;
+    const btns = document.querySelectorAll('.option-btn');
+    btns.forEach(b => {
+      b.classList.add('locked');
+      if (b.dataset.answer === 'a') b.classList.add('correct');
+      else if (b.classList.contains('selected') && b.dataset.answer !== 'a') b.classList.add('wrong');
+    });
+    document.getElementById('confirm-btn').disabled = true;
+    document.getElementById('confirm-btn').textContent = 'Answered';
+
+    // Set the intro text for page 2 based on what they picked
+    const revealIntro = document.getElementById('reveal-intro');
+    if (selectedAnswer === 'a') {
+      revealIntro.textContent = "That's the right read. Sofia's intro is warm but it's doing almost no conversion work. Here are the specific signals you spotted — and the framework for catching them every time.";
+    } else if (selectedAnswer === 'b') {
+      revealIntro.textContent = "Good instinct — checking the full account matters. But in this case, Sofia's account is healthy (response rate, budget, background check are all fine). The intro is the dominant constraint. Here's what makes it weak, and the framework for spotting these patterns.";
+    } else {
+      revealIntro.textContent = "Sofia does have some account strengths — but her intro is doing almost no conversion work for her. A client reading it has no specific reason to reach out. Here's what's actually happening in that intro, and the framework for catching these gaps.";
+    }
+
+    // Transition to page 2 after a brief pause
+    setTimeout(() => {
+      document.getElementById('page-1').classList.remove('active');
+      document.getElementById('page-2').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1200);
+  }
+</script>
+</body>
+</html>
