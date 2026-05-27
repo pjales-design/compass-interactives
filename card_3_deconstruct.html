@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card 3 — Deconstruct a Strong Intro</title>
+<style>
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Thumbtack Rise'; src: url('fonts/ThumbtackRise-Heavy.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-100: #EAF6FA; --blue-200: #B2EBFF; --blue-300: #79D2F2;
+    --blue: #009FD9; --blue-500: #007FAD; --blue-600: #005979;
+    --green-100: #E1FDF3; --green-200: #C6F7DA; --green: #2DB783; --green-500: #16855B; --green-600: #054E33;
+    --yellow-100: #FDF7E7; --yellow-200: #FFEBB3; --yellow: #FEBE14; --yellow-500: #A77005;
+    --red-100: #FFEFF0; --red-200: #FFD9D9; --red: #FF5A5F; --red-500: #B22D31; --red-600: #7D0D10;
+    --purple-100: #F5EFFF; --purple-200: #DFCCFF; --purple: #8D56EB; --purple-500: #6637B6;
+    --indigo-100: #E8F1FD; --indigo: #5968E2; --indigo-500: #4F54B2;
+    --ink: #1A1A1A; --ink-soft: #4A4A4A; --ink-mute: #8A8A85;
+    --line: #E8E6E0; --line-strong: #D4D2CB; --surface: #FFFFFF; --bg: #F5F4EF;
+    --shadow-card: 0 2px 16px rgba(20,20,18,0.06), 0 1px 3px rgba(20,20,18,0.04);
+    --shadow-sm: 0 1px 2px rgba(20,20,18,0.05);
+    --sans: 'Thumbtack Rise', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.5; font-size: 15px; -webkit-font-smoothing: antialiased; padding: 28px 20px 60px; }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  @keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+
+  .top-header { margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand-lockup { display: flex; align-items: center; gap: 12px; }
+  .logo-mark { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+  .brand-text { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); font-weight: 500; }
+  .step-pill { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; }
+  .step-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+  .page-title { font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .page-title em { font-style: normal; color: var(--blue-500); }
+  .page-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 28px; max-width: 660px; }
+
+  /* Pro card (compact — just header + intro) */
+  .pro-card { background: var(--surface); border-radius: 14px; padding: 26px 28px; box-shadow: var(--shadow-card); margin-bottom: 22px; }
+  .pro-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+  .pro-avatar { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 6px rgba(20,20,18,0.08); }
+  .pro-avatar svg { display: block; width: 100%; height: 100%; }
+  .pro-name { font-weight: 700; font-size: 20px; letter-spacing: -0.01em; margin-bottom: 2px; }
+  .pro-location { color: var(--ink-mute); font-size: 13px; margin-bottom: 6px; }
+  .pro-rating { display: flex; align-items: center; gap: 3px; color: var(--green-500); }
+  .pro-rating .star { width: 13px; height: 13px; fill: currentColor; }
+  .pro-rating .review-count { color: var(--ink-mute); font-size: 12px; margin-left: 5px; }
+
+  .section-label { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+
+  /* ============================================================
+     TAPPABLE INTRO — the core interaction
+     ============================================================ */
+  .intro-interact {
+    font-size: 18px; line-height: 1.8; color: var(--ink); padding: 20px 0 4px;
+    user-select: none; -webkit-user-select: none;
+  }
+
+  .tap-target {
+    display: inline;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 1px;
+    transition: all 0.25s ease;
+    position: relative;
+    border-bottom: 2px dashed transparent;
+  }
+  .tap-target:hover:not(.found) {
+    background: rgba(0,159,217,0.06);
+    border-bottom-color: var(--blue-200);
+  }
+  .tap-target.found {
+    cursor: default;
+  }
+
+  /* Color-coded highlights per category */
+  .tap-target.found[data-cat="credibility"] { background: var(--green-100); border-bottom: 2px solid var(--green); }
+  .tap-target.found[data-cat="experience"] { background: var(--blue-100); border-bottom: 2px solid var(--blue); }
+  .tap-target.found[data-cat="specificity"] { background: var(--purple-100); border-bottom: 2px solid var(--purple); }
+  .tap-target.found[data-cat="location"] { background: var(--yellow-100); border-bottom: 2px solid var(--yellow); }
+  .tap-target.found[data-cat="social-proof"] { background: var(--indigo-100); border-bottom: 2px solid var(--indigo); }
+  .tap-target.found[data-cat="urgency"] { background: var(--red-100); border-bottom: 2px solid var(--red); }
+
+  /* Floating label that appears on tap */
+  .tap-label {
+    display: none;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 10;
+    animation: popIn 0.25s ease;
+    pointer-events: none;
+  }
+  .tap-target.found .tap-label { display: inline-block; }
+
+  .tap-label[data-cat="credibility"] { background: var(--green); color: #fff; }
+  .tap-label[data-cat="experience"] { background: var(--blue); color: #fff; }
+  .tap-label[data-cat="specificity"] { background: var(--purple); color: #fff; }
+  .tap-label[data-cat="location"] { background: var(--yellow-500); color: #fff; }
+  .tap-label[data-cat="social-proof"] { background: var(--indigo); color: #fff; }
+  .tap-label[data-cat="urgency"] { background: var(--red); color: #fff; }
+
+  /* Small triangle pointer under label */
+  .tap-label::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+  }
+  .tap-label[data-cat="credibility"]::after { border-top-color: var(--green); }
+  .tap-label[data-cat="experience"]::after { border-top-color: var(--blue); }
+  .tap-label[data-cat="specificity"]::after { border-top-color: var(--purple); }
+  .tap-label[data-cat="location"]::after { border-top-color: var(--yellow-500); }
+  .tap-label[data-cat="social-proof"]::after { border-top-color: var(--indigo); }
+  .tap-label[data-cat="urgency"]::after { border-top-color: var(--red); }
+
+  /* Counter + hint */
+  .counter-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .counter {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .counter .count-num {
+    background: var(--blue); color: #fff; font-weight: 700;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; transition: transform 0.2s ease;
+  }
+  .counter .count-num.bump { transform: scale(1.2); }
+  .tap-hint {
+    font-size: 13px; color: var(--ink-mute); font-style: italic;
+  }
+
+  /* Reveal button */
+  .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--sans); font-size: 13.5px; font-weight: 600;
+    padding: 11px 20px; border-radius: 8px; cursor: pointer;
+    border: 1.5px solid transparent; transition: all 0.2s ease;
+  }
+  .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(0,159,217,0.18); }
+  .btn-primary:hover { background: var(--blue-500); }
+  .btn-ghost { background: transparent; color: var(--ink-mute); font-size: 12.5px; padding: 11px 12px; font-weight: 500; }
+  .btn-ghost:hover { color: var(--ink); }
+
+  /* ============================================================
+     BREAKDOWN PANEL — shown after all found or reveal
+     ============================================================ */
+  .breakdown {
+    display: none; margin-top: 24px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 26px 28px; box-shadow: var(--shadow-sm);
+  }
+  .breakdown.visible { display: block; animation: pageIn 0.4s ease; }
+  .breakdown h3 { font-weight: 700; font-size: 20px; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .breakdown .bd-sub { color: var(--ink-mute); font-size: 14px; margin-bottom: 20px; }
+
+  .element-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .element-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 16px; border-radius: 8px; border-left: 3px solid;
+  }
+  .element-card[data-cat="credibility"] { background: var(--green-100); border-left-color: var(--green); }
+  .element-card[data-cat="experience"] { background: var(--blue-100); border-left-color: var(--blue); }
+  .element-card[data-cat="specificity"] { background: var(--purple-100); border-left-color: var(--purple); }
+  .element-card[data-cat="location"] { background: var(--yellow-100); border-left-color: var(--yellow); }
+  .element-card[data-cat="social-proof"] { background: var(--indigo-100); border-left-color: var(--indigo); }
+  .element-card[data-cat="urgency"] { background: var(--red-100); border-left-color: var(--red); }
+
+  .element-badge {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 700; padding: 4px 8px; border-radius: 4px; color: #fff; white-space: nowrap;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .element-badge[data-cat="credibility"] { background: var(--green); }
+  .element-badge[data-cat="experience"] { background: var(--blue); }
+  .element-badge[data-cat="specificity"] { background: var(--purple); }
+  .element-badge[data-cat="location"] { background: var(--yellow-500); }
+  .element-badge[data-cat="social-proof"] { background: var(--indigo); }
+  .element-badge[data-cat="urgency"] { background: var(--red); }
+
+  .element-text { flex: 1; }
+  .element-phrase { font-weight: 600; font-size: 14px; color: var(--ink); margin-bottom: 3px; }
+  .element-why { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+
+  .takeaway-box {
+    background: var(--blue-100); border-radius: 8px; border-left: 3px solid var(--blue);
+    padding: 18px 20px;
+  }
+  .takeaway-box h4 { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue-600); margin-bottom: 8px; }
+  .takeaway-box p { font-size: 14px; color: var(--ink); line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    body { padding: 18px 14px 50px; }
+    .page-title { font-size: 22px; }
+    .intro-interact { font-size: 16px; line-height: 1.75; }
+    .top-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .pro-card { padding: 20px; }
+    .breakdown { padding: 20px; }
+    .counter-row { flex-direction: column; align-items: flex-start; }
+    .tap-label { font-size: 8.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="top-header">
+    <div class="brand-lockup">
+      <div class="logo-mark">T</div>
+      <div class="brand-text">Compass · Profile Optimization</div>
+    </div>
+    <div class="step-pill">
+      <span class="dot"></span>
+      <span>Card 3 · Strong intro</span>
+    </div>
+  </div>
+
+  <h1 class="page-title">This intro converts. <em>Find out why.</em></h1>
+  <p class="page-sub">Tap every phrase in Ray's intro that would help a potential client decide to reach out. There are six elements to find.</p>
+
+  <!-- Pro card -->
+  <section class="pro-card">
+    <div class="pro-header">
+      <div class="pro-avatar">
+        <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+          <defs><clipPath id="ac"><circle cx="28" cy="28" r="28"/></clipPath></defs>
+          <g clip-path="url(#ac)">
+            <rect width="56" height="56" fill="#C6F7DA"/>
+            <path d="M 0 56 Q 0 42 12 37 L 21 34 L 28 42 L 35 34 L 44 37 Q 56 42 56 56 Z" fill="#16855B"/>
+            <path d="M 21 34 L 28 42 L 35 34 L 33 36 L 28 37 L 23 36 Z" fill="#054E33"/>
+            <rect x="24" y="31" width="8" height="6" fill="#C4956A"/>
+            <ellipse cx="28" cy="24" rx="10.5" ry="12" fill="#D4A67A"/>
+            <path d="M 17.5 20 Q 17.5 12 28 10 Q 38.5 12 38.5 20 Q 38.5 16 36 14 Q 34 12 28 12 Q 22 12 20 14 Q 17.5 16 17.5 20 Z" fill="#3A2418"/>
+            <rect x="22" y="21" width="4" height="1.1" rx="0.55" fill="#3A2418"/>
+            <rect x="30" y="21" width="4" height="1.1" rx="0.55" fill="#3A2418"/>
+            <circle cx="24" cy="24.5" r="1" fill="#1A1A1A"/>
+            <circle cx="32" cy="24.5" r="1" fill="#1A1A1A"/>
+            <path d="M 25 29 Q 28 31 31 29" stroke="#5C3A20" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+            <!-- lightning bolt badge -->
+            <circle cx="38" cy="46" r="4" fill="#FEBE14"/>
+            <path d="M 38.5 43.5 L 37 46.2 L 38.4 46.2 L 37.5 48.5 L 39.5 45.5 L 38 45.5 Z" fill="#714601"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="pro-name">Ray Torres</div>
+        <div class="pro-location">Denver, CO</div>
+        <div class="pro-rating">
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 2l2.99 7.16L23 9.74l-6.18 5.4L18.91 23 12 19.27 5.09 23l2.09-7.86L1 9.74l8.01-.58z"/></svg>
+          <span class="review-count">(214)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">About this pro</div>
+
+    <div class="counter-row">
+      <div class="counter">
+        <span class="count-num" id="count-num">0</span>
+        <span>of 6 elements found</span>
+      </div>
+      <div class="tap-hint" id="tap-hint">Tap the phrases that would convince a client.</div>
+    </div>
+
+    <!-- The intro text with tappable elements -->
+    <div class="intro-interact" id="intro-interact">
+      <span class="tap-target" data-cat="credibility" data-label="Credibility" onclick="tapElement(this)">Licensed electrician<span class="tap-label" data-cat="credibility">Credibility</span></span>
+      with
+      <span class="tap-target" data-cat="experience" data-label="Experience" onclick="tapElement(this)">12 years of experience<span class="tap-label" data-cat="experience">Experience</span></span>
+      specializing in
+      <span class="tap-target" data-cat="specificity" data-label="Specificity" onclick="tapElement(this)">residential rewiring and panel upgrades<span class="tap-label" data-cat="specificity">Service specificity</span></span>
+      across the
+      <span class="tap-target" data-cat="location" data-label="Location" onclick="tapElement(this)">Denver metro area<span class="tap-label" data-cat="location">Location</span></span>.
+      <span class="tap-target" data-cat="social-proof" data-label="Social proof" onclick="tapElement(this)">Over 200 five-star reviews<span class="tap-label" data-cat="social-proof">Social proof</span></span>
+      from homeowners who trust me with their most important investment.
+      <span class="tap-target" data-cat="urgency" data-label="Urgency" onclick="tapElement(this)">Same-week availability<span class="tap-label" data-cat="urgency">Differentiator</span></span>
+      for most projects — reach out today for a free estimate.
+    </div>
+  </section>
+
+  <div class="actions" id="actions">
+    <button class="btn btn-ghost" id="reveal-btn" onclick="revealAll()">Show what I missed</button>
+  </div>
+
+  <!-- Breakdown -->
+  <section class="breakdown" id="breakdown">
+    <h3>Six elements. Each one doing a job.</h3>
+    <p class="bd-sub" id="bd-sub"></p>
+
+    <div class="element-grid">
+      <div class="element-card" data-cat="credibility">
+        <span class="element-badge" data-cat="credibility">Credibility</span>
+        <div class="element-text">
+          <div class="element-phrase">"Licensed electrician"</div>
+          <div class="element-why">Licensing is a trust signal — it tells the client this pro is verified, insured, and accountable. It answers "can I trust this person in my home?" before the client even asks.</div>
+        </div>
+      </div>
+      <div class="element-card" data-cat="experience">
+        <span class="element-badge" data-cat="experience">Experience</span>
+        <div class="element-text">
+          <div class="element-phrase">"12 years of experience"</div>
+          <div class="element-why">A specific number beats "experienced" or "been doing this for a while." It's verifiable and concrete — the client can picture the depth of work behind it.</div>
+        </div>
+      </div>
+      <div class="element-card" data-cat="specificity">
+        <span class="element-badge" data-cat="specificity">Specificity</span>
+        <div class="element-text">
+          <div class="element-phrase">"Residential rewiring and panel upgrades"</div>
+          <div class="element-why">This tells a homeowner with a rewiring need: "this is my person." Generic phrases like "electrical services" don't create that match. Specificity converts because clients self-select into the service they need.</div>
+        </div>
+      </div>
+      <div class="element-card" data-cat="location">
+        <span class="element-badge" data-cat="location">Location</span>
+        <div class="element-text">
+          <div class="element-phrase">"Denver metro area"</div>
+          <div class="element-why">Clients want someone who works in their area and knows local codes. Mentioning the service area in the intro — not just in a sidebar — makes it feel personal and immediate.</div>
+        </div>
+      </div>
+      <div class="element-card" data-cat="social-proof">
+        <span class="element-badge" data-cat="social-proof">Social proof</span>
+        <div class="element-text">
+          <div class="element-phrase">"Over 200 five-star reviews"</div>
+          <div class="element-why">Review counts are the strongest conversion signal on the platform. Pulling the number into the intro means the client sees it even if they never scroll down to the reviews section.</div>
+        </div>
+      </div>
+      <div class="element-card" data-cat="urgency">
+        <span class="element-badge" data-cat="urgency">Differentiator</span>
+        <div class="element-text">
+          <div class="element-phrase">"Same-week availability"</div>
+          <div class="element-why">Most clients hiring an electrician have an urgent need. "Same-week availability" is the reason to reach out <em>now</em> instead of bookmarking and comparing. It's the element that turns browsing into action.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="takeaway-box">
+      <h4>What you're looking for when you edit AI output</h4>
+      <p>When the AI Bio Booster generates a draft, these are the six categories you're checking for. A strong intro has most of them; a weak intro is usually missing three or more. Your job as the specialist isn't to add elements the pro can't back up — it's to make sure the real ones are in the intro where clients will actually see them.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  let found = 0;
+  const total = 6;
+  const countNum = document.getElementById('count-num');
+  const tapHint = document.getElementById('tap-hint');
+  const revealBtn = document.getElementById('reveal-btn');
+  const breakdown = document.getElementById('breakdown');
+  const bdSub = document.getElementById('bd-sub');
+
+  function tapElement(el) {
+    if (el.classList.contains('found')) return;
+    el.classList.add('found');
+    found++;
+
+    // Bump the counter
+    countNum.textContent = found;
+    countNum.classList.add('bump');
+    setTimeout(() => countNum.classList.remove('bump'), 200);
+
+    // Update hint
+    if (found < total) {
+      const remaining = total - found;
+      tapHint.textContent = remaining === 1 ? '1 more to find.' : `${remaining} more to find.`;
+    } else {
+      tapHint.textContent = 'You found them all.';
+      showBreakdown(true);
+    }
+  }
+
+  function revealAll() {
+    document.querySelectorAll('.tap-target:not(.found)').forEach(el => {
+      el.classList.add('found');
+    });
+    found = total;
+    countNum.textContent = found;
+    tapHint.textContent = 'All elements revealed.';
+    showBreakdown(false);
+  }
+
+  function showBreakdown(foundAll) {
+    revealBtn.style.display = 'none';
+    if (foundAll) {
+      bdSub.textContent = "You identified all six conversion elements. Here's what each one is doing and why it matters — this is the lens you'll use when reviewing AI-generated drafts.";
+    } else {
+      bdSub.textContent = "Here are all six elements and what each one does for conversion. The ones you missed are worth studying — they're the same elements you'll need to check for in AI-generated drafts.";
+    }
+    breakdown.classList.add('visible');
+    setTimeout(() => {
+      breakdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+</script>
+</body>
+</html>
