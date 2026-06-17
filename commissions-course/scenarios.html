@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commission Scenarios</title>
+<style>
+  :root {
+    --tt-blue: #009FD9;
+    --tt-blue-deep: #007DAD;
+    --tt-blue-soft: #E5F5FB;
+    --tt-blue-tint: #F4FBFD;
+    --tt-black: #2F3033;
+    --tt-gray-700: #676D73;
+    --tt-gray-500: #A8ACB0;
+    --tt-gray-400: #D3D4D5;
+    --tt-gray-300: #E9ECED;
+    --tt-gray-200: #FAFAFA;
+    --tt-white: #FFFFFF;
+    --tt-green: #2DB783;
+    --tt-green-deep: #1F8B62;
+    --tt-green-soft: #E6F5EE;
+    --tt-red: #FF5A5F;
+    --tt-red-soft: #FFE9EA;
+    --tt-red-deep: #C44348;
+    --tt-yellow: #FEBE14;
+    --tt-yellow-soft: #FFF5DC;
+    --tt-yellow-deep: #B07A00;
+
+    --font-body: 'Thumbtack Rise', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--tt-white);
+    color: var(--tt-black);
+    line-height: 1.5;
+    padding: 28px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* ─────────── Modal ─────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(47, 48, 51, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeBg 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.dismissed { display: none; }
+
+  @keyframes fadeBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-card {
+    background: var(--tt-white);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+    animation: modalIn 0.3s ease;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    margin: auto;
+  }
+
+  .modal-card.wide { max-width: 560px; }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--tt-blue-tint);
+    color: var(--tt-blue);
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-icon.success {
+    background: var(--tt-green-soft);
+    color: var(--tt-green);
+  }
+
+  .modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--tt-black);
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+
+  .modal-body {
+    font-size: 15px;
+    color: var(--tt-gray-700);
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+
+  .modal-body.centered { text-align: center; }
+
+  .modal-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 20px;
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    margin-bottom: 24px;
+  }
+
+  .modal-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .modal-step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--tt-blue);
+    color: var(--tt-white);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .modal-step-text {
+    font-size: 14px;
+    color: var(--tt-black);
+    line-height: 1.45;
+    padding-top: 2px;
+  }
+
+  .modal-dismiss {
+    background: var(--tt-blue);
+    color: var(--tt-white);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 28px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    width: 100%;
+  }
+
+  .modal-dismiss:hover { background: var(--tt-blue-deep); }
+
+  .modal-dismiss.success { background: var(--tt-green); }
+  .modal-dismiss.success:hover { background: var(--tt-green-deep); }
+
+  /* Outro recap */
+  .outro-recap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0 20px;
+  }
+
+  .recap-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    background: var(--tt-gray-200);
+    border-radius: 8px;
+  }
+
+  .recap-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tt-blue);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .recap-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--tt-black);
+  }
+
+  .recap-text strong {
+    color: var(--tt-black);
+    font-weight: 700;
+  }
+
+  .outro-closer {
+    font-size: 14px;
+    color: var(--tt-black);
+    line-height: 1.6;
+    padding: 16px 20px;
+    background: var(--tt-blue-tint);
+    border-radius: 10px;
+    border-left: 3px solid var(--tt-blue);
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  /* ─────────── Progress indicator ─────────── */
+  .progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 8px 0 20px;
+    border-bottom: 1px solid var(--tt-gray-300);
+  }
+
+  .progress-dots {
+    display: flex;
+    align-items: center;
+  }
+
+  .progress-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--tt-white);
+    border: 2px solid var(--tt-gray-300);
+    color: var(--tt-gray-500);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .progress-dot.current {
+    background: var(--tt-blue);
+    border-color: var(--tt-blue);
+    color: var(--tt-white);
+    transform: scale(1.1);
+  }
+
+  .progress-dot.completed {
+    background: var(--tt-green);
+    border-color: var(--tt-green);
+    color: var(--tt-white);
+  }
+
+  .progress-line {
+    width: 28px;
+    height: 2px;
+    background: var(--tt-gray-300);
+    transition: background 0.3s ease;
+  }
+
+  .progress-line.completed { background: var(--tt-green); }
+
+  .progress-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tt-gray-700);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ─────────── Scenario card ─────────── */
+  .scenario-detail { min-height: 200px; }
+
+  .scenario-card {
+    background: var(--tt-white);
+    border: 1px solid var(--tt-gray-300);
+    border-radius: 12px;
+    padding: 28px;
+    animation: cardIn 0.4s ease;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scenario-card-header {
+    border-bottom: 1px solid var(--tt-gray-300);
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+  }
+
+  .scenario-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--tt-blue);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .scenario-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--tt-black);
+    letter-spacing: -0.01em;
+  }
+
+  .scenario-story {
+    font-size: 15px;
+    color: var(--tt-black);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .scenario-setup {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .scenario-setup-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scenario-setup-row:not(:last-child) {
+    border-bottom: 1px solid var(--tt-gray-300);
+  }
+
+  .scenario-setup-label { color: var(--tt-gray-700); }
+  .scenario-setup-value { font-weight: 600; color: var(--tt-black); }
+
+  .prediction {
+    background: var(--tt-blue-tint);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  .prediction.locked { background: var(--tt-gray-200); }
+
+  .prediction-prompt {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tt-black);
+    margin-bottom: 12px;
+  }
+
+  .prediction-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .prediction-btn {
+    padding: 12px 10px;
+    background: var(--tt-white);
+    border: 1px solid var(--tt-gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tt-black);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.3;
+  }
+
+  .prediction-btn:hover:not(:disabled) {
+    border-color: var(--tt-blue);
+    background: var(--tt-blue-tint);
+  }
+
+  .prediction-btn.picked {
+    background: var(--tt-blue);
+    border-color: var(--tt-blue);
+    color: var(--tt-white);
+  }
+
+  .prediction-btn.correct-answer {
+    background: var(--tt-green);
+    border-color: var(--tt-green);
+    color: var(--tt-white);
+  }
+
+  .prediction-btn:disabled { cursor: default; opacity: 0.6; }
+  .prediction-btn.picked:disabled,
+  .prediction-btn.correct-answer:disabled { opacity: 1; }
+
+  .prediction-feedback {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--tt-blue-soft);
+    font-size: 13px;
+    color: var(--tt-gray-700);
+    line-height: 1.55;
+    display: none;
+  }
+
+  .prediction-feedback.show { display: block; }
+  .prediction-feedback strong { color: var(--tt-blue); font-weight: 600; }
+
+  .math-reveal { display: none; }
+  .math-reveal.show { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .math-section {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+  }
+
+  .math-section.zone-red { background: var(--tt-red-soft); }
+  .math-section.zone-yellow { background: var(--tt-yellow-soft); }
+  .math-section.zone-green { background: var(--tt-green-soft); }
+
+  .math-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tt-gray-700);
+    margin-bottom: 10px;
+  }
+
+  .math-flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--tt-black);
+    flex-wrap: wrap;
+  }
+
+  .math-step { font-weight: 500; }
+  .math-arrow { color: var(--tt-gray-500); font-weight: 400; }
+
+  .math-result {
+    font-weight: 700;
+    font-size: 15px;
+    margin-left: auto;
+  }
+
+  .math-section.zone-red .math-result { color: var(--tt-red-deep); }
+  .math-section.zone-yellow .math-result { color: var(--tt-yellow-deep); }
+  .math-section.zone-green .math-result { color: var(--tt-green); }
+
+  .math-total {
+    color: var(--tt-white);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 14px 0 18px;
+  }
+
+  .math-total.outcome-below { background: var(--tt-red); }
+  .math-total.outcome-close { background: var(--tt-yellow); color: var(--tt-black); }
+  .math-total.outcome-above { background: var(--tt-green); }
+
+  .math-total-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .math-total-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .math-total-value {
+    font-size: 30px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .math-total-delta {
+    font-size: 12px;
+    margin-top: 8px;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+
+  .math-total.outcome-close .math-total-delta { opacity: 0.75; }
+
+  .position-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--tt-gray-300);
+  }
+
+  .position-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tt-gray-700);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .position-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .position-chart-wrap {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+  }
+
+  .position-chart-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tt-black);
+    margin-bottom: 4px;
+  }
+
+  .position-chart-value {
+    font-size: 11px;
+    color: var(--tt-gray-700);
+    margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 60px;
+    border-bottom: 1px solid var(--tt-gray-300);
+  }
+
+  .mini-bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    opacity: 0.35;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mini-bar.zone-red { background: var(--tt-red); }
+  .mini-bar.zone-yellow { background: var(--tt-yellow); }
+  .mini-bar.zone-green { background: var(--tt-green); }
+
+  .mini-bar.active {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  .scenario-reflection {
+    border-left: 3px solid var(--tt-blue);
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--tt-black);
+    margin-top: 16px;
+  }
+
+  .scenario-reflection.outcome-below {
+    background: var(--tt-red-soft);
+    border-left-color: var(--tt-red);
+  }
+
+  .scenario-reflection.outcome-close {
+    background: var(--tt-yellow-soft);
+    border-left-color: var(--tt-yellow);
+  }
+
+  .scenario-reflection.outcome-above {
+    background: var(--tt-green-soft);
+    border-left-color: var(--tt-green);
+  }
+
+  .scenario-reflection strong { font-weight: 600; }
+  .scenario-reflection.outcome-below strong { color: var(--tt-red-deep); }
+  .scenario-reflection.outcome-close strong { color: var(--tt-yellow-deep); }
+  .scenario-reflection.outcome-above strong { color: var(--tt-green); }
+
+  /* Advance button */
+  .advance-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--tt-gray-300);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .advance-btn {
+    background: var(--tt-blue);
+    color: var(--tt-white);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .advance-btn:hover {
+    background: var(--tt-blue-deep);
+    transform: translateX(2px);
+  }
+
+  .advance-btn.final {
+    background: var(--tt-green);
+  }
+
+  .advance-btn.final:hover {
+    background: var(--tt-green-deep);
+  }
+
+  .advance-arrow { transition: transform 0.2s ease; }
+  .advance-btn:hover .advance-arrow { transform: translateX(2px); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    body { padding: 20px 16px; }
+    .modal-card { padding: 24px 20px; }
+    .scenario-card { padding: 20px 16px; }
+    .prediction-options { grid-template-columns: 1fr; }
+    .math-total-value { font-size: 22px; }
+    .math-total-inner { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .position-grid { grid-template-columns: 1fr; }
+    .progress-dot { width: 28px; height: 28px; font-size: 10px; }
+    .progress-line { width: 20px; }
+    .progress-text { font-size: 10px; }
+    .advance-section { justify-content: stretch; }
+    .advance-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────── INTRO MODAL ─────────── -->
+<div class="modal-overlay" id="intro-modal">
+  <div class="modal-card">
+    <div class="modal-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+    </div>
+    <h2 class="modal-title">How to use this</h2>
+    <p class="modal-body">Four different months from four PSS reps. Each one teaches something specific about how the comp plan rewards (or punishes) different behaviors.</p>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <span class="modal-step-num">1</span>
+        <span class="modal-step-text">Read the rep's month.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">2</span>
+        <span class="modal-step-text">Predict their total commission before revealing.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">3</span>
+        <span class="modal-step-text">See the math and where they land on both curves.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">4</span>
+        <span class="modal-step-text">Move on to the next rep until you've seen all four.</span>
+      </div>
+    </div>
+    <button class="modal-dismiss" id="dismiss-intro">Got it, let's start</button>
+  </div>
+</div>
+
+<!-- ─────────── OUTRO MODAL ─────────── -->
+<div class="modal-overlay dismissed" id="outro-modal">
+  <div class="modal-card wide">
+    <div class="modal-icon success">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2 class="modal-title">Nicely done.</h2>
+    <p class="modal-body centered">You worked through four different months — here's what each one was teaching.</p>
+    <div class="outro-recap">
+      <div class="recap-item">
+        <span class="recap-num">01</span>
+        <div class="recap-text"><strong>Jordan</strong> — matching holdout pays 0.6×, not 1.0×. You have to actually beat it.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">02</span>
+        <div class="recap-text"><strong>Karmela</strong> — churn is a real lever. She earned $30 above OTE on the churn side alone.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">03</span>
+        <div class="recap-text"><strong>Andrew</strong> — strong revenue with bad churn lands barely above OTE. The two multipliers interact.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">04</span>
+        <div class="recap-text"><strong>Maya</strong> — a balanced strong month tops $300. No heroics required.</div>
+      </div>
+    </div>
+    <div class="outro-closer">Your commission isn't set by one heroic metric. It's set by both, working together — and that's almost entirely in your hands.</div>
+    <button class="modal-dismiss success" id="dismiss-outro">Got it</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="progress">
+    <div class="progress-dots" id="progress-dots"></div>
+    <div class="progress-text" id="progress-text">Scenario 1 of 4</div>
+  </div>
+
+  <div class="scenario-detail" id="scenario-detail"></div>
+
+</div>
+
+<script>
+  // ─────────── BRACKETS for mini-charts ───────────
+  const revBrackets = [
+    { mult: 0,   zone: 'red' },    { mult: 40,  zone: 'red' },
+    { mult: 70,  zone: 'red' },    { mult: 90,  zone: 'yellow' },
+    { mult: 100, zone: 'green' },  { mult: 105, zone: 'green' },
+    { mult: 115, zone: 'green' },  { mult: 120, zone: 'green' },
+    { mult: 125, zone: 'green' },  { mult: 130, zone: 'green' },
+    { mult: 135, zone: 'green' }
+  ];
+
+  const churnBrackets = [
+    { mult: 1.8, zone: 'green' },  { mult: 1.6, zone: 'green' },
+    { mult: 1.4, zone: 'green' },  { mult: 1.2, zone: 'green' },
+    { mult: 1.1, zone: 'green' },  { mult: 1.0, zone: 'yellow' },
+    { mult: 0.6, zone: 'red' },    { mult: 0.4, zone: 'red' },
+    { mult: 0,   zone: 'red' }
+  ];
+
+  function findRevBracketIdx(pct) {
+    if (pct < 60) return 0;
+    if (pct < 75) return 1;
+    if (pct < 90) return 2;
+    if (pct < 100) return 3;
+    if (pct < 120) return 4;
+    if (pct < 130) return 5;
+    if (pct < 140) return 6;
+    if (pct < 150) return 7;
+    if (pct < 160) return 8;
+    if (pct < 170) return 9;
+    return 10;
+  }
+
+  function findChurnBracketIdx(delta) {
+    if (delta <= -18) return 0;
+    if (delta <= -12) return 1;
+    if (delta <= -8) return 2;
+    if (delta <= -4) return 3;
+    if (delta <= -2) return 4;
+    if (delta < 0) return 5;
+    if (delta < 6) return 6;
+    if (delta < 10) return 7;
+    return 8;
+  }
+
+  function renderMiniChart(container, brackets, activeIdx, maxMult) {
+    container.innerHTML = '';
+    brackets.forEach((b, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'mini-bar zone-' + b.zone;
+      if (i === activeIdx) bar.classList.add('active');
+      bar.style.height = Math.max(3, (b.mult / maxMult) * 100) + '%';
+      container.appendChild(bar);
+    });
+  }
+
+  // ─────────── SCENARIOS ───────────
+  const scenarios = {
+    jordan: {
+      num: '01', name: 'Jordan', tagline: 'The Slow Start',
+      story: "Jordan started February strong but lost a week mid-month to a personal issue. His pros got less attention than usual, and a few never engaged at all. He recovered for the last stretch, but his action plans had already gone cold.",
+      setup: [
+        { label: 'Quota (L2-3)', value: '$11,100' },
+        { label: '28-day revenue', value: '$8,325' },
+        { label: 'Churn vs holdout', value: '0pp delta (matched holdout)' }
+      ],
+      attainmentPct: 75, revMult: 70, revZone: 'red', revPayout: 122.50,
+      churnDelta: 0, churnMult: 0.6, churnZone: 'red', churnPayout: 45.00,
+      total: 167.50, outcome: 'below', correctPrediction: 'less',
+      feedback: {
+        less: "Correct. Jordan came in at <strong>$167.50</strong> — that's <strong>$82.50 below OTE</strong>. Missing quota by 25% on revenue plus matching (not beating) holdout on churn is a real hit.",
+        about: "Not quite — Jordan came in well below OTE at <strong>$167.50</strong>. Missing quota cascades harder than people expect: 75% attainment only pays a 70% multiplier.",
+        more: "Not this time — Jordan came in below OTE at <strong>$167.50</strong>. Missing quota by 25% drops his revenue multiplier to 70%, and matching holdout on churn only pays 0.6×."
+      },
+      reflection: "Matching the holdout benchmark isn't the neutral case — it pays <strong>0.6×</strong>, not 1.0×. To earn the full $75 churn OTE, you need to beat holdout by at least 0.01pp. Jordan's slow start cost him on revenue, and he didn't recover on the churn side either. <strong>The first week of an action plan matters more than any other week.</strong>"
+    },
+    karmela: {
+      num: '02', name: 'Karmela', tagline: 'The Churn Specialist',
+      story: "Karmela had an average revenue month — she hit exactly 100% of her quota, no more. But she worked her action plans hard, returned every callback the same day, and set clear spend expectations with each new pro. Her pros stayed active.",
+      setup: [
+        { label: 'Quota (L2-3)', value: '$11,100' },
+        { label: '28-day revenue', value: '$11,100' },
+        { label: 'Her churn', value: '20%' },
+        { label: 'Holdout churn', value: '28%' },
+        { label: 'Churn delta', value: '−8pp' }
+      ],
+      attainmentPct: 100, revMult: 100, revZone: 'green', revPayout: 175.00,
+      churnDelta: -8, churnMult: 1.4, churnZone: 'green', churnPayout: 105.00,
+      total: 280.00, outcome: 'above', correctPrediction: 'more',
+      feedback: {
+        less: "Not quite — Karmela earned <strong>$280</strong>, above OTE. Even though her revenue was only at quota, beating holdout by 8pp on churn paid a 1.4× multiplier.",
+        about: "Close — but Karmela actually earned <strong>$280</strong>, which is $30 above OTE. The extra came entirely from beating holdout by 8pp on churn.",
+        more: "Correct. Karmela earned <strong>$280</strong> — $30 above OTE, even though her revenue was exactly at quota. The entire upside came from churn."
+      },
+      reflection: "Karmela hit exactly $250 worth of revenue effort, but earned $280. The extra $30 came entirely from churn — even though churn only weights 30% of OTE. <strong>Beating holdout aggressively is one of the highest-leverage moves in this comp plan.</strong> Reps who think of churn as a side metric leave money on the table."
+    },
+    andrew: {
+      num: '03', name: 'Andrew', tagline: 'The Trade-off',
+      story: "Andrew was on track for 140% attainment by Day 20. To hit it, he pushed several pros into bigger spend commitments than they were ready for. Three of those pros deactivated by Day 28 — they couldn't keep up with the lead volume they'd committed to.",
+      setup: [
+        { label: 'Attainment', value: '140%' },
+        { label: 'Churn delta', value: '+4pp (worse than holdout)' }
+      ],
+      attainmentPct: 140, revMult: 120, revZone: 'green', revPayout: 210.00,
+      churnDelta: 4, churnMult: 0.6, churnZone: 'red', churnPayout: 45.00,
+      total: 255.00, outcome: 'close', correctPrediction: 'about',
+      feedback: {
+        less: "Not quite — Andrew earned <strong>$255</strong>, which is $5 above OTE. But notice how close to OTE that is despite his 140% attainment.",
+        about: "Correct. Andrew earned <strong>$255</strong> — only $5 above OTE despite hitting 140% on revenue. The bad churn (+4pp) cut his churn payout to 0.6× and erased most of his revenue gains.",
+        more: "Technically yes — Andrew earned <strong>$255</strong>, which is more than $250. But notice how barely. 140% attainment normally pays well, but bad churn pulled him almost down to OTE."
+      },
+      reflection: "Andrew came in only $5 above OTE — despite hitting 140% on revenue. <strong>A weaker-looking revenue month with healthy churn can outperform a stronger-looking revenue month with hurting churn.</strong> Pushing pros past what they're ready for isn't a revenue strategy — it's a churn problem in disguise."
+    },
+    maya: {
+      num: '04', name: 'Maya', tagline: 'A Strong Month',
+      story: "Maya had a complete month. Strong discovery on every new assignment, fast first contact, and clear action plan execution. She didn't push any pro past what they were ready for — she just executed the basics consistently across all of them.",
+      setup: [
+        { label: 'Attainment', value: '165%' },
+        { label: 'Her churn', value: '22%' },
+        { label: 'Holdout churn', value: '28%' },
+        { label: 'Churn delta', value: '−6pp' }
+      ],
+      attainmentPct: 165, revMult: 130, revZone: 'green', revPayout: 227.50,
+      churnDelta: -6, churnMult: 1.2, churnZone: 'green', churnPayout: 90.00,
+      total: 317.50, outcome: 'above', correctPrediction: 'more',
+      feedback: {
+        less: "Not at all — Maya earned <strong>$317.50</strong>, $67.50 above OTE. Strong on both metrics is what a top month looks like.",
+        about: "Maya actually earned <strong>$317.50</strong> — $67.50 above OTE. Solid performance on both curves compounds in a way single-metric heroics don't.",
+        more: "Correct. Maya earned <strong>$317.50</strong> — $67.50 above OTE. Notice she didn't max out either curve — she just executed well on both."
+      },
+      reflection: "Maya's month wasn't extraordinary — she didn't max out either curve. She just hit healthy numbers on both. <strong>The path to top earnings isn't a single heroic metric — it's both metrics working together.</strong> Reps who chase one and ignore the other never get here."
+    }
+  };
+
+  const scenarioOrder = ['jordan', 'karmela', 'andrew', 'maya'];
+  let currentIdx = 0;
+
+  // ─────────── Progress dots ───────────
+  function buildProgressDots() {
+    const wrap = document.getElementById('progress-dots');
+    wrap.innerHTML = '';
+    scenarioOrder.forEach((k, i) => {
+      if (i > 0) {
+        const line = document.createElement('div');
+        line.className = 'progress-line';
+        line.dataset.line = i;
+        wrap.appendChild(line);
+      }
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot';
+      dot.dataset.step = i;
+      dot.textContent = String(i + 1).padStart(2, '0');
+      wrap.appendChild(dot);
+    });
+  }
+
+  function updateProgress() {
+    document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+      dot.classList.remove('current', 'completed');
+      if (i < currentIdx) {
+        dot.classList.add('completed');
+        dot.innerHTML = '✓';
+      } else if (i === currentIdx) {
+        dot.classList.add('current');
+        dot.textContent = String(i + 1).padStart(2, '0');
+      } else {
+        dot.textContent = String(i + 1).padStart(2, '0');
+      }
+    });
+    document.querySelectorAll('.progress-line').forEach((line, i) => {
+      line.classList.toggle('completed', i < currentIdx);
+    });
+    document.getElementById('progress-text').textContent = `Scenario ${currentIdx + 1} of ${scenarioOrder.length}`;
+  }
+
+  // ─────────── Render scenario ───────────
+  function renderScenario(key) {
+    const s = scenarios[key];
+    const detail = document.getElementById('scenario-detail');
+
+    const setupRows = s.setup.map(r => `
+      <div class="scenario-setup-row">
+        <span class="scenario-setup-label">${r.label}</span>
+        <span class="scenario-setup-value">${r.value}</span>
+      </div>
+    `).join('');
+
+    const otePos = s.total >= 250
+      ? `<div class="math-total-delta">+ $${(s.total - 250).toFixed(2)} above OTE</div>`
+      : `<div class="math-total-delta">− $${(250 - s.total).toFixed(2)} below OTE</div>`;
+
+    const churnDeltaText = s.churnDelta === 0
+      ? '0pp'
+      : (s.churnDelta < 0 ? `−${Math.abs(s.churnDelta)}pp` : `+${s.churnDelta}pp`);
+
+    const isLast = currentIdx === scenarioOrder.length - 1;
+    const nextName = !isLast ? scenarios[scenarioOrder[currentIdx + 1]].name : null;
+    const advanceLabel = isLast ? "See your summary" : `Continue to ${nextName}`;
+    const advanceClass = isLast ? 'advance-btn final' : 'advance-btn';
+
+    detail.innerHTML = `
+      <div class="scenario-card">
+        <div class="scenario-card-header">
+          <div class="scenario-eyebrow">Scenario ${s.num}</div>
+          <div class="scenario-card-title">${s.name} — ${s.tagline}</div>
+        </div>
+
+        <p class="scenario-story">${s.story}</p>
+
+        <div class="scenario-setup">${setupRows}</div>
+
+        <div class="prediction" id="prediction-${key}">
+          <div class="prediction-prompt">Before you see the math — what's ${s.name}'s total commission for the month?</div>
+          <div class="prediction-options">
+            <button class="prediction-btn" data-pred="less">Less than $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">below OTE</span></button>
+            <button class="prediction-btn" data-pred="about">About $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">around OTE</span></button>
+            <button class="prediction-btn" data-pred="more">More than $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">above OTE</span></button>
+          </div>
+          <div class="prediction-feedback" id="prediction-feedback-${key}"></div>
+        </div>
+
+        <div class="math-reveal" id="math-reveal-${key}">
+
+          <div class="math-section zone-${s.revZone}">
+            <div class="math-section-label">Revenue · 70% of OTE</div>
+            <div class="math-flow">
+              <span class="math-step">${s.attainmentPct}% attainment</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">${s.revMult}% multiplier</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">$175 × ${(s.revMult/100).toFixed(2)}</span>
+              <span class="math-result">$${s.revPayout.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="math-section zone-${s.churnZone}">
+            <div class="math-section-label">Churn · 30% of OTE</div>
+            <div class="math-flow">
+              <span class="math-step">${churnDeltaText} delta</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">${s.churnMult.toFixed(1)}× multiplier</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">$75 × ${s.churnMult.toFixed(1)}</span>
+              <span class="math-result">$${s.churnPayout.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="math-total outcome-${s.outcome}">
+            <div class="math-total-inner">
+              <span class="math-total-label">${s.name}'s total commission</span>
+              <span class="math-total-value">$${s.total.toFixed(2)}</span>
+            </div>
+            ${otePos}
+          </div>
+
+          <div class="position-section">
+            <div class="position-title">Where ${s.name} lands on each curve</div>
+            <div class="position-grid">
+              <div class="position-chart-wrap">
+                <div class="position-chart-label">Revenue</div>
+                <div class="position-chart-value">${s.attainmentPct}% attainment → ${s.revMult}% multiplier</div>
+                <div class="mini-chart" id="mini-rev-${key}"></div>
+              </div>
+              <div class="position-chart-wrap">
+                <div class="position-chart-label">Churn</div>
+                <div class="position-chart-value">${churnDeltaText} delta → ${s.churnMult.toFixed(1)}× multiplier</div>
+                <div class="mini-chart" id="mini-churn-${key}"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-reflection outcome-${s.outcome}">${s.reflection}</div>
+
+          <div class="advance-section">
+            <button class="${advanceClass}" id="advance-btn">
+              <span>${advanceLabel}</span>
+              <span class="advance-arrow">→</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    // Wire prediction buttons
+    detail.querySelectorAll('.prediction-btn').forEach(btn => {
+      btn.addEventListener('click', () => handlePrediction(key, btn.dataset.pred));
+    });
+  }
+
+  function handlePrediction(key, pred) {
+    const s = scenarios[key];
+    const container = document.getElementById('prediction-' + key);
+    const feedbackEl = document.getElementById('prediction-feedback-' + key);
+    const reveal = document.getElementById('math-reveal-' + key);
+
+    container.querySelectorAll('.prediction-btn').forEach(btn => {
+      btn.disabled = true;
+      if (btn.dataset.pred === pred) btn.classList.add('picked');
+      if (btn.dataset.pred === s.correctPrediction && pred !== s.correctPrediction) {
+        btn.classList.add('correct-answer');
+      }
+    });
+
+    container.classList.add('locked');
+    feedbackEl.innerHTML = s.feedback[pred];
+    feedbackEl.classList.add('show');
+
+    setTimeout(() => {
+      reveal.classList.add('show');
+      const revIdx = findRevBracketIdx(s.attainmentPct);
+      const churnIdx = findChurnBracketIdx(s.churnDelta);
+      renderMiniChart(document.getElementById('mini-rev-' + key), revBrackets, revIdx, 135);
+      renderMiniChart(document.getElementById('mini-churn-' + key), churnBrackets, churnIdx, 1.8);
+
+      // Wire advance button
+      document.getElementById('advance-btn').addEventListener('click', advance);
+
+      reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 400);
+  }
+
+  function advance() {
+    if (currentIdx < scenarioOrder.length - 1) {
+      currentIdx++;
+      renderScenario(scenarioOrder[currentIdx]);
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Mark final as complete and open outro
+      currentIdx++;
+      // Mark last dot as completed
+      document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+        if (i === scenarioOrder.length - 1) {
+          dot.classList.remove('current');
+          dot.classList.add('completed');
+          dot.innerHTML = '✓';
+        }
+      });
+      document.querySelectorAll('.progress-line').forEach(line => line.classList.add('completed'));
+      document.getElementById('progress-text').textContent = 'All scenarios complete';
+      document.getElementById('outro-modal').classList.remove('dismissed');
+    }
+  }
+
+  // ─────────── Modal dismissal ───────────
+  document.getElementById('dismiss-intro').addEventListener('click', () => {
+    document.getElementById('intro-modal').classList.add('dismissed');
+  });
+
+  document.getElementById('dismiss-outro').addEventListener('click', () => {
+    document.getElementById('outro-modal').classList.add('dismissed');
+  });
+
+  // ─────────── Init ───────────
+  buildProgressDots();
+  updateProgress();
+  renderScenario(scenarioOrder[0]);
+</script>
+
+</body>
+</html>
