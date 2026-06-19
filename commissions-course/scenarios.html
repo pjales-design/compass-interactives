@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Multiplier Explorer</title>
+<title>Commission Scenarios</title>
 <style>
   :root {
     --tt-blue: #009FD9;
@@ -18,6 +18,7 @@
     --tt-gray-200: #FAFAFA;
     --tt-white: #FFFFFF;
     --tt-green: #2DB783;
+    --tt-green-deep: #1F8B62;
     --tt-green-soft: #E6F5EE;
     --tt-red: #FF5A5F;
     --tt-red-soft: #FFE9EA;
@@ -53,6 +54,7 @@
     z-index: 1000;
     padding: 20px;
     animation: fadeBg 0.25s ease;
+    overflow-y: auto;
   }
 
   .modal-overlay.dismissed { display: none; }
@@ -70,7 +72,10 @@
     width: 100%;
     animation: modalIn 0.3s ease;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    margin: auto;
   }
+
+  .modal-card.wide { max-width: 560px; }
 
   @keyframes modalIn {
     from { opacity: 0; transform: translateY(16px) scale(0.98); }
@@ -89,13 +94,18 @@
     justify-content: center;
   }
 
+  .modal-icon.success {
+    background: var(--tt-green-soft);
+    color: var(--tt-green);
+  }
+
   .modal-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--tt-black);
     margin-bottom: 12px;
     text-align: center;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 
   .modal-body {
@@ -105,34 +115,44 @@
     margin-bottom: 20px;
   }
 
-  .modal-legend {
+  .modal-body.centered { text-align: center; }
+
+  .modal-steps {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 16px 20px;
+    gap: 12px;
+    padding: 18px 20px;
     background: var(--tt-gray-200);
     border-radius: 10px;
     margin-bottom: 24px;
   }
 
-  .modal-legend .legend-item {
+  .modal-step {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: var(--tt-black);
+    align-items: flex-start;
+    gap: 12px;
   }
 
-  .modal-legend .legend-swatch {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
+  .modal-step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--tt-blue);
+    color: var(--tt-white);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
 
-  .modal-legend .legend-swatch.red { background: var(--tt-red); }
-  .modal-legend .legend-swatch.yellow { background: var(--tt-yellow); }
-  .modal-legend .legend-swatch.green { background: var(--tt-green); }
+  .modal-step-text {
+    font-size: 14px;
+    color: var(--tt-black);
+    line-height: 1.45;
+    padding-top: 2px;
+  }
 
   .modal-dismiss {
     background: var(--tt-blue);
@@ -150,417 +170,501 @@
 
   .modal-dismiss:hover { background: var(--tt-blue-deep); }
 
-  /* ─────────── Tabs ─────────── */
-  .tabs {
+  .modal-dismiss.success { background: var(--tt-green); }
+  .modal-dismiss.success:hover { background: var(--tt-green-deep); }
+
+  /* Outro recap */
+  .outro-recap {
     display: flex;
-    gap: 4px;
-    margin-bottom: 0;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0 20px;
+  }
+
+  .recap-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    background: var(--tt-gray-200);
+    border-radius: 8px;
+  }
+
+  .recap-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tt-blue);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .recap-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--tt-black);
+  }
+
+  .recap-text strong {
+    color: var(--tt-black);
+    font-weight: 700;
+  }
+
+  .outro-closer {
+    font-size: 14px;
+    color: var(--tt-black);
+    line-height: 1.6;
+    padding: 16px 20px;
+    background: var(--tt-blue-tint);
+    border-radius: 10px;
+    border-left: 3px solid var(--tt-blue);
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  /* ─────────── Progress indicator ─────────── */
+  .progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 8px 0 20px;
     border-bottom: 1px solid var(--tt-gray-300);
   }
 
-  .tab {
-    flex: 1;
-    padding: 16px 20px;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--tt-gray-700);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: -1px;
-    text-align: left;
-    position: relative;
-  }
-
-  .tab:hover { color: var(--tt-black); }
-
-  .tab.active {
-    color: var(--tt-blue);
-    border-bottom-color: var(--tt-blue);
-  }
-
-  .tab-label-small {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--tt-gray-500);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .tab.active .tab-label-small { color: var(--tt-blue); }
-
-  /* Churn tab nudge */
-  .tab-nudge {
-    position: absolute;
-    top: 18px;
-    right: 16px;
-    width: 9px;
-    height: 9px;
-    background: var(--tt-blue);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  .tab.has-nudge .tab-nudge {
-    opacity: 1;
-    animation: nudgePulse 1.8s ease-in-out infinite;
-  }
-
-  @keyframes nudgePulse {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(0, 159, 217, 0.55);
-      transform: scale(1);
-    }
-    50% {
-      box-shadow: 0 0 0 8px rgba(0, 159, 217, 0);
-      transform: scale(1.15);
-    }
-  }
-
-  /* ─────────── Panel ─────────── */
-  .panel {
-    display: none;
-    padding: 28px 0 0 0;
-  }
-  .panel.active { display: block; }
-
-  /* Readout */
-  .readout {
-    background: var(--tt-blue-tint);
-    border-radius: 16px;
-    padding: 26px 28px;
-    margin-bottom: 24px;
-    border: 2px solid transparent;
-    transition: background 0.25s ease, border-color 0.25s ease;
-  }
-
-  .readout.zone-red {
-    background: var(--tt-red-soft);
-    border-color: var(--tt-red);
-  }
-
-  .readout.zone-yellow {
-    background: var(--tt-yellow-soft);
-    border-color: var(--tt-yellow);
-  }
-
-  .readout.zone-green {
-    background: var(--tt-green-soft);
-    border-color: var(--tt-green);
-  }
-
-  .readout-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr auto 1fr;
-    gap: 16px;
+  .progress-dots {
+    display: flex;
     align-items: center;
   }
 
-  .readout-grid.readout-grid-rev {
-    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
-    gap: 12px;
+  .progress-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--tt-white);
+    border: 2px solid var(--tt-gray-300);
+    color: var(--tt-gray-500);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
   }
 
-  .readout-grid.readout-grid-rev .readout-value { font-size: 26px; }
-  .readout-grid.readout-grid-rev .readout-payout { font-size: 30px; }
+  .progress-dot.current {
+    background: var(--tt-blue);
+    border-color: var(--tt-blue);
+    color: var(--tt-white);
+    transform: scale(1.1);
+  }
 
-  .readout-cell { text-align: center; }
+  .progress-dot.completed {
+    background: var(--tt-green);
+    border-color: var(--tt-green);
+    color: var(--tt-white);
+  }
 
-  .readout-label {
+  .progress-line {
+    width: 28px;
+    height: 2px;
+    background: var(--tt-gray-300);
+    transition: background 0.3s ease;
+  }
+
+  .progress-line.completed { background: var(--tt-green); }
+
+  .progress-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tt-gray-700);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ─────────── Scenario card ─────────── */
+  .scenario-detail { min-height: 200px; }
+
+  .scenario-card {
+    background: var(--tt-white);
+    border: 1px solid var(--tt-gray-300);
+    border-radius: 12px;
+    padding: 28px;
+    animation: cardIn 0.4s ease;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scenario-card-header {
+    border-bottom: 1px solid var(--tt-gray-300);
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+  }
+
+  .scenario-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--tt-blue);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .scenario-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--tt-black);
+    letter-spacing: -0.01em;
+  }
+
+  .scenario-story {
+    font-size: 15px;
+    color: var(--tt-black);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .scenario-setup {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .scenario-setup-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scenario-setup-row:not(:last-child) {
+    border-bottom: 1px solid var(--tt-gray-300);
+  }
+
+  .scenario-setup-label { color: var(--tt-gray-700); }
+  .scenario-setup-value { font-weight: 600; color: var(--tt-black); }
+
+  .prediction {
+    background: var(--tt-blue-tint);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  .prediction.locked { background: var(--tt-gray-200); }
+
+  .prediction-prompt {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tt-black);
+    margin-bottom: 12px;
+  }
+
+  .prediction-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .prediction-btn {
+    padding: 12px 10px;
+    background: var(--tt-white);
+    border: 1px solid var(--tt-gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tt-black);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.3;
+  }
+
+  .prediction-btn:hover:not(:disabled) {
+    border-color: var(--tt-blue);
+    background: var(--tt-blue-tint);
+  }
+
+  .prediction-btn.picked {
+    background: var(--tt-blue);
+    border-color: var(--tt-blue);
+    color: var(--tt-white);
+  }
+
+  .prediction-btn.correct-answer {
+    background: var(--tt-green);
+    border-color: var(--tt-green);
+    color: var(--tt-white);
+  }
+
+  .prediction-btn:disabled { cursor: default; opacity: 0.6; }
+  .prediction-btn.picked:disabled,
+  .prediction-btn.correct-answer:disabled { opacity: 1; }
+
+  .prediction-feedback {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--tt-blue-soft);
+    font-size: 13px;
+    color: var(--tt-gray-700);
+    line-height: 1.55;
+    display: none;
+  }
+
+  .prediction-feedback.show { display: block; }
+  .prediction-feedback strong { color: var(--tt-blue); font-weight: 600; }
+
+  .math-reveal { display: none; }
+  .math-reveal.show { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .math-section {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+  }
+
+  .math-section.zone-red { background: var(--tt-red-soft); }
+  .math-section.zone-yellow { background: var(--tt-yellow-soft); }
+  .math-section.zone-green { background: var(--tt-green-soft); }
+
+  .math-section-label {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--tt-gray-700);
-    margin-bottom: 6px;
+    margin-bottom: 10px;
   }
 
-  .readout-value {
-    font-size: 32px;
-    font-weight: 700;
+  .math-flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
     color: var(--tt-black);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    transition: color 0.25s ease;
+    flex-wrap: wrap;
   }
 
-  .readout-value.zone-red { color: var(--tt-red-deep); }
-  .readout-value.zone-yellow { color: var(--tt-yellow-deep); }
-  .readout-value.zone-green { color: var(--tt-green); }
+  .math-step { font-weight: 500; }
+  .math-arrow { color: var(--tt-gray-500); font-weight: 400; }
 
-  .readout-op {
-    font-size: 24px;
-    color: var(--tt-gray-500);
-    font-weight: 400;
-  }
-
-  .readout-payout {
-    font-size: 36px;
+  .math-result {
     font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    transition: color 0.25s ease;
+    font-size: 15px;
+    margin-left: auto;
   }
 
-  .readout-payout.zone-red { color: var(--tt-red-deep); }
-  .readout-payout.zone-yellow { color: var(--tt-yellow-deep); }
-  .readout-payout.zone-green { color: var(--tt-green); }
+  .math-section.zone-red .math-result { color: var(--tt-red-deep); }
+  .math-section.zone-yellow .math-result { color: var(--tt-yellow-deep); }
+  .math-section.zone-green .math-result { color: var(--tt-green); }
 
-  /* Slider */
-  .slider-section { margin-bottom: 28px; }
+  .math-total {
+    color: var(--tt-white);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 14px 0 18px;
+  }
 
-  .slider-header {
+  .math-total.outcome-below { background: var(--tt-red); }
+  .math-total.outcome-close { background: var(--tt-yellow); color: var(--tt-black); }
+  .math-total.outcome-above { background: var(--tt-green); }
+
+  .math-total-inner {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+  }
+
+  .math-total-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .math-total-value {
+    font-size: 30px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .math-total-delta {
+    font-size: 12px;
+    margin-top: 8px;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+
+  .math-total.outcome-close .math-total-delta { opacity: 0.75; }
+
+  .position-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--tt-gray-300);
+  }
+
+  .position-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tt-gray-700);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     margin-bottom: 14px;
   }
 
-  .slider-label {
-    font-size: 14px;
+  .position-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .position-chart-wrap {
+    background: var(--tt-gray-200);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+  }
+
+  .position-chart-label {
+    font-size: 12px;
     font-weight: 600;
     color: var(--tt-black);
+    margin-bottom: 4px;
   }
 
-  .slider-input-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--tt-blue);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .slider-wrapper { position: relative; padding: 8px 0; }
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    background: var(--tt-gray-300);
-    border-radius: 3px;
-    outline: none;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--tt-blue);
-    border: 3px solid var(--tt-white);
-    box-shadow: 0 2px 8px rgba(0, 159, 217, 0.35);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-  }
-
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-  input[type="range"]::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--tt-blue);
-    border: 3px solid var(--tt-white);
-    box-shadow: 0 2px 8px rgba(0, 159, 217, 0.35);
-    cursor: pointer;
-  }
-
-  .slider-scale {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
+  .position-chart-value {
     font-size: 11px;
-    color: var(--tt-gray-500);
+    color: var(--tt-gray-700);
+    margin-bottom: 10px;
     font-variant-numeric: tabular-nums;
   }
 
-  .presets {
+  .mini-chart {
     display: flex;
-    gap: 8px;
+    align-items: flex-end;
+    gap: 2px;
+    height: 60px;
+    border-bottom: 1px solid var(--tt-gray-300);
+  }
+
+  .mini-bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    opacity: 0.35;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mini-bar.zone-red { background: var(--tt-red); }
+  .mini-bar.zone-yellow { background: var(--tt-yellow); }
+  .mini-bar.zone-green { background: var(--tt-green); }
+
+  .mini-bar.active {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  .scenario-reflection {
+    border-left: 3px solid var(--tt-blue);
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--tt-black);
     margin-top: 16px;
   }
 
-  .preset-btn {
-    flex: 1;
-    padding: 10px 12px;
-    background: var(--tt-white);
-    border: 1px solid var(--tt-gray-300);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--tt-black);
-    cursor: pointer;
-    transition: all 0.15s ease;
-    text-align: left;
-  }
-
-  .preset-btn:hover {
-    border-color: var(--tt-blue);
-    background: var(--tt-blue-tint);
-  }
-
-  .preset-btn-label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--tt-gray-700);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-
-  /* Chart */
-  .chart-section { margin-bottom: 24px; }
-
-  .chart-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--tt-gray-700);
-    margin-bottom: 16px;
-    letter-spacing: 0.02em;
-  }
-
-  .chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 200px;
-    padding: 0 4px;
-    border-bottom: 1px solid var(--tt-gray-300);
-    position: relative;
-  }
-
-  .bar {
-    flex: 1;
-    border-radius: 6px 6px 0 0;
-    position: relative;
-    transition: opacity 0.2s ease, transform 0.25s ease;
-    min-height: 2px;
-    cursor: pointer;
-    opacity: 0.45;
-  }
-
-  .bar:hover { opacity: 0.7; }
-
-  .bar.active {
-    opacity: 1;
-    transform: translateY(-4px);
-  }
-
-  .bar.zone-red { background: var(--tt-red); }
-  .bar.zone-yellow { background: var(--tt-yellow); }
-  .bar.zone-green { background: var(--tt-green); }
-
-  .bar-value {
-    position: absolute;
-    top: -22px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    font-weight: 700;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .bar.active .bar-value { opacity: 1; }
-  .bar.zone-red.active .bar-value { color: var(--tt-red-deep); }
-  .bar.zone-yellow.active .bar-value { color: var(--tt-yellow-deep); }
-  .bar.zone-green.active .bar-value { color: var(--tt-green); }
-
-  .chart-x-labels {
-    display: flex;
-    gap: 4px;
-    padding: 8px 4px 0;
-    font-size: 10px;
-    color: var(--tt-gray-500);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .x-label {
-    flex: 1;
-    text-align: center;
-  }
-
-  /* Takeaway */
-  .takeaway {
-    background: var(--tt-gray-200);
-    border-left: 3px solid var(--tt-blue);
-    padding: 18px 20px;
-    border-radius: 4px;
-    font-size: 14px;
-    color: var(--tt-black);
-    line-height: 1.55;
-    transition: border-color 0.25s ease, background 0.25s ease;
-  }
-
-  .takeaway.zone-red {
+  .scenario-reflection.outcome-below {
     background: var(--tt-red-soft);
     border-left-color: var(--tt-red);
   }
 
-  .takeaway.zone-yellow {
+  .scenario-reflection.outcome-close {
     background: var(--tt-yellow-soft);
     border-left-color: var(--tt-yellow);
   }
 
-  .takeaway.zone-green {
+  .scenario-reflection.outcome-above {
     background: var(--tt-green-soft);
     border-left-color: var(--tt-green);
   }
 
-  .takeaway strong { font-weight: 600; }
-  .takeaway.zone-red strong { color: var(--tt-red-deep); }
-  .takeaway.zone-yellow strong { color: var(--tt-yellow-deep); }
-  .takeaway.zone-green strong { color: var(--tt-green); }
+  .scenario-reflection strong { font-weight: 600; }
+  .scenario-reflection.outcome-below strong { color: var(--tt-red-deep); }
+  .scenario-reflection.outcome-close strong { color: var(--tt-yellow-deep); }
+  .scenario-reflection.outcome-above strong { color: var(--tt-green); }
 
-  .footnote {
-    margin-top: 32px;
+  /* Advance button */
+  .advance-section {
+    margin-top: 24px;
     padding-top: 20px;
     border-top: 1px solid var(--tt-gray-300);
-    font-size: 12px;
-    color: var(--tt-gray-700);
-    text-align: center;
+    display: flex;
+    justify-content: flex-end;
   }
 
-  .footnote strong { color: var(--tt-black); }
+  .advance-btn {
+    background: var(--tt-blue);
+    color: var(--tt-white);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .advance-btn:hover {
+    background: var(--tt-blue-deep);
+    transform: translateX(2px);
+  }
+
+  .advance-btn.final {
+    background: var(--tt-green);
+  }
+
+  .advance-btn.final:hover {
+    background: var(--tt-green-deep);
+  }
+
+  .advance-arrow { transition: transform 0.2s ease; }
+  .advance-btn:hover .advance-arrow { transform: translateX(2px); }
 
   /* Responsive */
   @media (max-width: 640px) {
     body { padding: 20px 16px; }
     .modal-card { padding: 24px 20px; }
-    .readout { padding: 20px 16px; }
-    .readout-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .readout-grid.readout-grid-rev {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    .readout-grid.readout-grid-rev .readout-value,
-    .readout-grid.readout-grid-rev .readout-payout { font-size: 22px; }
-    .readout-op { display: none; }
-    .readout-cell { display: flex; align-items: baseline; justify-content: space-between; }
-    .readout-cell.payout { padding-top: 12px; border-top: 1px solid var(--tt-gray-300); }
-    .readout-label { margin-bottom: 0; }
-    .readout-value, .readout-payout { font-size: 24px; }
-    .presets { flex-direction: column; }
-    .chart { height: 160px; }
-    .tab { padding: 14px 12px; font-size: 14px; }
-    .tab-nudge { top: 14px; right: 10px; }
+    .scenario-card { padding: 20px 16px; }
+    .prediction-options { grid-template-columns: 1fr; }
+    .math-total-value { font-size: 22px; }
+    .math-total-inner { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .position-grid { grid-template-columns: 1fr; }
+    .progress-dot { width: 28px; height: 28px; font-size: 10px; }
+    .progress-line { width: 20px; }
+    .progress-text { font-size: 10px; }
+    .advance-section { justify-content: stretch; }
+    .advance-btn { width: 100%; justify-content: center; }
   }
 </style>
 </head>
@@ -577,446 +681,431 @@
       </svg>
     </div>
     <h2 class="modal-title">How to use this</h2>
-    <p class="modal-body">Drag the slider — or click a bracket directly — to see how your commission changes. <strong>Revenue uses two multipliers:</strong> your quota attainment percentage AND a bracket accelerator. Both multiply your $175 Revenue OTE.</p>
-    <div class="modal-legend">
-      <div class="legend-item"><span class="legend-swatch red"></span>Missing the target</div>
-      <div class="legend-item"><span class="legend-swatch yellow"></span>Close — at OTE</div>
-      <div class="legend-item"><span class="legend-swatch green"></span>Exceeding the target</div>
+    <p class="modal-body">Four different months from four PSS reps. Each one teaches something specific about how the comp plan rewards (or punishes) different behaviors.</p>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <span class="modal-step-num">1</span>
+        <span class="modal-step-text">Read the rep's month.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">2</span>
+        <span class="modal-step-text">Predict their total commission before revealing.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">3</span>
+        <span class="modal-step-text">See the math and where they land on both curves.</span>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-num">4</span>
+        <span class="modal-step-text">Move on to the next rep until you've seen all four.</span>
+      </div>
     </div>
-    <button class="modal-dismiss" id="dismiss-intro">Got it</button>
+    <button class="modal-dismiss" id="dismiss-intro">Got it, let's start</button>
+  </div>
+</div>
+
+<!-- ─────────── OUTRO MODAL ─────────── -->
+<div class="modal-overlay dismissed" id="outro-modal">
+  <div class="modal-card wide">
+    <div class="modal-icon success">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2 class="modal-title">Nicely done.</h2>
+    <p class="modal-body centered">You worked through four different months — here's what each one was teaching.</p>
+    <div class="outro-recap">
+      <div class="recap-item">
+        <span class="recap-num">01</span>
+        <div class="recap-text"><strong>Jordan</strong> — missing quota cascades. Below 100%, your attainment AND the accelerator both multiply against you.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">02</span>
+        <div class="recap-text"><strong>Karmela</strong> — churn is a real lever. She earned $30 above OTE on the churn side alone.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">03</span>
+        <div class="recap-text"><strong>Andrew</strong> — strong revenue still pays, but bad churn is an opportunity cost. He left $30–60 on the table.</div>
+      </div>
+      <div class="recap-item">
+        <span class="recap-num">04</span>
+        <div class="recap-text"><strong>Maya</strong> — a balanced strong month tops $450. Both multipliers working together is where the real upside lives.</div>
+      </div>
+    </div>
+    <div class="outro-closer">Your commission isn't set by one heroic metric. It's set by both, working together — and that's almost entirely in your hands.</div>
+    <button class="modal-dismiss success" id="dismiss-outro">Got it</button>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="revenue" role="tab" aria-selected="true">
-      <span class="tab-label-small">70% · $175 OTE</span>
-      Revenue Multiplier
-    </button>
-    <button class="tab" data-tab="churn" role="tab" aria-selected="false">
-      <span class="tab-label-small">30% · $75 OTE</span>
-      Churn Multiplier
-      <span class="tab-nudge"></span>
-    </button>
+  <div class="progress">
+    <div class="progress-dots" id="progress-dots"></div>
+    <div class="progress-text" id="progress-text">Scenario 1 of 4</div>
   </div>
 
-  <!-- REVENUE PANEL -->
-  <section class="panel active" id="panel-revenue" role="tabpanel">
-
-    <div class="readout" id="rev-readout">
-      <div class="readout-grid readout-grid-rev">
-        <div class="readout-cell">
-          <div class="readout-label">Attainment</div>
-          <div class="readout-value" id="rev-attainment-display">100%</div>
-        </div>
-        <div class="readout-op">×</div>
-        <div class="readout-cell">
-          <div class="readout-label">Accelerator</div>
-          <div class="readout-value" id="rev-accelerator-display">1.00×</div>
-        </div>
-        <div class="readout-op">×</div>
-        <div class="readout-cell">
-          <div class="readout-label">Revenue OTE</div>
-          <div class="readout-value" style="color:var(--tt-black);">$175</div>
-        </div>
-        <div class="readout-op">=</div>
-        <div class="readout-cell payout">
-          <div class="readout-label">Revenue Payout</div>
-          <div class="readout-payout" id="rev-payout">$175.00</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="slider-section">
-      <div class="slider-header">
-        <div class="slider-label">Your % to quota attainment</div>
-        <div class="slider-input-value" id="rev-input-value">100%</div>
-      </div>
-      <div class="slider-wrapper">
-        <input type="range" id="rev-slider" min="0" max="200" value="100" step="1">
-        <div class="slider-scale">
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
-          <span>150%</span>
-          <span>200%</span>
-        </div>
-      </div>
-
-      <div class="presets">
-        <button class="preset-btn" data-target="rev" data-value="80">
-          <span class="preset-btn-label">Missed quota</span>
-          80% of target
-        </button>
-        <button class="preset-btn" data-target="rev" data-value="100">
-          <span class="preset-btn-label">On target</span>
-          100% of target
-        </button>
-        <button class="preset-btn" data-target="rev" data-value="135">
-          <span class="preset-btn-label">Crushing it</span>
-          135% of target
-        </button>
-      </div>
-    </div>
-
-    <div class="chart-section">
-      <div class="chart-title">Accelerator by attainment bracket <span style="font-weight:400;color:var(--tt-gray-500);">(one of two multipliers on revenue)</span></div>
-      <div class="chart" id="rev-chart"></div>
-      <div class="chart-x-labels" id="rev-chart-labels"></div>
-    </div>
-
-    <div class="takeaway" id="rev-takeaway"></div>
-
-  </section>
-
-  <!-- CHURN PANEL -->
-  <section class="panel" id="panel-churn" role="tabpanel">
-
-    <div class="readout" id="churn-readout">
-      <div class="readout-grid">
-        <div class="readout-cell">
-          <div class="readout-label">Multiplier</div>
-          <div class="readout-value" id="churn-multiplier">1.0×</div>
-        </div>
-        <div class="readout-op">×</div>
-        <div class="readout-cell">
-          <div class="readout-label">Churn OTE</div>
-          <div class="readout-value" style="color:var(--tt-black);">$75</div>
-        </div>
-        <div class="readout-op">=</div>
-        <div class="readout-cell payout">
-          <div class="readout-label">Churn Payout</div>
-          <div class="readout-payout" id="churn-payout">$75.00</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="slider-section">
-      <div class="slider-header">
-        <div class="slider-label">Your churn delta vs holdout <span style="color: var(--tt-gray-500); font-weight: 400;">(negative = better)</span></div>
-        <div class="slider-input-value" id="churn-input-value">−1.0pp</div>
-      </div>
-      <div class="slider-wrapper">
-        <input type="range" id="churn-slider" min="-2000" max="1200" value="-100" step="10">
-        <div class="slider-scale">
-          <span>−20pp</span>
-          <span>−10pp</span>
-          <span>0</span>
-          <span>+6pp</span>
-          <span>+12pp</span>
-        </div>
-      </div>
-
-      <div class="presets">
-        <button class="preset-btn" data-target="churn" data-value="600">
-          <span class="preset-btn-label">Worse than holdout</span>
-          +6pp delta
-        </button>
-        <button class="preset-btn" data-target="churn" data-value="-100">
-          <span class="preset-btn-label">Slight improvement</span>
-          −1pp delta
-        </button>
-        <button class="preset-btn" data-target="churn" data-value="-500">
-          <span class="preset-btn-label">Strong improvement</span>
-          −5pp delta
-        </button>
-      </div>
-    </div>
-
-    <div class="chart-section">
-      <div class="chart-title">Multiplier by churn delta bracket</div>
-      <div class="chart" id="churn-chart"></div>
-      <div class="chart-x-labels" id="churn-chart-labels"></div>
-    </div>
-
-    <div class="takeaway" id="churn-takeaway"></div>
-
-  </section>
-
-  <div class="footnote">
-    These multipliers apply to your <strong>$250 monthly commission OTE</strong>, on top of your base salary. The full plan combines both portions every month.
-  </div>
+  <div class="scenario-detail" id="scenario-detail"></div>
 
 </div>
 
 <script>
-  // ─────────── BRACKETS ───────────
+  // ─────────── BRACKETS for mini-charts ───────────
   const revBrackets = [
-    { min: 0,   max: 59,  mult: 0,    short: '0–59',    zone: 'red' },
-    { min: 60,  max: 74,  mult: 40,   short: '60–74',   zone: 'red' },
-    { min: 75,  max: 89,  mult: 70,   short: '75–89',   zone: 'red' },
-    { min: 90,  max: 99,  mult: 90,   short: '90–99',   zone: 'yellow' },
-    { min: 100, max: 119, mult: 100,  short: '100–119', zone: 'green' },
-    { min: 120, max: 129, mult: 105,  short: '120–129', zone: 'green' },
-    { min: 130, max: 139, mult: 115,  short: '130–139', zone: 'green' },
-    { min: 140, max: 149, mult: 120,  short: '140–149', zone: 'green' },
-    { min: 150, max: 159, mult: 125,  short: '150–159', zone: 'green' },
-    { min: 160, max: 169, mult: 130,  short: '160–169', zone: 'green' },
-    { min: 170, max: 999, mult: 135,  short: '170+',    zone: 'green' }
+    { mult: 0,   zone: 'red' },    { mult: 40,  zone: 'red' },
+    { mult: 70,  zone: 'red' },    { mult: 90,  zone: 'yellow' },
+    { mult: 100, zone: 'green' },  { mult: 105, zone: 'green' },
+    { mult: 115, zone: 'green' },  { mult: 120, zone: 'green' },
+    { mult: 125, zone: 'green' },  { mult: 130, zone: 'green' },
+    { mult: 135, zone: 'green' }
   ];
 
   const churnBrackets = [
-    { min: -99999, max: -1800, mult: 1.8, short: '≤−18',     zone: 'green' },
-    { min: -1799,  max: -1200, mult: 1.6, short: '−12 to −18', zone: 'green' },
-    { min: -1199,  max: -800,  mult: 1.4, short: '−8 to −12',  zone: 'green' },
-    { min: -799,   max: -400,  mult: 1.2, short: '−4 to −8',   zone: 'green' },
-    { min: -399,   max: -200,  mult: 1.1, short: '−2 to −4',   zone: 'green' },
-    { min: -199,   max: -1,    mult: 1.0, short: '−0 to −2',   zone: 'yellow' },
-    { min: 0,      max: 599,   mult: 0.6, short: '0 to +6',    zone: 'red' },
-    { min: 600,    max: 999,   mult: 0.4, short: '+6 to +10',  zone: 'red' },
-    { min: 1000,   max: 99999, mult: 0,   short: '≥+10',       zone: 'red' }
+    { mult: 1.8, zone: 'green' },  { mult: 1.6, zone: 'green' },
+    { mult: 1.4, zone: 'green' },  { mult: 1.2, zone: 'green' },
+    { mult: 1.1, zone: 'green' },  { mult: 1.0, zone: 'yellow' },
+    { mult: 0.6, zone: 'red' },    { mult: 0.4, zone: 'red' },
+    { mult: 0,   zone: 'red' }
   ];
 
-  // ─────────── REVENUE ───────────
-  const revChart = document.getElementById('rev-chart');
-  const revChartLabels = document.getElementById('rev-chart-labels');
-  const revSlider = document.getElementById('rev-slider');
-  const revReadout = document.getElementById('rev-readout');
-  const revAttainmentEl = document.getElementById('rev-attainment-display');
-  const revAccelEl = document.getElementById('rev-accelerator-display');
-  const revPayoutEl = document.getElementById('rev-payout');
-  const revTakeawayEl = document.getElementById('rev-takeaway');
+  function findRevBracketIdx(pct) {
+    if (pct < 60) return 0;
+    if (pct < 75) return 1;
+    if (pct < 90) return 2;
+    if (pct < 100) return 3;
+    if (pct < 120) return 4;
+    if (pct < 130) return 5;
+    if (pct < 140) return 6;
+    if (pct < 150) return 7;
+    if (pct < 160) return 8;
+    if (pct < 170) return 9;
+    return 10;
+  }
 
-  function buildRevChart() {
-    revChart.innerHTML = '';
-    revChartLabels.innerHTML = '';
-    const maxMult = 135;
-    revBrackets.forEach((b, i) => {
+  function findChurnBracketIdx(delta) {
+    if (delta <= -18) return 0;
+    if (delta <= -12) return 1;
+    if (delta <= -8) return 2;
+    if (delta <= -4) return 3;
+    if (delta <= -2) return 4;
+    if (delta < 0) return 5;
+    if (delta < 6) return 6;
+    if (delta < 10) return 7;
+    return 8;
+  }
+
+  function renderMiniChart(container, brackets, activeIdx, maxMult) {
+    container.innerHTML = '';
+    brackets.forEach((b, i) => {
       const bar = document.createElement('div');
-      bar.className = 'bar zone-' + b.zone;
-      bar.dataset.idx = i;
-      bar.style.height = Math.max(2, (b.mult / maxMult) * 100) + '%';
-      const val = document.createElement('span');
-      val.className = 'bar-value';
-      val.textContent = b.mult + '%';
-      bar.appendChild(val);
-      bar.addEventListener('click', () => {
-        const mid = b.max < 999 ? Math.round((b.min + b.max) / 2) : 175;
-        revSlider.value = mid;
-        updateRev();
-        triggerNudge();
-      });
-      revChart.appendChild(bar);
-
-      const label = document.createElement('div');
-      label.className = 'x-label';
-      label.textContent = b.short;
-      revChartLabels.appendChild(label);
+      bar.className = 'mini-bar zone-' + b.zone;
+      if (i === activeIdx) bar.classList.add('active');
+      bar.style.height = Math.max(3, (b.mult / maxMult) * 100) + '%';
+      container.appendChild(bar);
     });
   }
 
-  function findRevBracket(pct) {
-    return revBrackets.find(b => pct >= b.min && pct <= b.max) || revBrackets[revBrackets.length - 1];
-  }
-
-  function revTakeaway(pct, bracket, payout) {
-    const payoutStr = '$' + payout.toFixed(2);
-    const pctOfOTE = ((payout / 175) * 100).toFixed(0);
-    const accelStr = (bracket.mult / 100).toFixed(2);
-
-    if (bracket.mult === 0) {
-      return `You're at <strong>${pct}%</strong> — below 60% of quota, the accelerator is <strong>0</strong>. Revenue pays nothing, no matter how close to 60% you get.`;
+  // ─────────── SCENARIOS ───────────
+  const scenarios = {
+    jordan: {
+      num: '01', name: 'Jordan', tagline: 'The Slow Start',
+      story: "Jordan started February strong but lost a week mid-month to a personal issue. His pros got less attention than usual, and a few never engaged at all. He recovered for the last stretch, but his action plans had already gone cold.",
+      setup: [
+        { label: 'Quota (L2-3)', value: '$11,100' },
+        { label: '28-day revenue', value: '$8,325' },
+        { label: 'Churn vs holdout', value: '0pp delta (matched holdout)' }
+      ],
+      attainmentPct: 75, revMult: 70, revZone: 'red', revPayout: 91.88,
+      churnDelta: 0, churnMult: 0.6, churnZone: 'red', churnPayout: 45.00,
+      total: 136.88, outcome: 'below', correctPrediction: 'less',
+      feedback: {
+        less: "Correct. Jordan came in at <strong>$136.88</strong> — that's <strong>$113.12 below OTE</strong>. Missing quota cascades hard: his attainment (0.75) AND the accelerator (0.70) both bite into revenue, and matching holdout on churn only pays 0.6×.",
+        about: "Not quite — Jordan came in well below OTE at <strong>$136.88</strong>. Missing quota compounds: both his attainment % (0.75) AND the accelerator (0.70) work against him on the revenue side.",
+        more: "Not this time — Jordan came in below OTE at <strong>$136.88</strong>. Below quota, his revenue base ($175) is multiplied by 0.75 attainment AND by the 0.70 accelerator. Matching holdout on churn only pays 0.6×."
+      },
+      reflection: "Matching the holdout benchmark isn't the neutral case — it pays <strong>0.6×</strong>, not 1.0×. And on revenue, missing quota by 25% means his base is multiplied by 0.75 <em>and</em> by the 0.70 accelerator — both working against him. <strong>That's why missing quota cascades so hard.</strong> Jordan landed $113 below OTE in a single month. The first week of an action plan matters more than any other week."
+    },
+    karmela: {
+      num: '02', name: 'Karmela', tagline: 'The Churn Specialist',
+      story: "Karmela had an average revenue month — she hit exactly 100% of her quota, no more. But she worked her action plans hard, returned every callback the same day, and set clear spend expectations with each new pro. Her pros stayed active.",
+      setup: [
+        { label: 'Quota (L2-3)', value: '$11,100' },
+        { label: '28-day revenue', value: '$11,100' },
+        { label: 'Her churn', value: '20%' },
+        { label: 'Holdout churn', value: '28%' },
+        { label: 'Churn delta', value: '−8pp' }
+      ],
+      attainmentPct: 100, revMult: 100, revZone: 'green', revPayout: 175.00,
+      churnDelta: -8, churnMult: 1.4, churnZone: 'green', churnPayout: 105.00,
+      total: 280.00, outcome: 'above', correctPrediction: 'more',
+      feedback: {
+        less: "Not quite — Karmela earned <strong>$280</strong>, above OTE. Even though her revenue was only at quota, beating holdout by 8pp on churn paid a 1.4× multiplier.",
+        about: "Close — but Karmela actually earned <strong>$280</strong>, which is $30 above OTE. The extra came entirely from beating holdout by 8pp on churn.",
+        more: "Correct. Karmela earned <strong>$280</strong> — $30 above OTE, even though her revenue was exactly at quota. The entire upside came from churn."
+      },
+      reflection: "Karmela's revenue was $175 × 1.00 × 1.00 = exactly the full Revenue OTE. The extra $30 came entirely from churn — even though churn only weights 30% of the OTE. <strong>Beating holdout aggressively is one of the highest-leverage moves in this comp plan.</strong> Reps who think of churn as a side metric leave money on the table."
+    },
+    andrew: {
+      num: '03', name: 'Andrew', tagline: 'The Trade-off',
+      story: "Andrew was on track for 140% attainment by Day 20. To hit it, he pushed several pros into bigger spend commitments than they were ready for. Three of those pros deactivated by Day 28 — they couldn't keep up with the lead volume they'd committed to.",
+      setup: [
+        { label: 'Attainment', value: '140%' },
+        { label: 'Churn delta', value: '+4pp (worse than holdout)' }
+      ],
+      attainmentPct: 140, revMult: 120, revZone: 'green', revPayout: 294.00,
+      churnDelta: 4, churnMult: 0.6, churnZone: 'red', churnPayout: 45.00,
+      total: 339.00, outcome: 'above', correctPrediction: 'more',
+      feedback: {
+        less: "Not quite — Andrew earned <strong>$339</strong>, well above OTE. His 140% attainment carried him on the revenue side. But notice the cost: bad churn dropped his churn payout to $45.",
+        about: "Not quite — Andrew earned <strong>$339</strong>, $89 above OTE. His revenue side was strong ($294) because 140% attainment multiplies the base AND triggers the 1.20× accelerator. Bad churn hurt, but didn't cancel the gains.",
+        more: "Correct — Andrew earned <strong>$339</strong>, $89 above OTE. But notice the opportunity cost: if his churn had been just neutral (−1pp), he'd have earned $369. If strong (−8pp), $399. <strong>Bad churn cost him $30–60 he could have had.</strong>"
+      },
+      reflection: "Andrew earned $339 — $89 above OTE — and you might think 'he's winning.' But look at what he left on the table: with neutral churn he'd have earned $369. With strong churn, $399. <strong>Pushing pros past what they're ready for didn't just hurt the pros — it cost Andrew $30–60 in a single month.</strong> Over a year, that's $360–720 in commission he won't see. Bad churn isn't a draw; it's a drain."
+    },
+    maya: {
+      num: '04', name: 'Maya', tagline: 'A Strong Month',
+      story: "Maya had a complete month. Strong discovery on every new assignment, fast first contact, and clear action plan execution. She didn't push any pro past what they were ready for — she just executed the basics consistently across all of them.",
+      setup: [
+        { label: 'Attainment', value: '165%' },
+        { label: 'Her churn', value: '22%' },
+        { label: 'Holdout churn', value: '28%' },
+        { label: 'Churn delta', value: '−6pp' }
+      ],
+      attainmentPct: 165, revMult: 130, revZone: 'green', revPayout: 375.38,
+      churnDelta: -6, churnMult: 1.2, churnZone: 'green', churnPayout: 90.00,
+      total: 465.38, outcome: 'above', correctPrediction: 'more',
+      feedback: {
+        less: "Not at all — Maya earned <strong>$465.38</strong>, $215 above OTE. Strong on both metrics compounds: her 165% attainment AND her 1.30× accelerator both work for her on revenue.",
+        about: "Maya actually earned <strong>$465.38</strong> — $215 above OTE. Solid performance on both curves compounds in a way single-metric heroics don't.",
+        more: "Correct. Maya earned <strong>$465.38</strong> — $215 above OTE. Notice she didn't max out either curve — she just executed well on both, and the multipliers compounded."
+      },
+      reflection: "Maya's month wasn't extraordinary — she didn't max out either curve. She just executed well on both. Her revenue: $175 × 1.65 × 1.30 = $375. Her churn: $75 × 1.2 = $90. Total: $465.38 — almost <strong>double her OTE</strong>. <strong>The path to top earnings isn't a single heroic metric — it's both metrics working together, with attainment compounding through the accelerator.</strong> Reps who chase one and ignore the other never get here."
     }
-    if (bracket.zone === 'red') {
-      return `You're at <strong>${pct}%</strong> — earning <strong>${payoutStr}</strong> (${pctOfOTE}% of Revenue OTE). Below quota, both multipliers work against you: your attainment is ${pct}% AND the accelerator is ${accelStr}×. <strong>They compound.</strong>`;
-    }
-    if (bracket.zone === 'yellow') {
-      return `You're at <strong>${pct}%</strong> — earning <strong>${payoutStr}</strong>. So close to the 100% line. Crossing it pushes both multipliers to 1.0× — a meaningful jump. <strong>The 100% line restores the full accelerator AND removes the attainment penalty.</strong>`;
-    }
-    if (pct >= 100 && pct < 120) {
-      return `You're at <strong>${pct}%</strong> — earning <strong>${payoutStr}</strong>. Your accelerator is exactly 1.00×, but your attainment is ${pct}%, so every point above 100% adds to your base. <strong>Quota is the cliff edge; everything above is gradual but real.</strong>`;
-    }
-    if (pct >= 170) {
-      return `You're at <strong>${pct}%</strong> — earning <strong>${payoutStr}</strong> (${pctOfOTE}% of Revenue OTE). The accelerator caps at 1.35× past 170%, but your attainment % keeps growing. <strong>The cap is on the accelerator — not the payout.</strong>`;
-    }
-    return `You're at <strong>${pct}%</strong> — earning <strong>${payoutStr}</strong> (${pctOfOTE}% of Revenue OTE). Both multipliers climb together above quota: your attainment is ${pct}% AND your accelerator is ${accelStr}×. <strong>They compound on the way up too.</strong>`;
-  }
+  };
 
-  function setZoneClasses(el, zone) {
-    el.classList.remove('zone-red', 'zone-yellow', 'zone-green');
-    el.classList.add('zone-' + zone);
-  }
+  const scenarioOrder = ['jordan', 'karmela', 'andrew', 'maya'];
+  let currentIdx = 0;
 
-  function updateRev() {
-    const pct = parseInt(revSlider.value);
-    const bracket = findRevBracket(pct);
-    const idx = revBrackets.indexOf(bracket);
-    const accelerator = bracket.mult / 100;
-    const attainmentRatio = pct / 100;
-    const payout = (175 * attainmentRatio * accelerator);
-
-    document.getElementById('rev-input-value').textContent = pct + '%';
-    revAttainmentEl.textContent = pct + '%';
-    revAccelEl.textContent = accelerator.toFixed(2) + '×';
-    revPayoutEl.textContent = '$' + payout.toFixed(2);
-    revTakeawayEl.innerHTML = revTakeaway(pct, bracket, payout);
-
-    setZoneClasses(revReadout, bracket.zone);
-    setZoneClasses(revAttainmentEl, bracket.zone);
-    setZoneClasses(revAccelEl, bracket.zone);
-    setZoneClasses(revPayoutEl, bracket.zone);
-    setZoneClasses(revTakeawayEl, bracket.zone);
-
-    document.querySelectorAll('#rev-chart .bar').forEach((bar, i) => {
-      bar.classList.toggle('active', i === idx);
-    });
-  }
-
-  // ─────────── CHURN ───────────
-  const churnChart = document.getElementById('churn-chart');
-  const churnChartLabels = document.getElementById('churn-chart-labels');
-  const churnSlider = document.getElementById('churn-slider');
-  const churnReadout = document.getElementById('churn-readout');
-  const churnMultEl = document.getElementById('churn-multiplier');
-  const churnPayoutEl = document.getElementById('churn-payout');
-  const churnTakeawayEl = document.getElementById('churn-takeaway');
-
-  function buildChurnChart() {
-    churnChart.innerHTML = '';
-    churnChartLabels.innerHTML = '';
-    const maxMult = 1.8;
-    churnBrackets.forEach((b, i) => {
-      const bar = document.createElement('div');
-      bar.className = 'bar zone-' + b.zone;
-      bar.dataset.idx = i;
-      bar.style.height = Math.max(2, (b.mult / maxMult) * 100) + '%';
-      const val = document.createElement('span');
-      val.className = 'bar-value';
-      val.textContent = b.mult.toFixed(1) + '×';
-      bar.appendChild(val);
-      bar.addEventListener('click', () => {
-        let mid;
-        if (b.min < -10000) mid = -2000;
-        else if (b.max > 10000) mid = 1200;
-        else mid = Math.round((b.min + b.max) / 2);
-        churnSlider.value = mid;
-        updateChurn();
-      });
-      churnChart.appendChild(bar);
-
-      const label = document.createElement('div');
-      label.className = 'x-label';
-      label.textContent = b.short;
-      churnChartLabels.appendChild(label);
-    });
-  }
-
-  function findChurnBracket(d) {
-    return churnBrackets.find(b => d >= b.min && d <= b.max) || churnBrackets[churnBrackets.length - 1];
-  }
-
-  function formatDelta(d100) {
-    const d = d100 / 100;
-    if (d > 0) return '+' + d.toFixed(1) + 'pp';
-    if (d < 0) return '−' + Math.abs(d).toFixed(1) + 'pp';
-    return '0.0pp';
-  }
-
-  function churnTakeaway(d100, bracket) {
-    const d = d100 / 100;
-    if (bracket.mult === 0) {
-      return `Your churn is <strong>${Math.abs(d).toFixed(1)}pp worse than holdout</strong> — the churn portion <strong>pays nothing</strong>. 10pp worse is the line where the multiplier hits zero.`;
-    }
-    if (bracket.zone === 'red') {
-      const dir = d >= 0 ? 'worse than holdout' : 'better than holdout';
-      return `Your churn is <strong>${Math.abs(d).toFixed(1)}pp ${dir}</strong> — earning ${bracket.mult}× the Churn OTE. <strong>Matching holdout pays less than half.</strong> The 1.0× line requires actually beating the benchmark.`;
-    }
-    if (bracket.zone === 'yellow') {
-      return `Your churn is <strong>${Math.abs(d).toFixed(1)}pp better than holdout</strong> — earning the full Churn OTE at 1.0×. Improving by another 1pp would push you to 1.1×. <strong>The rewards above this line accelerate quickly.</strong>`;
-    }
-    if (bracket.mult >= 1.6) {
-      return `Your churn is <strong>${Math.abs(d).toFixed(1)}pp better than holdout</strong> — earning ${bracket.mult}× the Churn OTE. The top of the curve pays nearly <strong>double</strong> the OTE. Holding pros on the platform isn't a side metric.`;
-    }
-    return `Your churn is <strong>${Math.abs(d).toFixed(1)}pp better than holdout</strong> — earning ${bracket.mult}× the Churn OTE. <strong>The curve above holdout climbs steeply.</strong> Every few points of improvement adds meaningful dollars.`;
-  }
-
-  function updateChurn() {
-    const d100 = parseInt(churnSlider.value);
-    const bracket = findChurnBracket(d100);
-    const idx = churnBrackets.indexOf(bracket);
-    const payout = (75 * bracket.mult).toFixed(2);
-
-    document.getElementById('churn-input-value').textContent = formatDelta(d100);
-    churnMultEl.textContent = bracket.mult.toFixed(1) + '×';
-    churnPayoutEl.textContent = '$' + payout;
-    churnTakeawayEl.innerHTML = churnTakeaway(d100, bracket);
-
-    setZoneClasses(churnReadout, bracket.zone);
-    setZoneClasses(churnMultEl, bracket.zone);
-    setZoneClasses(churnPayoutEl, bracket.zone);
-    setZoneClasses(churnTakeawayEl, bracket.zone);
-
-    document.querySelectorAll('#churn-chart .bar').forEach((bar, i) => {
-      bar.classList.toggle('active', i === idx);
-    });
-  }
-
-  // ─────────── TABS ───────────
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab;
-      document.querySelectorAll('.tab').forEach(t => {
-        t.classList.toggle('active', t === tab);
-        t.setAttribute('aria-selected', t === tab);
-      });
-      document.querySelectorAll('.panel').forEach(p => {
-        p.classList.toggle('active', p.id === 'panel-' + target);
-      });
-      if (target === 'churn') {
-        churnVisited = true;
-        document.querySelector('.tab[data-tab="churn"]').classList.remove('has-nudge');
+  // ─────────── Progress dots ───────────
+  function buildProgressDots() {
+    const wrap = document.getElementById('progress-dots');
+    wrap.innerHTML = '';
+    scenarioOrder.forEach((k, i) => {
+      if (i > 0) {
+        const line = document.createElement('div');
+        line.className = 'progress-line';
+        line.dataset.line = i;
+        wrap.appendChild(line);
       }
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot';
+      dot.dataset.step = i;
+      dot.textContent = String(i + 1).padStart(2, '0');
+      wrap.appendChild(dot);
     });
-  });
+  }
 
-  // ─────────── PRESETS ───────────
-  document.querySelectorAll('.preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.target;
-      const value = parseInt(btn.dataset.value);
-      if (target === 'rev') {
-        revSlider.value = value;
-        updateRev();
-        triggerNudge();
+  function updateProgress() {
+    document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+      dot.classList.remove('current', 'completed');
+      if (i < currentIdx) {
+        dot.classList.add('completed');
+        dot.innerHTML = '✓';
+      } else if (i === currentIdx) {
+        dot.classList.add('current');
+        dot.textContent = String(i + 1).padStart(2, '0');
       } else {
-        churnSlider.value = value;
-        updateChurn();
+        dot.textContent = String(i + 1).padStart(2, '0');
       }
     });
-  });
+    document.querySelectorAll('.progress-line').forEach((line, i) => {
+      line.classList.toggle('completed', i < currentIdx);
+    });
+    document.getElementById('progress-text').textContent = `Scenario ${currentIdx + 1} of ${scenarioOrder.length}`;
+  }
 
-  // ─────────── INTRO MODAL ───────────
+  // ─────────── Render scenario ───────────
+  function renderScenario(key) {
+    const s = scenarios[key];
+    const detail = document.getElementById('scenario-detail');
+
+    const setupRows = s.setup.map(r => `
+      <div class="scenario-setup-row">
+        <span class="scenario-setup-label">${r.label}</span>
+        <span class="scenario-setup-value">${r.value}</span>
+      </div>
+    `).join('');
+
+    const otePos = s.total >= 250
+      ? `<div class="math-total-delta">+ $${(s.total - 250).toFixed(2)} above OTE</div>`
+      : `<div class="math-total-delta">− $${(250 - s.total).toFixed(2)} below OTE</div>`;
+
+    const churnDeltaText = s.churnDelta === 0
+      ? '0pp'
+      : (s.churnDelta < 0 ? `−${Math.abs(s.churnDelta)}pp` : `+${s.churnDelta}pp`);
+
+    const isLast = currentIdx === scenarioOrder.length - 1;
+    const nextName = !isLast ? scenarios[scenarioOrder[currentIdx + 1]].name : null;
+    const advanceLabel = isLast ? "See your summary" : `Continue to ${nextName}`;
+    const advanceClass = isLast ? 'advance-btn final' : 'advance-btn';
+
+    detail.innerHTML = `
+      <div class="scenario-card">
+        <div class="scenario-card-header">
+          <div class="scenario-eyebrow">Scenario ${s.num}</div>
+          <div class="scenario-card-title">${s.name} — ${s.tagline}</div>
+        </div>
+
+        <p class="scenario-story">${s.story}</p>
+
+        <div class="scenario-setup">${setupRows}</div>
+
+        <div class="prediction" id="prediction-${key}">
+          <div class="prediction-prompt">Before you see the math — what's ${s.name}'s total commission for the month?</div>
+          <div class="prediction-options">
+            <button class="prediction-btn" data-pred="less">Less than $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">below OTE</span></button>
+            <button class="prediction-btn" data-pred="about">About $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">around OTE</span></button>
+            <button class="prediction-btn" data-pred="more">More than $250<br><span style="font-weight:400;opacity:0.75;font-size:11px;">above OTE</span></button>
+          </div>
+          <div class="prediction-feedback" id="prediction-feedback-${key}"></div>
+        </div>
+
+        <div class="math-reveal" id="math-reveal-${key}">
+
+          <div class="math-section zone-${s.revZone}">
+            <div class="math-section-label">Revenue · 70% of OTE</div>
+            <div class="math-flow">
+              <span class="math-step">$175</span>
+              <span class="math-arrow">×</span>
+              <span class="math-step">${(s.attainmentPct/100).toFixed(2)} (attainment)</span>
+              <span class="math-arrow">×</span>
+              <span class="math-step">${(s.revMult/100).toFixed(2)} (accelerator)</span>
+              <span class="math-result">$${s.revPayout.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="math-section zone-${s.churnZone}">
+            <div class="math-section-label">Churn · 30% of OTE</div>
+            <div class="math-flow">
+              <span class="math-step">${churnDeltaText} delta</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">${s.churnMult.toFixed(1)}× multiplier</span>
+              <span class="math-arrow">→</span>
+              <span class="math-step">$75 × ${s.churnMult.toFixed(1)}</span>
+              <span class="math-result">$${s.churnPayout.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="math-total outcome-${s.outcome}">
+            <div class="math-total-inner">
+              <span class="math-total-label">${s.name}'s total commission</span>
+              <span class="math-total-value">$${s.total.toFixed(2)}</span>
+            </div>
+            ${otePos}
+          </div>
+
+          <div class="position-section">
+            <div class="position-title">Where ${s.name} lands on each curve</div>
+            <div class="position-grid">
+              <div class="position-chart-wrap">
+                <div class="position-chart-label">Revenue</div>
+                <div class="position-chart-value">${s.attainmentPct}% attainment → ${s.revMult}% accelerator</div>
+                <div class="mini-chart" id="mini-rev-${key}"></div>
+              </div>
+              <div class="position-chart-wrap">
+                <div class="position-chart-label">Churn</div>
+                <div class="position-chart-value">${churnDeltaText} delta → ${s.churnMult.toFixed(1)}× multiplier</div>
+                <div class="mini-chart" id="mini-churn-${key}"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-reflection outcome-${s.outcome}">${s.reflection}</div>
+
+          <div class="advance-section">
+            <button class="${advanceClass}" id="advance-btn">
+              <span>${advanceLabel}</span>
+              <span class="advance-arrow">→</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    // Wire prediction buttons
+    detail.querySelectorAll('.prediction-btn').forEach(btn => {
+      btn.addEventListener('click', () => handlePrediction(key, btn.dataset.pred));
+    });
+  }
+
+  function handlePrediction(key, pred) {
+    const s = scenarios[key];
+    const container = document.getElementById('prediction-' + key);
+    const feedbackEl = document.getElementById('prediction-feedback-' + key);
+    const reveal = document.getElementById('math-reveal-' + key);
+
+    container.querySelectorAll('.prediction-btn').forEach(btn => {
+      btn.disabled = true;
+      if (btn.dataset.pred === pred) btn.classList.add('picked');
+      if (btn.dataset.pred === s.correctPrediction && pred !== s.correctPrediction) {
+        btn.classList.add('correct-answer');
+      }
+    });
+
+    container.classList.add('locked');
+    feedbackEl.innerHTML = s.feedback[pred];
+    feedbackEl.classList.add('show');
+
+    setTimeout(() => {
+      reveal.classList.add('show');
+      const revIdx = findRevBracketIdx(s.attainmentPct);
+      const churnIdx = findChurnBracketIdx(s.churnDelta);
+      renderMiniChart(document.getElementById('mini-rev-' + key), revBrackets, revIdx, 135);
+      renderMiniChart(document.getElementById('mini-churn-' + key), churnBrackets, churnIdx, 1.8);
+
+      // Wire advance button
+      document.getElementById('advance-btn').addEventListener('click', advance);
+
+      reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 400);
+  }
+
+  function advance() {
+    if (currentIdx < scenarioOrder.length - 1) {
+      currentIdx++;
+      renderScenario(scenarioOrder[currentIdx]);
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Mark final as complete and open outro
+      currentIdx++;
+      // Mark last dot as completed
+      document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+        if (i === scenarioOrder.length - 1) {
+          dot.classList.remove('current');
+          dot.classList.add('completed');
+          dot.innerHTML = '✓';
+        }
+      });
+      document.querySelectorAll('.progress-line').forEach(line => line.classList.add('completed'));
+      document.getElementById('progress-text').textContent = 'All scenarios complete';
+      document.getElementById('outro-modal').classList.remove('dismissed');
+    }
+  }
+
+  // ─────────── Modal dismissal ───────────
   document.getElementById('dismiss-intro').addEventListener('click', () => {
     document.getElementById('intro-modal').classList.add('dismissed');
   });
 
-  // ─────────── CHURN TAB NUDGE ───────────
-  let revInteracted = false;
-  let churnVisited = false;
-
-  function triggerNudge() {
-    if (revInteracted || churnVisited) return;
-    revInteracted = true;
-    setTimeout(() => {
-      const churnTab = document.querySelector('.tab[data-tab="churn"]');
-      if (!churnVisited && !churnTab.classList.contains('active')) {
-        churnTab.classList.add('has-nudge');
-      }
-    }, 2000);
-  }
-
-  // ─────────── INIT ───────────
-  revSlider.addEventListener('input', () => {
-    updateRev();
-    triggerNudge();
+  document.getElementById('dismiss-outro').addEventListener('click', () => {
+    document.getElementById('outro-modal').classList.add('dismissed');
   });
-  churnSlider.addEventListener('input', updateChurn);
 
-  buildRevChart();
-  buildChurnChart();
-  updateRev();
-  updateChurn();
+  // ─────────── Init ───────────
+  buildProgressDots();
+  updateProgress();
+  renderScenario(scenarioOrder[0]);
 </script>
 
 </body>
