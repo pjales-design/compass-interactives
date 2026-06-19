@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notebook — Visual Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EAF6FA;
+    --surface: #FFFFFF;
+    --ink: #2F3033;
+    --ink-soft: #4B5563;
+    --ink-muted: #6B7280;
+    --ink-faint: #9CA3AF;
+    --accent: #009FD9;
+    --accent-deep: #007FAD;
+    --accent-soft: #B2EBFF;
+    --accent-bg: #EAF6FA;
+    --highlight: #FFDD80;
+    --rule: #E5E7EB;
+    --rule-soft: #F3F4F6;
+    --shadow-sm: rgba(0, 0, 0, 0.04);
+    --shadow-md: rgba(0, 31, 51, 0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  body {
+    padding: 48px 16px 80px;
+  }
+
+  .doc {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 64px 72px;
+    box-shadow: 0 1px 2px var(--shadow-sm), 0 12px 32px var(--shadow-md);
+  }
+
+  /* === HEADER === */
+  .doc-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+
+  .doc-eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .doc-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  .doc-subtitle {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .doc-meta {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 48px;
+  }
+
+  /* === TLDR === */
+  .tldr {
+    background: var(--accent-bg);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 56px;
+  }
+
+  .tldr-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 14px;
+  }
+
+  .tldr ol {
+    list-style: none;
+    counter-reset: tldr;
+  }
+
+  .tldr li {
+    counter-increment: tldr;
+    padding-left: 32px;
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .tldr li:last-child { margin-bottom: 0; }
+
+  .tldr li::before {
+    content: counter(tldr);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    background: var(--accent);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .tldr li strong { font-weight: 600; }
+
+  /* === SECTIONS === */
+  section {
+    margin-bottom: 56px;
+  }
+
+  section:last-child { margin-bottom: 0; }
+
+  .section-num {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 28px;
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+
+  h3:first-of-type { margin-top: 0; }
+
+  p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  p strong, li strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  ul {
+    list-style: none;
+    margin-bottom: 12px;
+  }
+
+  ul li {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+
+  ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  code {
+    background: var(--rule-soft);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+
+  /* === COLOR SWATCHES === */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin: 16px 0 20px;
+  }
+
+  .swatch {
+    background: var(--surface);
+  }
+
+  .swatch-chip {
+    height: 56px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    margin-bottom: 8px;
+  }
+
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .swatch-hex {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .swatch-use {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  /* === TYPE SAMPLES === */
+  .type-sample {
+    background: var(--rule-soft);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+  }
+
+  .type-sample-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  .type-inter-display {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .type-inter-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .type-caveat {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent-deep);
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+
+  /* === CARD TYPE CALLOUTS === */
+  .card-types {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 16px 0 20px;
+  }
+
+  .card-type {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+
+  .card-type-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .card-type-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+    background: var(--accent);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .card-type-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .card-type-desc {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* === SLOT DIAGRAM === */
+  .slot-diagram {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 16px 0 20px;
+  }
+
+  .slot-diagram-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  .slot-diagram-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+
+  .slot-diagram-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .slot-diagram-cues {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .slot-diagram-evidence {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  .slot-diagram-evidence .hl {
+    background: linear-gradient(180deg, transparent 8%, var(--highlight) 8%, var(--highlight) 90%, transparent 90%);
+    padding: 0 3px;
+  }
+
+  .slot-callout {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    color: var(--accent-deep);
+    font-size: 14px;
+    margin-top: 6px;
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+
+  /* === DON'T LIST === */
+  .donts {
+    background: #FFF5F5;
+    border-radius: 10px;
+    padding: 24px 28px;
+    border-left: 3px solid #E5484D;
+  }
+
+  .donts ul li::before {
+    content: '✕';
+    color: #E5484D;
+    font-weight: 700;
+  }
+
+  /* === REFERENCES === */
+  .refs {
+    background: var(--rule-soft);
+    border-radius: 10px;
+    padding: 24px 28px;
+  }
+
+  .refs ul li::before {
+    content: '↳';
+    color: var(--accent);
+  }
+
+  .refs a {
+    color: var(--accent-deep);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft);
+  }
+
+  .refs a:hover {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* === DIVIDER === */
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 40px 0;
+  }
+
+  /* === BUILD DECISION CARDS (authoring section) === */
+  .build-decisions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0 24px;
+  }
+
+  .build-decision {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+
+  .build-decision-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .build-decision p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .build-decision p:last-child { margin-bottom: 0; }
+
+  .build-detail {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding-top: 4px;
+  }
+
+  .build-detail strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .build-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+  }
+
+  .build-badge.native {
+    background: var(--accent-bg);
+    color: var(--accent-deep);
+  }
+
+  .build-badge.custom {
+    background: #FFF7E1;
+    color: #714601;
+  }
+
+  /* === CRITERIA CALLOUT === */
+  .criteria {
+    background: var(--surface);
+    border: 1px solid var(--accent-soft);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 16px 0 24px;
+  }
+
+  .criteria-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 12px;
+  }
+
+  .criteria-intro {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .criteria-intro strong { font-weight: 700; }
+
+  .criteria-list {
+    list-style: none;
+    counter-reset: criteria;
+    margin: 0 0 14px 0;
+    padding: 0;
+  }
+
+  .criteria-list li {
+    counter-increment: criteria;
+    padding-left: 32px;
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .criteria-list li::before {
+    content: counter(criteria);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    background: var(--accent);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .criteria-footer {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    font-style: italic;
+  }
+
+  /* === FONT SPLIT === */
+  .font-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0 20px;
+  }
+
+  .font-column {
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+
+  .font-column.compass {
+    background: #F5F0E1;
+    border: 1px solid #ECE5D0;
+  }
+
+  .font-column.html {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-soft);
+  }
+
+  .font-column-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+  }
+
+  .font-item {
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .font-item:last-child { margin-bottom: 0; }
+
+  .font-item strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .font-item span { color: var(--ink-soft); }
+
+  @media (max-width: 720px) {
+    .font-split { grid-template-columns: 1fr; }
+  }
+
+  /* === EXAMPLE CARDS (mini previews of the three card types) === */
+  .ex-card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 16px 0 20px;
+    box-shadow: 0 1px 2px var(--shadow-sm), 0 4px 12px var(--shadow-md);
+  }
+
+  .ex-card .ex-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 24px;
+  }
+
+  .ex-eyebrow-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* Working page example */
+  .ex-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    line-height: 1.15;
+  }
+
+  .ex-meta {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+
+  .ex-divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 16px 0 20px;
+  }
+
+  .ex-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .ex-slot {
+    position: relative;
+  }
+
+  .ex-slot-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .ex-slot-num {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .ex-slot-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.008em;
+  }
+
+  .ex-slot-cues {
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .ex-slot-cues .dot {
+    margin: 0 4px;
+    color: var(--ink-faint);
+    opacity: 0.6;
+  }
+
+  .ex-evidence {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  .ex-evidence .hl {
+    background: linear-gradient(180deg, transparent 8%, var(--highlight) 8%, var(--highlight) 90%, transparent 90%);
+    padding: 0 3px;
+    font-style: italic;
+  }
+
+  .ex-close {
+    border-top: 1px solid var(--rule);
+    padding-top: 18px;
+    margin-top: 4px;
+  }
+
+  .ex-close-note {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--accent-deep);
+    transform: rotate(-1deg);
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .ex-rec {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .ex-rec strong { font-weight: 700; }
+
+  .ex-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    background: var(--accent);
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 159, 217, 0.15);
+  }
+
+  /* Content page example */
+  .ex-content-headline {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.022em;
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+
+  .ex-content-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .ex-content-body em { font-style: italic; }
+
+  .ex-compare {
+    margin: 16px 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .ex-compare-row {
+    margin-bottom: 14px;
+  }
+
+  .ex-compare-row:last-child { margin-bottom: 0; }
+
+  .ex-compare-label {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink-soft);
+    transform: rotate(-1deg);
+    display: inline-block;
+    margin-bottom: 2px;
+  }
+
+  .ex-compare-label .mark {
+    color: var(--ink-muted);
+    margin-left: 2px;
+    font-weight: 700;
+  }
+
+  .ex-compare-label.check .mark { color: var(--accent-deep); }
+
+  .ex-compare-text {
+    font-size: 13.5px;
+    line-height: 1.6;
+    padding-left: 4px;
+  }
+
+  .ex-compare-text.inf {
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  .ex-compare-text.disc { color: var(--ink); }
+
+  .ex-pullquote {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+    margin-top: 18px;
+    letter-spacing: -0.005em;
+  }
+
+  /* Marginalia page example */
+  .ex-marginalia {
+    padding: 32px 36px 36px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ex-marginalia-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .ex-marginalia-prefix {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .ex-marginalia-prompt {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.3;
+    color: var(--ink);
+    transform: rotate(-1deg);
+    max-width: 320px;
+    letter-spacing: 0.005em;
+  }
+
+  .ex-ghost-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--rule);
+    padding: 9px 16px;
+    border-radius: 6px;
+    margin-top: 24px;
+    align-self: flex-start;
+  }
+
+  /* Slot definition callout */
+  .slot-def {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 14px 0 20px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .slot-def strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .slot-def-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* Card type subsection heading */
+  .ex-h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 36px;
+    margin-bottom: 6px;
+    letter-spacing: -0.008em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ex-h3:first-of-type { margin-top: 8px; }
+
+  .ex-h3 .type-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+    background: var(--accent);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* Decision rule callout */
+  .decision-rule {
+    background: #FFF7E1;
+    border-left: 3px solid #FFDD80;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0 24px;
+  }
+
+  .decision-rule-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #714601;
+    margin-bottom: 8px;
+  }
+
+  .decision-rule p {
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 0;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+
+  /* === PRINT === */
+  @media print {
+    body { background: white; padding: 0; }
+    .doc { box-shadow: none; padding: 32px; max-width: 100%; }
+    section { page-break-inside: avoid; }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 720px) {
+    body { padding: 24px 8px 60px; }
+    .doc { padding: 32px 24px; }
+    .doc-title { font-size: 26px; }
+    h2 { font-size: 20px; }
+    .tldr, .donts, .refs, .slot-diagram { padding: 18px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="doc-eyebrow">
+    <span class="doc-eyebrow-dot"></span>
+    <span>AE Upskilling Program · Visual System</span>
+  </div>
+
+  <h1 class="doc-title">Field Notebook — Visual Guidelines</h1>
+  <p class="doc-subtitle">A practical reference for the Enablement Design team.</p>
+  <p class="doc-meta">v1 · Maintained by Pedro</p>
+
+  <!-- =============== TLDR =============== -->
+  <div class="tldr">
+    <div class="tldr-label">In a hurry — the five rules</div>
+    <ol>
+      <li><strong>The Field Notebook is the metaphor.</strong> Every page in every asset is a page in the AE's notebook. Aesthetic stays consistent; what changes is what the AE is doing on the page.</li>
+      <li><strong>Yellow highlight = captured evidence. Only.</strong> Never decoration, never hover, never headlines. If it's not a direct Pro quote tied to a dimension, it doesn't get yellow.</li>
+      <li><strong>Blue = decision.</strong> Used sparingly: eyebrow dot, primary buttons, the "decided" annotations. If everything's blue, nothing is.</li>
+      <li><strong>Three card types: working, content, marginalia.</strong> Default to content. Add slots only when the AE will put a quote in them.</li>
+      <li><strong>Doodles for the notebook; photos when hearing directly from a Pro.</strong> Doodle = memory, photo = encounter.</li>
+    </ol>
+  </div>
+
+  <!-- =============== 01 THE METAPHOR =============== -->
+  <section>
+    <div class="section-num">01</div>
+    <h2>The metaphor</h2>
+    <p>The AE keeps a field notebook. Every Pro they talk to becomes a page. Direct quotes are the only evidence. Five dimensions, five slots per page.</p>
+    <p>This metaphor is load-bearing — it's not decoration. It encodes the program's central rule (<strong>inference is not discovery</strong>) into a visual constraint: if a quote isn't in the notebook in the Pro's own words, the AE hasn't discovered it.</p>
+    <h3>What it refuses to be</h3>
+    <ul>
+      <li>Not a journal (private, emotional, reflective)</li>
+      <li>Not a logbook (mechanical, checkbox-driven)</li>
+      <li>Not a corporate playbook (sales-y, prescriptive)</li>
+      <li>Not a Moleskine — the aesthetic is Thumbtack-modern, not weathered or literary</li>
+    </ul>
+    <p>It's a <em>working tool</em>: clean, light, used.</p>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 02 COLOR =============== -->
+  <section>
+    <div class="section-num">02</div>
+    <h2>Color</h2>
+
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #EAF6FA;"></div>
+        <div class="swatch-name">Blue 100</div>
+        <div class="swatch-hex">#EAF6FA</div>
+        <div class="swatch-use">Page background</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #FFFFFF;"></div>
+        <div class="swatch-name">White</div>
+        <div class="swatch-hex">#FFFFFF</div>
+        <div class="swatch-use">Card surface</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #FFDD80;"></div>
+        <div class="swatch-name">Yellow 300</div>
+        <div class="swatch-hex">#FFDD80</div>
+        <div class="swatch-use">Evidence highlight</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #009FD9;"></div>
+        <div class="swatch-name">Blue</div>
+        <div class="swatch-hex">#009FD9</div>
+        <div class="swatch-use">Decision / primary</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #2F3033;"></div>
+        <div class="swatch-name">Ink</div>
+        <div class="swatch-hex">#2F3033</div>
+        <div class="swatch-use">Primary text</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-chip" style="background: #6B7280;"></div>
+        <div class="swatch-name">Ink Muted</div>
+        <div class="swatch-hex">#6B7280</div>
+        <div class="swatch-use">Secondary text</div>
+      </div>
+    </div>
+
+    <h3>Rules</h3>
+    <ul>
+      <li><strong>Yellow only on captured quotes.</strong> Never on headlines, hover states, or illustrative text. This is the program's most important visual contract.</li>
+      <li><strong>Blue marks decisions and primary actions.</strong> Eyebrow dots, the "Ready to recommend" button, the decisive ✓ on a clean dimension. Tentative thinking stays in soft ink.</li>
+      <li><strong>Never use blue and yellow on the same element.</strong> They mean two different things — designating vs. capturing.</li>
+      <li><strong>For broader needs, use Thumbtack's extended palette.</strong> Stay within the brand's 100-300 ranges for backgrounds, 400-500 for accents.</li>
+    </ul>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 03 TYPOGRAPHY =============== -->
+  <section>
+    <div class="section-num">03</div>
+    <h2>Typography</h2>
+    <p>Three fonts, three roles. Don't mix them.</p>
+
+    <div class="type-sample">
+      <div class="type-sample-label">Inter — the system voice</div>
+      <div class="type-inter-display">Maria Santos</div>
+      <div class="type-inter-body">House cleaner · Phoenix, AZ. Used for headlines, body, UI labels, buttons, metadata — everything that isn't a personal handwritten note.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample-label">Caveat — the AE's hand</div>
+      <div class="type-caveat">5/5 filled. Ready.</div>
+      <p style="margin-top: 8px; font-size: 13px; color: var(--ink-soft);">Used <strong>sparingly</strong> — sketch captions, key personal annotations, decisive marks. Maximum 2–3 instances per page. If you're using Caveat for headers or labels, stop.</p>
+    </div>
+
+    <h3>Type scale</h3>
+    <ul>
+      <li><strong>Display / Pro name</strong> — Inter 700, 32–40px, tight letter-spacing</li>
+      <li><strong>Dimension names, slot headers</strong> — Inter 600, 18–22px</li>
+      <li><strong>Body, evidence quotes</strong> — Inter 400, 15–17px</li>
+      <li><strong>Cues, metadata, eyebrows</strong> — Inter 500–600, 11–13px (uppercase + tracked for eyebrows)</li>
+      <li><strong>Caveat annotations</strong> — 16–22px, slight rotation (±1–2°)</li>
+    </ul>
+
+    <h3>Annotation hierarchy</h3>
+    <p>Two annotation styles, two cognitive modes:</p>
+    <ul>
+      <li><strong>Caveat handwriting</strong> — for moments of personal AE voice. The sketch caption, the closing "Ready" note, decisive gut calls.</li>
+      <li><strong>Inter italic with a blue arrow</strong> (<code>→</code>) — for analytical annotations. "→ awareness, not capacity", "→ Plus package math".</li>
+    </ul>
+    <p>Caveat = the AE <em>feels</em> something. Inter italic = the AE <em>figures something out</em>.</p>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 04 THE THREE CARD TYPES =============== -->
+  <section>
+    <div class="section-num">04</div>
+    <h2>The three card types</h2>
+    <p>Every card in the program is one of three types. The notebook world stays constant; what changes is what the AE is doing on the page.</p>
+
+    <div class="decision-rule">
+      <div class="decision-rule-label">The decision rule</div>
+      <p>Default to a content page. Add slots only when you can name the quote the AE is about to put in them.</p>
+    </div>
+
+    <!-- ============== TYPE 01: WORKING PAGE ============== -->
+    <h3 class="ex-h3"><span class="type-tag">Type 01</span> Working page</h3>
+    <p>The five-slot mechanic is present. Evidence gets captured. Yellow highlighter appears. Used for cold opens that lead into discovery, practice activities, completed Pro pages, the Discovery Audit, the 30-Day Assessment.</p>
+
+    <div class="slot-def">
+      <span class="slot-def-label">What's a slot?</span>
+      A <strong>slot</strong> is one of the five evidence-capture areas on a working page. Each slot holds one dimension — its number, its name, listening cues, and the Pro's direct quote when captured. Five slots, one per dimension, same shape every time. The slot mechanic enforces the program's central rule: a dimension is only answered when the Pro <em>said</em> it.
+    </div>
+
+    <!-- Working Page Example -->
+    <div class="ex-card">
+      <div class="ex-eyebrow">
+        <span class="ex-eyebrow-dot"></span>
+        <span>Asset 6 · The Full Picture</span>
+      </div>
+
+      <h4 class="ex-name">Maria Santos</h4>
+      <p class="ex-meta">House cleaner · Phoenix, AZ · Call · Day 12</p>
+
+      <hr class="ex-divider"/>
+
+      <div class="ex-slots">
+        <div class="ex-slot">
+          <div class="ex-slot-header">
+            <span class="ex-slot-num">01</span>
+            <span class="ex-slot-name">Current Business State</span>
+          </div>
+          <p class="ex-slot-cues">Lead volume<span class="dot">·</span>Revenue<span class="dot">·</span>Seasonal<span class="dot">·</span>Mix</p>
+          <p class="ex-evidence"><span class="hl">"Right now I'm doing about 4 to 5 cleans a week. Used to be 7 or 8 last year."</span></p>
+        </div>
+
+        <div class="ex-slot">
+          <div class="ex-slot-header">
+            <span class="ex-slot-num">02</span>
+            <span class="ex-slot-name">Growth Blocker</span>
+          </div>
+          <p class="ex-slot-cues">Too few<span class="dot">·</span>Wrong type<span class="dot">·</span>Competition<span class="dot">·</span>Capacity</p>
+          <p class="ex-evidence"><span class="hl">"The Airbnb work really slowed down after summer."</span></p>
+        </div>
+
+        <div class="ex-slot">
+          <div class="ex-slot-header">
+            <span class="ex-slot-num">03</span>
+            <span class="ex-slot-name">Definition of Success</span>
+          </div>
+          <p class="ex-slot-cues">More jobs<span class="dot">·</span>Revenue target<span class="dot">·</span>Leads / week</p>
+          <p class="ex-evidence"><span class="hl">"I'd like to get back to 7 or 8 cleans a week."</span></p>
+        </div>
+
+        <div class="ex-slot">
+          <div class="ex-slot-header">
+            <span class="ex-slot-num">04</span>
+            <span class="ex-slot-name">Lead Gen History &amp; Investment</span>
+          </div>
+          <p class="ex-slot-cues">Platforms<span class="dot">·</span>Spend<span class="dot">·</span>What worked</p>
+          <p class="ex-evidence"><span class="hl">"I tried Yelp ads last year, spent maybe $300 over two months."</span></p>
+        </div>
+
+        <div class="ex-slot">
+          <div class="ex-slot-header">
+            <span class="ex-slot-num">05</span>
+            <span class="ex-slot-name">Decision Maker</span>
+          </div>
+          <p class="ex-slot-cues">On the call<span class="dot">·</span>Spouse / partner<span class="dot">·</span>Co-owner</p>
+          <p class="ex-evidence"><span class="hl">"It's just me. I run everything myself."</span></p>
+        </div>
+      </div>
+
+      <div class="ex-close">
+        <span class="ex-close-note">5/5 filled. Ready.</span>
+        <p class="ex-rec">Recommendation: <strong>Plus package.</strong></p>
+        <button class="ex-btn">Ready to recommend →</button>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-muted); margin-top: -8px;">Key rules:</p>
+    <ul>
+      <li>Five slots, always in the same order. Dimension language stays exact.</li>
+      <li>Yellow only on captured quotes. The slot is empty until a direct Pro quote fills it.</li>
+      <li>The "Ready to recommend" button activates only when all five slots are filled — never before.</li>
+      <li>Annotations sit alongside slots (analytical in Inter italic, personal in Caveat).</li>
+    </ul>
+
+    <!-- ============== TYPE 02: CONTENT PAGE ============== -->
+    <h3 class="ex-h3"><span class="type-tag">Type 02</span> Content page</h3>
+    <p>When the AE is reading or thinking, not capturing. No slots. No yellow. No Ready-to-recommend button. Used for concept explanations, framework intros, transitions, lesson pages.</p>
+
+    <!-- Content Page Example -->
+    <div class="ex-card">
+      <div class="ex-eyebrow">
+        <span class="ex-eyebrow-dot"></span>
+        <span>Asset 2 · Reading the Pro · Lesson 2.3</span>
+      </div>
+
+      <h4 class="ex-content-headline">Inference is not discovery.</h4>
+
+      <p class="ex-content-body">There's always a temptation to fill in the blanks. The Pro hints at something, you've heard this kind of story before, you complete the sentence in your head — and then in your notes.</p>
+      <p class="ex-content-body">A dimension is only answered when the Pro <em>said</em> the answer. If you can't point to a specific quote, you haven't discovered it — you've assumed it.</p>
+
+      <div class="ex-compare">
+        <div class="ex-compare-row">
+          <div class="ex-compare-label">inference <span class="mark">×</span></div>
+          <p class="ex-compare-text inf">She probably can't afford much more.</p>
+        </div>
+        <div class="ex-compare-row">
+          <div class="ex-compare-label check">discovery <span class="mark">✓</span></div>
+          <p class="ex-compare-text disc">"I spent $300 over two months and I don't have it in the budget to keep doing that."</p>
+        </div>
+      </div>
+
+      <blockquote class="ex-pullquote">If you can't quote it,<br/>you didn't discover it.</blockquote>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-muted); margin-top: -8px;">Key rules:</p>
+    <ul>
+      <li>No slots. No yellow highlighter, even on illustrative quotes — quotation marks do the work.</li>
+      <li>Body text is Inter, not Caveat. Content pages read in the system voice.</li>
+      <li>Caveat is reserved for the inline labels of the comparison ("inference ×", "discovery ✓") — the AE's marks of judgment.</li>
+      <li>One memorable closing line in Inter weight 500 with a blue accent rule — for the takeaway the AE carries forward.</li>
+    </ul>
+
+    <!-- ============== TYPE 03: MARGINALIA PAGE ============== -->
+    <h3 class="ex-h3"><span class="type-tag">Type 03</span> Marginalia page</h3>
+    <p>Pauses, reflection prompts, transitions. Mostly empty paper, one handwritten Caveat note, a quiet ghost button. The shortness <em>is</em> the design. Use sparingly — one or two per asset, max.</p>
+
+    <!-- Marginalia Page Example -->
+    <div class="ex-card ex-marginalia">
+      <div class="ex-eyebrow">
+        <span class="ex-eyebrow-dot"></span>
+        <span>Asset 2 · Pause</span>
+      </div>
+
+      <div class="ex-marginalia-body">
+        <p class="ex-marginalia-prefix">Before you meet the next Pro —</p>
+        <p class="ex-marginalia-prompt">
+          what's one thing you<br/>
+          already know how to<br/>
+          listen for, that you<br/>
+          didn't before?
+        </p>
+      </div>
+
+      <button class="ex-ghost-btn">Continue</button>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-muted); margin-top: -8px;">Key rules:</p>
+    <ul>
+      <li>The prompt is Caveat — the AE's internal voice, not the notebook's editorial voice.</li>
+      <li>One Inter prefix line ("Before you meet the next Pro —") frames the prompt; everything else is whitespace.</li>
+      <li>Ghost button, not primary blue. Pauses shouldn't have momentum.</li>
+      <li>No headline, no body copy, no second handwritten line. If you're adding more, it has stopped being marginalia.</li>
+    </ul>
+
+  </section>
+
+  <hr/>
+
+  <!-- =============== 05 THE FIVE-SLOT MECHANIC =============== -->
+  <section>
+    <div class="section-num">05</div>
+    <h2>The five-slot mechanic</h2>
+    <p>Every working page uses the same slot anatomy. Same shape, same proportions, same type treatment. <strong>The reuse is the design.</strong></p>
+
+    <div class="slot-diagram">
+      <div class="slot-diagram-header">
+        <span class="slot-diagram-num">01</span>
+        <span class="slot-diagram-name">Current Business State</span>
+      </div>
+      <div class="slot-diagram-cues">Lead volume · Revenue · Seasonal patterns · Current mix</div>
+      <div class="slot-diagram-evidence">
+        <span class="hl">"Right now I'm doing about 4 to 5 cleans a week..."</span>
+      </div>
+      <div class="slot-callout">↑ this is what a filled slot looks like</div>
+    </div>
+
+    <h3>The four contracts</h3>
+    <ul>
+      <li><strong>The exit condition is visual.</strong> The "Ready to recommend →" button activates only when all five slots are filled. Until then, it's dimmed.</li>
+      <li><strong>Quotes only.</strong> Slot accepts a direct Pro quote with quotation marks. Paraphrases don't qualify. Inferences don't qualify.</li>
+      <li><strong>Yellow on capture.</strong> The moment a slot is filled with a quote, the yellow highlighter appears. No other element on the page gets yellow.</li>
+      <li><strong>Three slot states:</strong> empty (dashed border, "no quote yet"), partial (introduced in Asset 9 — solid blue border, weak signal noted), filled (yellow highlighter on quote).</li>
+    </ul>
+
+    <h3>The five dimensions</h3>
+    <ul>
+      <li><strong>01 Current Business State</strong> — how the Pro's business is performing right now</li>
+      <li><strong>02 Growth Blocker</strong> — what's preventing growth</li>
+      <li><strong>03 Definition of Success</strong> — what the Pro is trying to achieve</li>
+      <li><strong>04 Lead Gen History &amp; Investment</strong> — what they've tried, what worked</li>
+      <li><strong>05 Decision Maker</strong> — who else is involved in the buying decision</li>
+    </ul>
+    <p>Dimension language stays exact across all assets. Do not paraphrase the names.</p>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 06 THE PROS =============== -->
+  <section>
+    <div class="section-num">06</div>
+    <h2>The Pros</h2>
+    <p>Five Pros carry through Assets 2–7. Each has a locked persona, package, and objection type. The structural attributes don't change between courses; the depth of detail grows.</p>
+
+    <h3>Doodle vs photo</h3>
+    <ul>
+      <li><strong>Doodles</strong> when the AE is <em>referencing the notebook</em> — completed pages, recap moments, persona reminders, cross-course callbacks. The AE's hand on the page.</li>
+      <li><strong>Photos</strong> when the learner is <em>hearing directly</em> — voice memos, quotes, video clips. The Pro on screen, not in memory.</li>
+    </ul>
+    <p>When both appear on the same page (voice memo card up top, notebook page below), that side-by-side <em>encounter / memory</em> pairing is one of the program's strongest visual moves.</p>
+
+    <h3>The five Pros at a glance</h3>
+    <ul>
+      <li><strong>Maria Santos</strong> — House cleaner · Phoenix · Plus · <em>clean close</em> — main visual signal: medium wavy hair + spray bottle</li>
+      <li><strong>Derek Washington</strong> — Landscaper · Atlanta · Premium · <em>price sensitive</em> — beard + potted plant</li>
+      <li><strong>Rosa Kim</strong> — Painter · Chicago · Plus · <em>trust / past experience</em> — hair in a bun + paint brushes</li>
+      <li><strong>Marcus Bell</strong> — HVAC Technician · Dallas · Premium · <em>decision authority</em> — mustache + HVAC gauge</li>
+      <li><strong>Jen Torres</strong> — General Contractor · Denver · Premium · <em>timing + readiness</em> — hard hat + rolled blueprint</li>
+    </ul>
+
+    <h3>Doodle handling rules</h3>
+    <ul>
+      <li>All SVGs use <code>currentColor</code> — recolor via CSS color on the parent</li>
+      <li>Do not put doodles in circular masks or treat as avatars. They live on a page, not in a corner pill.</li>
+      <li>Do not animate doodles. If a Pro needs to move or speak, switch to the photo.</li>
+      <li>For polished versions (slides, facilitator guides), edit the SVG in Illustrator and add up to one Thumbtack-blue accent. No more than one.</li>
+    </ul>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 07 WHAT THIS ISN'T =============== -->
+  <section>
+    <div class="section-num">07</div>
+    <h2>What this isn't — common failure modes</h2>
+
+    <div class="donts">
+      <ul>
+        <li><strong>Don't add icons to dimension names.</strong> No little house icon next to "Current Business State." The dimensions are language, not symbols.</li>
+        <li><strong>Don't introduce a Pro with a profile card.</strong> Voice memo or direct quote always comes first. Name, trade, and location come after.</li>
+        <li><strong>Don't use Caveat for headers.</strong> It's the AE's handwriting — annotation only.</li>
+        <li><strong>Don't redesign the slot layout per asset.</strong> Extend the system, don't reinvent it.</li>
+        <li><strong>Don't reintroduce skeuomorphism.</strong> No cream paper textures, no ruled-line backgrounds, no coffee rings, no dog-ears. The brand is modern; the notebook is a metaphor, not a recreation.</li>
+        <li><strong>Don't put yellow on illustrative quotes.</strong> Even on a content page showing "here's what discovery looks like," the example quote stays in plain ink. Yellow is reserved for captured evidence on working pages.</li>
+        <li><strong>Don't add motivational copy or corporate L&amp;D furniture.</strong> No "did you know," no "pro tip," no celebratory animations. Nothing in the notebook that wouldn't belong in a working AE's actual notes.</li>
+        <li><strong>Don't fill the page.</strong> Whitespace is paper. Generous margins are not wasted — they're where annotation happens.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 08 AUTHORING IN COMPASS =============== -->
+  <section>
+    <div class="section-num">08</div>
+    <h2>Authoring in Compass</h2>
+    <p>The Field Notebook is a visual system, not a directive to build every card in custom HTML. Compass native cards should be your default. Custom HTML embeds are reserved for the moments that earn them — specifically, where the slot mechanic, the yellow capture rule, or persistent state can't be approximated natively.</p>
+
+    <div class="decision-rule">
+      <div class="decision-rule-label">The build rule</div>
+      <p>Native Compass first. Custom HTML when the slot mechanic earns it.</p>
+    </div>
+
+    <!-- ============== CARD TYPE TO BUILD APPROACH MAPPING ============== -->
+    <h3>Card type → build approach</h3>
+
+    <div class="build-decisions">
+      <div class="build-decision">
+        <div class="build-decision-header">
+          <span class="type-tag">Type 01 — Working page</span>
+          <span class="build-badge custom">Custom HTML</span>
+        </div>
+        <p>The slot mechanic, yellow evidence capture, and persistent state across the activity require custom HTML embeds. This is where HTML earns its place in the program.</p>
+        <p class="build-detail"><strong>Use for:</strong> cold opens (Asset 2), evidence capture activities, completed Pro pages (Assets 6, 11), Discovery Audit (Asset 10), 30-Day Assessment (Asset 12).</p>
+      </div>
+
+      <div class="build-decision">
+        <div class="build-decision-header">
+          <span class="type-tag">Type 02 — Content page</span>
+          <span class="build-badge native">Native Compass</span>
+        </div>
+        <p>Standard lesson content — concepts, framework intros, transitions. Compass handles text hierarchy, embedded media, and image-with-text layouts natively. Don't recreate these in HTML "for consistency."</p>
+        <p class="build-detail"><strong>Use:</strong> Text, Text + image. Title page sparingly (2 per asset max — for opening and close only).</p>
+      </div>
+
+      <div class="build-decision">
+        <div class="build-decision-header">
+          <span class="type-tag">Type 03 — Marginalia page</span>
+          <span class="build-badge native">Native Compass</span>
+        </div>
+        <p>Compass already has this built in. The Reflection card IS the marginalia page. Use what's there.</p>
+        <p class="build-detail"><strong>Use:</strong> Reflection card.</p>
+      </div>
+    </div>
+
+    <!-- ============== BUILD BUDGET ============== -->
+    <h3>Build budget</h3>
+    <p>For a typical asset (~15–25 cards), expect roughly <strong>75–80% native Compass</strong> and <strong>20–25% custom HTML</strong>. The HTML cards are the pedagogical anchors. Everything else is native.</p>
+    <p>For Asset 2 specifically, that's about 3–5 custom HTML embeds out of ~20 cards — the cold open, the evidence capture practice, the introduction of the dashboard, the close. Everything in between is text, reflection, or knowledge check in native Compass.</p>
+    <p>If you find yourself building more than ~25% custom, pause and re-run the test below on each HTML embed. The system is designed to coexist with native Compass — not to replace it.</p>
+
+    <!-- ============== HTML CRITERIA ============== -->
+    <h3>When custom HTML earns its place</h3>
+    <p>Before building custom, run the three-question test.</p>
+
+    <div class="criteria">
+      <div class="criteria-label">The HTML test</div>
+      <p class="criteria-intro">Custom HTML earns its place only when <strong>all three</strong> are true:</p>
+      <ol class="criteria-list">
+        <li>The interaction can't be approximated in a native Compass card.</li>
+        <li>The interaction is pedagogically central — it IS the lesson, not decoration around it.</li>
+        <li>The interaction involves the five-slot mechanic, yellow evidence capture, or persistent state across the activity.</li>
+      </ol>
+      <p class="criteria-footer">If only one or two are true, build native. The system is designed to coexist — visual coherence doesn't require visual sameness.</p>
+    </div>
+
+    <!-- ============== FONT REALITY ============== -->
+    <h3>The font reality</h3>
+    <p>Compass supports only the Rise font family. HTML embeds can use any web-safe or Google font. This creates a small but important split between the two environments:</p>
+
+    <div class="font-split">
+      <div class="font-column compass">
+        <div class="font-column-header">In Native Compass</div>
+        <div class="font-item">
+          <strong>Rise</strong>
+          <span>The single voice. Used for everything — headlines, body, labels, reflection prompts, knowledge checks.</span>
+        </div>
+      </div>
+      <div class="font-column html">
+        <div class="font-column-header">In HTML Embeds</div>
+        <div class="font-item">
+          <strong>Inter</strong>
+          <span>The system voice. Stands in for Rise — close enough that the mismatch reads as minor.</span>
+        </div>
+        <div class="font-item">
+          <strong>Caveat</strong>
+          <span>The AE's hand. Annotations, sketch captions, decisive marks. Used sparingly.</span>
+        </div>
+      </div>
+    </div>
+
+    <p><strong>What this means in practice:</strong> Caveat handwriting only exists in HTML embeds. On native Compass cards, the single voice is Rise. This is intentional, not a limitation to work around — the AE annotates when they're capturing evidence (working pages, custom HTML), not when they're reading (content cards) or pausing (reflection cards). The handwriting and the slot mechanic travel together.</p>
+
+    <!-- ============== PITFALLS ============== -->
+    <h3>Pitfalls to avoid</h3>
+    <div class="donts">
+      <ul>
+        <li><strong>Don't overuse Title pages.</strong> Compass Title pages carry visual weight — they signal "new asset" or "major section break." Budget 2 per asset (open and close). Using one for every lesson dilutes them and front-loads the visual hierarchy.</li>
+        <li><strong>Don't recreate native cards in HTML "for consistency."</strong> The visual system makes Compass and HTML cards coexist — they don't need to look identical, just coherent. A reflection card and a custom HTML marginalia page both serve the same pedagogical role; build the native one.</li>
+        <li><strong>Don't introduce Caveat into native Compass cards.</strong> No image workarounds, no SVG inserts of handwriting, no Rise-italic substitutes pretending to be handwritten. Caveat's absence on non-working cards is by design.</li>
+        <li><strong>Don't put the slot mechanic in a non-working context.</strong> Slots exist for evidence capture. Don't show them on a content card just because the visual is recognizable — that would teach the AE that slots are decoration, not action.</li>
+        <li><strong>Don't build custom HTML for a moment that fails the three-question test.</strong> If you can build it in native Compass, build it in native Compass. Custom HTML is more work, less accessible, harder to update, and harder for analytics to track.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- =============== 09 REFERENCES =============== -->
+  <section>
+    <div class="section-num">09</div>
+    <h2>References</h2>
+    <p>Examples and templates live in their own files. Open them alongside this document.</p>
+
+    <div class="refs">
+      <ul>
+        <li><a href="maria-thumbtack-aligned.html">maria-thumbtack-aligned.html</a> — Canonical working page (Asset 6, Maria fully filled in)</li>
+        <li><a href="card-type-reference.html">card-type-reference.html</a> — Content page and marginalia page examples</li>
+        <li><a href="maria-cold-open.html">maria-cold-open.html</a> — Working interactive prototype of the Asset 2 cold open</li>
+        <li><a href="doodle-gallery.html">doodle-gallery.html</a> — All five Pro doodles with download links and recolor notes</li>
+      </ul>
+    </div>
+
+    <h3>When the system needs to change</h3>
+    <p>The contracts are locked. The aesthetic is locked. New patterns get added — not changed — when a course genuinely needs something the existing system doesn't cover. If you find yourself wanting to introduce a new color, font, annotation style, or slot variation, write up the pedagogical reason first and bring it to Pedro before building. Most "new" needs turn out to be existing patterns used in a new context.</p>
+  </section>
+
+</div>
+
+</body>
+</html>
