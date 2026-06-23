@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Asset 2 · Maria's Notebook</title>
+<title>Asset 2 · Maria — Reading the Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -101,8 +101,8 @@
     overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    min-height: 600px;
-    max-height: 720px;
+    height: min(720px, calc(100vh - 100px));
+    min-height: 500px;
   }
 
   /* === Panels === */
@@ -345,6 +345,35 @@
     margin-left: 1px;
   }
 
+  /* Erase button on filled slot */
+  .slot-erase {
+    display: none;
+    margin-top: 10px;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: color 0.15s ease;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--ink-faint);
+    text-decoration-thickness: 1px;
+  }
+
+  .slot-erase:hover {
+    color: var(--warn);
+    text-decoration-color: var(--warn);
+  }
+
+  .slot.filled .slot-erase {
+    display: inline-block;
+  }
+
   /* === Exit condition === */
   .exit-area {
     padding: 16px 28px 24px;
@@ -543,6 +572,34 @@
     border-bottom: 5px solid var(--ink);
   }
 
+  /* === Highlighter cursor === */
+  .highlighter-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 90px;
+    height: 90px;
+    pointer-events: none;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.08s ease;
+    filter: drop-shadow(0 3px 6px rgba(0, 31, 51, 0.2));
+    will-change: transform;
+  }
+
+  .highlighter-cursor.show { opacity: 1; }
+
+  .highlighter-cursor svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Hide on touch devices — finger obscures it anyway */
+  @media (hover: none) and (pointer: coarse) {
+    .highlighter-cursor { display: none; }
+  }
+
   /* === Mobile === */
   @media (max-width: 900px) {
     body { padding: 16px 12px 32px; }
@@ -578,7 +635,7 @@
   <div class="page-header-left">
     <div class="eyebrow">
       <span class="eyebrow-dot"></span>
-      Working page 1 of 5
+      Pro 1 of 5
     </div>
     <div class="pro-id">
       <strong>Maria Santos</strong> &nbsp;·&nbsp; House cleaner &nbsp;·&nbsp; Phoenix, AZ
@@ -665,6 +722,27 @@
 <!-- SELECTION HINT -->
 <div class="selection-hint" id="selection-hint">Click a slot to capture this quote</div>
 
+<!-- HIGHLIGHTER CURSOR -->
+<div id="highlighter-cursor" class="highlighter-cursor" aria-hidden="true">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
+       fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round"
+       color="#2F3033">
+    <g transform="rotate(-30, 100, 100)">
+      <polygon points="16 108, 30 92, 42 92, 42 108" fill="#FFDD80" stroke="currentColor"/>
+      <polygon points="42 92, 58 80, 58 120, 42 108" fill="#FFFFFF" stroke="currentColor"/>
+      <rect x="58" y="80" width="102" height="40" rx="3" fill="#FFDD80" stroke="currentColor"/>
+      <g>
+        <rect x="92" y="80" width="26" height="40" fill="#FFFFFF" stroke="currentColor"/>
+        <line x1="98" y1="100" x2="112" y2="100" stroke="currentColor"/>
+      </g>
+      <rect x="160" y="84" width="20" height="32" rx="2" fill="currentColor" stroke="currentColor"/>
+      <line x1="164" y1="84" x2="164" y2="116" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>
+      <line x1="62" y1="84" x2="156" y2="84" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+    </g>
+  </svg>
+</div>
+
 <script>
   /* ───────────────────────────────────────
    * Placeholder transcript — to be replaced
@@ -732,7 +810,17 @@
             ? `<span class="captured-quote">${escapeHtml(slot.captured)}</span>`
             : `<span class="empty-state">No quote yet</span>`}
         </div>
+        <button class="slot-erase" data-erase-id="${slot.id}" aria-label="Clear this quote">Clear and re-capture</button>
       `;
+      // Prevent click on erase button from also triggering the slot click (which would re-capture)
+      const eraseBtn = div.querySelector('.slot-erase');
+      if (eraseBtn) {
+        eraseBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+        eraseBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          handleErase(slot.id);
+        });
+      }
       div.addEventListener('mousedown', (e) => {
         // Prevent the browser from clearing the text selection when slot is clicked
         if (storedSelection) e.preventDefault();
@@ -822,20 +910,23 @@
     slot.captured = storedSelection.text;
 
     // Wrap the selected range in a captured span (persistent yellow highlight in transcript)
+    let capturedSpan;
     try {
       const range = storedSelection.range;
-      const span = document.createElement('span');
-      span.className = 'captured';
-      range.surroundContents(span);
+      capturedSpan = document.createElement('span');
+      capturedSpan.className = 'captured';
+      range.surroundContents(capturedSpan);
     } catch (e) {
       // Range may cross element boundaries — fallback: extract + re-insert wrapped
       const range = storedSelection.range;
       const contents = range.extractContents();
-      const span = document.createElement('span');
-      span.className = 'captured';
-      span.appendChild(contents);
-      range.insertNode(span);
+      capturedSpan = document.createElement('span');
+      capturedSpan.className = 'captured';
+      capturedSpan.appendChild(contents);
+      range.insertNode(capturedSpan);
     }
+    // Store reference so erase can unwrap this specific span later
+    slot.span = capturedSpan;
 
     // Clear selection and stored state
     window.getSelection().removeAllRanges();
@@ -849,6 +940,38 @@
     if (scaffoldStep === 3 && slotId === 1) {
       showScaffoldStep(4);
     }
+  }
+
+  /* ───────────────────────────────────────
+   * Erase a captured quote
+   *
+   * Unwraps the yellow-highlighted span from the transcript, clears the slot,
+   * and re-renders. The transcript text is restored to its un-highlighted state
+   * so the AE can re-select it (or a different quote) and re-capture.
+   * ─────────────────────────────────────── */
+  function handleErase(slotId) {
+    const slot = slots.find(s => s.id === slotId);
+    if (!slot.captured || !slot.span) return;
+
+    const span = slot.span;
+    const parent = span.parentNode;
+    if (parent) {
+      // Move all children of the span out, then remove the span
+      while (span.firstChild) {
+        parent.insertBefore(span.firstChild, span);
+      }
+      parent.removeChild(span);
+      parent.normalize(); // Merge adjacent text nodes back together
+    }
+
+    // Hide any open exit feedback — the picture is no longer "complete"
+    const feedback = document.getElementById('exit-feedback');
+    feedback.classList.remove('show', 'success', 'warn');
+    document.getElementById('exit-btn').disabled = false;
+
+    slot.captured = null;
+    slot.span = null;
+    renderSlots();
   }
 
   /* ───────────────────────────────────────
@@ -891,7 +1014,7 @@
     {
       label: 'Step 1 of 4',
       title: "Let's do the first one together.",
-      body: "Maria's notebook has five slots. Each slot takes a <strong>direct quote</strong> from what Maria said — not your paraphrase, not your interpretation. The exact words she used.",
+      body: "You'll capture five things Maria said — one for each of the five dimensions. Each one needs a <strong>direct quote</strong>. Use her exact words. Not your paraphrase, not your interpretation.",
       btnText: 'Got it'
     },
     {
@@ -948,6 +1071,52 @@
   renderTranscript();
   renderSlots();
   showScaffoldStep(1);
+
+  /* ───────────────────────────────────────
+   * Highlighter cursor (mouse only)
+   *
+   * Tip lands at SVG (31, 149) after the -30° rotation.
+   * Sized at 90px → tip in pixels is at (13.95, 67.05).
+   * Position the element so the tip sits 6px above the cursor:
+   * the cursor stays at the text being selected, the tip is
+   * just above the text line, and the body extends up-and-right
+   * (natural right-handed grip). Body stays off the selection.
+   * ─────────────────────────────────────── */
+  const highlighter = document.getElementById('highlighter-cursor');
+  const TIP_PX_X = 13.95;
+  const TIP_PX_Y = 67.05;
+  const TIP_LIFT = 6;
+  let isDownInTranscript = false;
+  let isHighlighterVisible = false;
+
+  function positionHighlighter(e) {
+    const x = e.clientX - TIP_PX_X;
+    const y = e.clientY - TIP_PX_Y - TIP_LIFT;
+    highlighter.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  transcriptBodyEl.addEventListener('mousedown', () => {
+    isDownInTranscript = true;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDownInTranscript) return;
+    positionHighlighter(e);
+    if (!isHighlighterVisible) {
+      highlighter.classList.add('show');
+      isHighlighterVisible = true;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDownInTranscript) {
+      isDownInTranscript = false;
+      if (isHighlighterVisible) {
+        highlighter.classList.remove('show');
+        isHighlighterVisible = false;
+      }
+    }
+  });
 </script>
 
 </body>
