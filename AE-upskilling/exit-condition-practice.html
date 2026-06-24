@@ -412,6 +412,139 @@
     line-height: 1.55;
   }
 
+  /* Per-scenario results (retry screen) */
+  .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 440px;
+    margin: 16px auto 24px;
+  }
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: var(--rule-soft);
+    text-align: left;
+  }
+
+  .result-row.correct {
+    background: var(--highlight-bg);
+  }
+
+  .result-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--ink-faint);
+  }
+
+  .result-row.correct .result-dot {
+    background: var(--highlight);
+  }
+
+  .result-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    min-width: 74px;
+  }
+
+  .result-status {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    flex: 1;
+  }
+
+  .result-row.correct .result-status {
+    color: var(--highlight-ink);
+    font-weight: 600;
+  }
+
+  /* === MODAL === */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 25, 45, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .modal-card {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 36px 36px 32px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 31, 51, 0.2);
+    text-align: center;
+  }
+
+  .modal-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .modal-body {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  .modal-btn {
+    padding: 14px 32px;
+    border-radius: 8px;
+    background: var(--ink);
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s ease;
+  }
+
+  .modal-btn:hover {
+    background: #1a1b1d;
+  }
+
+  /* === COMPLETION ICON === */
+  .completion-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 14px;
+    color: var(--ink);
+    display: block;
+  }
+
+  .completion-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
   /* === RESPONSIVE === */
   @media (max-width: 600px) {
     body { padding: 20px 12px 40px; }
@@ -422,13 +555,15 @@
 </head>
 <body>
 
-<div class="container">
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <h1 class="modal-title">Reading the Pro</h1>
+    <p class="modal-body">Three calls, three different patterns. For each one: read the discovery, decide if the AE is ready to recommend a package, and identify any dimensions still missing. All three need to be captured correctly to complete the practice.</p>
+    <button class="modal-btn" id="modalBeginBtn">Begin</button>
+  </div>
+</div>
 
-  <header class="activity-header">
-    <div class="eyebrow">Practice Activity · Card 6</div>
-    <h1 class="activity-title">Reading the Pro</h1>
-    <p class="instructions">Three calls, three different patterns. For each one: read the discovery, decide if the AE is ready to recommend a package, and identify any dimensions still missing.</p>
-  </header>
+<div class="container">
 
   <div class="progress">
     <div class="progress-dots">
@@ -586,6 +721,7 @@
   // ============================================================
 
   let currentIndex = 0;
+  let results = [];
 
   function firstName(scenario) {
     return scenario.pro.name.split(' ')[0];
@@ -680,12 +816,15 @@
 
         if (scenario.truth === 'ready') {
           // Ready scenario: Yes correct, No incorrect — no checkbox step needed
-          const fb = choice === 'yes' ? scenario.feedback.yesCorrect : scenario.feedback.noIncorrect;
+          const isCorrect = choice === 'yes';
+          results[currentIndex] = { scenarioId: scenario.id, correct: isCorrect };
+          const fb = isCorrect ? scenario.feedback.yesCorrect : scenario.feedback.noIncorrect;
           showFeedback(fb);
           nextSection.classList.add('show');
         } else {
           // Not-ready scenario
           if (choice === 'yes') {
+            results[currentIndex] = { scenarioId: scenario.id, correct: false };
             showFeedback(scenario.feedback.yesIncorrect);
             nextSection.classList.add('show');
           } else {
@@ -730,8 +869,11 @@
     const missed = truth.filter(d => !selected.includes(d));
     const wrong = selected.filter(d => !truth.includes(d));
 
+    const isPerfect = caught.length === truth.length && wrong.length === 0;
+    results[currentIndex] = { scenarioId: scenario.id, correct: isPerfect };
+
     let fb;
-    if (caught.length === truth.length && wrong.length === 0) {
+    if (isPerfect) {
       fb = scenario.feedback.noPerfect;
     } else if (caught.length > 0) {
       fb = renderPartial(scenario.feedback.noPartial, caught, missed, wrong);
@@ -784,20 +926,43 @@
   }
 
   function showCompletion() {
+    const allCorrect = results.length === scenarios.length && results.every(r => r && r.correct);
+
     document.querySelectorAll('.progress-dot').forEach(d => {
       d.classList.remove('active');
       d.classList.add('done');
     });
     document.getElementById('progressLabel').textContent = 'Complete';
 
+    if (allCorrect) {
+      showSuccessScreen();
+    } else {
+      showRetryScreen();
+    }
+  }
+
+  function showSuccessScreen() {
     document.getElementById('scenarioContainer').innerHTML = `
       <div class="card complete-card">
+        <div class="completion-icon">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
+               fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 100 50 A 50 50 0 1 1 65 65"/>
+            <polyline points="58 58, 65 65, 73 60"/>
+            <circle cx="150" cy="100" r="6" fill="#FFDD80" stroke="currentColor" stroke-width="2"/>
+            <g stroke="#009FD9">
+              <line x1="158" y1="100" x2="184" y2="100" stroke-dasharray="5 4" stroke-width="2.5"/>
+              <polyline points="178 95, 184 100, 178 105" stroke-width="2.5"/>
+            </g>
+          </svg>
+        </div>
         <div class="card-label">Practice complete</div>
         <h2 class="complete-title">Three calls, three different patterns.</h2>
         <p class="complete-summary">
-          <strong>Aisha</strong> — two gaps, including one that looked captured but wasn't.<br>
-          <strong>Tyrone</strong> — all five captured. Ready to recommend.<br>
-          <strong>Linda</strong> — a single subtle gap (Growth Blocker) under a clean-sounding call.
+          <strong>Aisha</strong> &mdash; two gaps, including one that looked captured but wasn't.<br>
+          <strong>Tyrone</strong> &mdash; all five captured. Ready to recommend.<br>
+          <strong>Linda</strong> &mdash; a single subtle gap (Growth Blocker) under a clean-sounding call.
         </p>
         <div class="complete-rule">
           The exit condition stays the same regardless of pattern: all five dimensions answered from what the Pro said. If you can't name a specific quote for each, you're not ready.
@@ -806,9 +971,51 @@
     `;
   }
 
+  function showRetryScreen() {
+    const rowsHtml = scenarios.map((s, i) => {
+      const result = results[i];
+      const isCorrect = result && result.correct;
+      const status = isCorrect ? 'Captured correctly' : 'Try this one again';
+      return `
+        <div class="result-row ${isCorrect ? 'correct' : ''}">
+          <span class="result-dot"></span>
+          <span class="result-name">${firstName(s)}</span>
+          <span class="result-status">${status}</span>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('scenarioContainer').innerHTML = `
+      <div class="card complete-card">
+        <div class="card-label">Not yet</div>
+        <h2 class="complete-title">One more pass.</h2>
+        <p class="complete-summary">
+          All three calls need to be captured correctly to complete the practice.
+        </p>
+        <div class="result-list">
+          ${rowsHtml}
+        </div>
+        <button class="next-btn" id="retryBtn">Try again</button>
+      </div>
+    `;
+
+    document.getElementById('retryBtn').addEventListener('click', resetActivity);
+  }
+
+  function resetActivity() {
+    currentIndex = 0;
+    results = [];
+    renderScenario(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   // ============================================================
   // INITIALIZE
   // ============================================================
+
+  document.getElementById('modalBeginBtn').addEventListener('click', () => {
+    document.getElementById('modalOverlay').classList.add('hidden');
+  });
 
   renderScenario(0);
 </script>
