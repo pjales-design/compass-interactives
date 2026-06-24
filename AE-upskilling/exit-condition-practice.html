@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice 6 — Reading the Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EAF6FA;
+    --surface: #FFFFFF;
+    --ink: #2F3033;
+    --ink-soft: #4B5563;
+    --ink-muted: #6B7280;
+    --ink-faint: #9CA3AF;
+    --accent: #009FD9;
+    --accent-deep: #007FAD;
+    --accent-soft: #B2EBFF;
+    --accent-bg: #EAF6FA;
+    --highlight: #FFDD80;
+    --highlight-bg: #FFF7E1;
+    --highlight-ink: #714601;
+    --rule: #E5E7EB;
+    --rule-soft: #F3F4F6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body { padding: 32px 16px 48px; }
+
+  .container { max-width: 760px; margin: 0 auto; }
+
+  /* === HEADER === */
+  .activity-header { margin-bottom: 20px; }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  h1.activity-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .instructions {
+    font-size: 14px;
+    color: var(--ink-soft);
+    max-width: 640px;
+    line-height: 1.55;
+  }
+
+  /* === PROGRESS === */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .progress-dot {
+    width: 28px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rule);
+    transition: background 0.25s ease;
+  }
+
+  .progress-dot.active { background: var(--accent); }
+  .progress-dot.done { background: var(--ink); }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* === PRO CONTEXT === */
+  .pro-context {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .pro-context strong { color: var(--ink); font-weight: 700; }
+  .pro-context .sep { color: var(--ink-faint); }
+
+  /* === CARDS === */
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0, 31, 51, 0.06);
+    margin-bottom: 16px;
+  }
+
+  .card:last-child { margin-bottom: 0; }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  /* === TRANSCRIPT === */
+  .transcript {
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+
+  .turn { margin-bottom: 12px; }
+  .turn:last-child { margin-bottom: 0; }
+  .speaker { font-weight: 700; color: var(--ink); }
+  .speaker.ae { color: var(--accent-deep); }
+  .speaker::after { content: '\00a0'; }
+  .turn-text { color: var(--ink-soft); }
+
+  /* === QUESTION === */
+  .question {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+  }
+
+  /* === YES/NO === */
+  .yesno {
+    display: flex;
+    gap: 12px;
+  }
+
+  .yesno-btn {
+    flex: 1;
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1.5px solid var(--rule);
+    background: var(--surface);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .yesno-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent-deep);
+    background: var(--accent-bg);
+  }
+
+  .yesno-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .yesno-btn:disabled { cursor: default; opacity: 0.5; }
+  .yesno-btn.selected:disabled { opacity: 1; }
+
+  /* === FOLLOWUP === */
+  .followup {
+    display: none;
+    margin-top: 18px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .followup.show { display: block; }
+
+  .followup-prompt {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .dim-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .dim-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--rule-soft);
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .dim-check:hover { border-color: var(--rule); }
+
+  .dim-check input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--ink-faint);
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    background: var(--surface);
+    transition: all 0.15s ease;
+  }
+
+  .dim-check input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .dim-check input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+  }
+
+  .dim-check.checked {
+    background: var(--accent-bg);
+    border-color: var(--accent-soft);
+  }
+
+  .dim-check-num {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dim-check-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .submit-btn {
+    padding: 12px 22px;
+    border-radius: 6px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.15s ease;
+  }
+
+  .submit-btn:hover:not(:disabled) { background: var(--accent-deep); }
+  .submit-btn:disabled { background: var(--ink-faint); cursor: default; }
+
+  /* === FEEDBACK === */
+  .feedback {
+    display: none;
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 8px;
+    border-left: 3px solid var(--rule);
+    background: var(--rule-soft);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .feedback.show { display: block; }
+
+  .feedback.correct {
+    background: var(--highlight-bg);
+    border-left-color: var(--highlight);
+  }
+
+  .feedback.incorrect, .feedback.partial {
+    background: var(--rule-soft);
+    border-left-color: var(--ink-faint);
+  }
+
+  .feedback-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .feedback.correct .feedback-header { color: var(--highlight-ink); }
+  .feedback.incorrect .feedback-header,
+  .feedback.partial .feedback-header { color: var(--ink-muted); }
+
+  .feedback-text { color: var(--ink); }
+
+  /* === NEXT BUTTON === */
+  .next-section {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .next-section.show { display: block; }
+
+  .next-btn {
+    padding: 14px 28px;
+    border-radius: 8px;
+    background: var(--ink);
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .next-btn:hover { background: #1a1b1d; }
+
+  /* === COMPLETION === */
+  .complete-card {
+    text-align: center;
+    padding: 40px 32px;
+  }
+
+  .complete-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin-bottom: 14px;
+  }
+
+  .complete-summary {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    text-align: left;
+    max-width: 540px;
+    margin: 0 auto 20px;
+  }
+
+  .complete-summary strong { color: var(--ink); font-weight: 600; }
+
+  .complete-rule {
+    padding: 16px 20px;
+    background: var(--highlight-bg);
+    border-left: 3px solid var(--highlight);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: var(--ink);
+    text-align: left;
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    body { padding: 20px 12px 40px; }
+    .yesno { flex-direction: column; }
+    .card { padding: 20px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="activity-header">
+    <div class="eyebrow">Practice Activity · Card 6</div>
+    <h1 class="activity-title">Reading the Pro</h1>
+    <p class="instructions">Three calls, three different patterns. For each one: read the discovery, decide if the AE is ready to recommend a package, and identify any dimensions still missing.</p>
+  </header>
+
+  <div class="progress">
+    <div class="progress-dots">
+      <div class="progress-dot active" data-step="1"></div>
+      <div class="progress-dot" data-step="2"></div>
+      <div class="progress-dot" data-step="3"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">Scenario 1 of 3</span>
+  </div>
+
+  <div id="scenarioContainer"></div>
+
+</div>
+
+<script>
+  // ============================================================
+  // SCENARIO DATA — transcripts, truth states, and feedback copy
+  // All feedback copy is placeholder pending the locked storyboard.
+  // Template variables: {{caught}}, {{missed}}, {{wrong}}
+  // ============================================================
+
+  const dimNames = {
+    '01': 'Current Business State',
+    '02': 'Growth Blocker',
+    '03': 'Definition of Success',
+    '04': 'Lead Gen History & Investment',
+    '05': 'Decision Maker'
+  };
+
+  const scenarios = [
+    // ─────────────────────────────────────────────────────────
+    // SCENARIO 1 — Aisha · NOT READY · missing 04 & 05
+    // ─────────────────────────────────────────────────────────
+    {
+      id: 'aisha',
+      pro: { name: 'Aisha Patel', trade: 'Mobile Pet Grooming', location: 'Seattle, WA' },
+      transcript: [
+        { speaker: 'ae',    text: 'Aisha, thanks for jumping on. Tell me a bit about your grooming business.' },
+        { speaker: 'aisha', text: "Sure. I've run Aisha's Mobile Pet Grooming for about three years. Dogs only — bath, trim, nails. I drive a converted van to clients in the greater Seattle area. Right now I'm doing around 10 appointments a week, sometimes 12." },
+        { speaker: 'ae',    text: "Got it. What's getting in the way of doing more?" },
+        { speaker: 'aisha', text: "Honestly, I'm finding the wrong clients. Most of my bookings are one-offs — someone needs a groom before vacation, then I never see them again. The people who actually pay off long-term are the ones on a regular schedule. I'm booked but I can't really build from one-offs." },
+        { speaker: 'ae',    text: 'That makes sense. What does success look like for you over the next six months?' },
+        { speaker: 'aisha', text: "15 appointments a week, mostly recurring. That's the most I can handle without hiring help. If I hit that, the income's predictable and I can take weekends off." },
+        { speaker: 'ae',    text: 'Have you tried other ways to find clients before?' },
+        { speaker: 'aisha', text: "A bit. Mostly I've stuck with word of mouth and Yelp. That's how most people find me." },
+        { speaker: 'ae',    text: "Alright. So based on everything you've shared, I'd recommend our Plus package…" }
+      ],
+      truth: 'not_ready',
+      missingDimensions: ['04', '05'],
+      feedback: {
+        yesIncorrect: {
+          header: 'Reconsider',
+          tone: 'incorrect',
+          text: "Not yet. Aisha mentioned \"word of mouth and Yelp,\" but the AE never probed what she's actually tried, what she's spent, or what worked. And no one ever asked whether anyone else is part of her decision. Two dimensions are still open."
+        },
+        noPerfect: {
+          header: 'Correct',
+          tone: 'correct',
+          text: "Right. Lead Gen History was touched but not captured — \"word of mouth and Yelp\" isn't specifics on what she's tried or spent. And Decision Maker was skipped entirely. Three of five captured. Not ready to recommend."
+        },
+        noPartial: {
+          header: 'Close',
+          tone: 'partial',
+          text: "You caught {{caught}}.{{missedPart}}{{wrongPart}} Both real gaps need to be named before the AE has the full picture."
+        },
+        noWrong: {
+          header: 'Reconsider',
+          tone: 'incorrect',
+          text: "Look again. {{wrong}} — those were captured in the call. The two that weren't: Lead Gen History &amp; Investment (a mention isn't specifics on what she tried or spent) and Decision Maker (never asked)."
+        }
+      }
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // SCENARIO 2 — Tyrone · READY · all 5 captured
+    // ─────────────────────────────────────────────────────────
+    {
+      id: 'tyrone',
+      pro: { name: 'Tyrone Williams', trade: 'Wedding Photography', location: 'Nashville, TN' },
+      transcript: [
+        { speaker: 'ae',     text: 'Tyrone, thanks for jumping on. Tell me about your photography business.' },
+        { speaker: 'tyrone', text: "Sure. I've been shooting weddings full-time for four years. Based in Nashville, traveling within about a three-hour radius. I book around 35 weddings a year, plus engagement sessions. Revenue's around $180K." },
+        { speaker: 'ae',     text: "What's keeping you from growing further?" },
+        { speaker: 'tyrone', text: "Most of my work comes from referrals and Instagram, which is great for quality but unpredictable. I get spikes around peak season and then dead months. Volume's fine — it's the consistency that kills me, especially November through February." },
+        { speaker: 'ae',     text: 'What does success look like for you over the next 12 months?' },
+        { speaker: 'tyrone', text: "45 bookings, with at least 20% coming from outside referral channels. That gives me consistency and breathing room to grow into commercial work. Targeting $230K." },
+        { speaker: 'ae',     text: 'Have you tried other ways to drive bookings?' },
+        { speaker: 'tyrone', text: "Yeah. Ran Instagram ads for six months last year — $400/month, got two bookings out of it. Not worth it. Tried WeddingWire premium for a year, got steady inquiries but most weren't my price point, so I dropped it. The Knot's worked better — I'm still on there." },
+        { speaker: 'ae',     text: "And just to confirm — you're making this decision solo?" },
+        { speaker: 'tyrone', text: 'Just me. My wife handles some admin but the business calls are mine.' },
+        { speaker: 'ae',     text: "Great. Based on everything you've shared, I'd recommend our Premium package…" }
+      ],
+      truth: 'ready',
+      missingDimensions: [],
+      feedback: {
+        yesCorrect: {
+          header: 'Correct',
+          tone: 'correct',
+          text: "Right. Tyrone gave a complete read — four years in, $180K revenue, the off-season consistency gap, a specific 45-booking target with a channel mix, three named lead gen experiments with results, and confirmed sole decision authority. All five captured. Ready to recommend."
+        },
+        noIncorrect: {
+          header: 'Reconsider',
+          tone: 'incorrect',
+          text: "Look again — Tyrone gave a complete picture. Current state (4 years, 35 weddings/year, $180K), growth blocker (off-season inconsistency, Nov–Feb), success (45 bookings with 20% from new channels, $230K), lead gen history (Instagram ads, WeddingWire, The Knot — with spend and results), and decision authority (just him). All five captured. Ready to recommend."
+        }
+      }
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // SCENARIO 3 — Linda · NOT READY · missing 02 only
+    // ─────────────────────────────────────────────────────────
+    {
+      id: 'linda',
+      pro: { name: 'Linda Chen', trade: 'Massage Therapy', location: 'Portland, OR' },
+      transcript: [
+        { speaker: 'ae',    text: 'Linda, tell me about your massage therapy practice.' },
+        { speaker: 'linda', text: "Sure. I've been licensed for six years and renting a room at a small wellness center in Northeast Portland for the last four. Deep tissue and sports massage mostly. I'm seeing about 25 clients a week." },
+        { speaker: 'ae',    text: 'What does success look like for you over the next year?' },
+        { speaker: 'linda', text: "35 clients a week consistently, and putting away enough savings to start scouting my own space within two years. That's the goal." },
+        { speaker: 'ae',    text: 'Have you tried other ways to grow before?' },
+        { speaker: 'linda', text: "Yeah. I ran a Groupon promotion last year — brought in about 40 new clients but only 6 stuck around. Wasn't great ROI for the work involved. I tried Yelp ads too, $200/month for three months, didn't see anything come of it. Most of my consistent business is from referrals and the wellness center's walk-ins." },
+        { speaker: 'ae',    text: "And to confirm — you're the one running the show? No partner or anyone else in business decisions?" },
+        { speaker: 'linda', text: "All me. I'm a sole proprietor." },
+        { speaker: 'ae',    text: "Alright. Based on everything you've shared, I'd recommend our Plus package…" }
+      ],
+      truth: 'not_ready',
+      missingDimensions: ['02'],
+      feedback: {
+        yesIncorrect: {
+          header: 'Reconsider',
+          tone: 'incorrect',
+          text: "Not yet. The AE never asked what's keeping Linda from being at 35 already. Schedule capacity? Lead volume? Pricing? Geographic reach? Without naming the growth blocker, the recommendation could solve the wrong problem."
+        },
+        noPerfect: {
+          header: 'Correct',
+          tone: 'correct',
+          text: "Right. The AE never asked what's blocking growth. Linda has clear goals (35 clients, own space in two years) and a clear lead gen history, but the AE doesn't know what's actually keeping her at 25 today. Without naming the blocker, the recommendation is a guess."
+        },
+        noPartial: {
+          header: 'Close',
+          tone: 'partial',
+          text: "You caught {{caught}}.{{missedPart}}{{wrongPart}} The one real gap: Linda described where she is and where she wants to go, but the AE never asked what's stopping her from getting there."
+        },
+        noWrong: {
+          header: 'Reconsider',
+          tone: 'incorrect',
+          text: "Look again. {{wrong}} — those were captured. The one that wasn't: Growth Blocker. Linda described where she is and where she wants to be, but the AE never named what's stopping her from getting there."
+        }
+      }
+    }
+  ];
+
+  // ============================================================
+  // STATE & RENDERING
+  // ============================================================
+
+  let currentIndex = 0;
+
+  function firstName(scenario) {
+    return scenario.pro.name.split(' ')[0];
+  }
+
+  function listDims(arr) {
+    const names = arr.map(d => dimNames[d]);
+    if (names.length === 0) return '';
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return names[0] + ' and ' + names[1];
+    return names.slice(0, -1).join(', ') + ', and ' + names[names.length - 1];
+  }
+
+  function renderScenario(index) {
+    const scenario = scenarios[index];
+    const container = document.getElementById('scenarioContainer');
+
+    const transcriptHtml = scenario.transcript.map(t => {
+      const speakerLabel = t.speaker === 'ae' ? 'AE' : firstName(scenario);
+      const speakerClass = t.speaker === 'ae' ? 'speaker ae' : 'speaker';
+      return `<p class="turn"><span class="${speakerClass}">${speakerLabel}:</span><span class="turn-text">${t.text}</span></p>`;
+    }).join('');
+
+    const checkboxesHtml = Object.keys(dimNames).map(dim => {
+      return `
+        <label class="dim-check" data-dim="${dim}">
+          <input type="checkbox" value="${dim}">
+          <span class="dim-check-num">${dim}</span>
+          <span class="dim-check-name">${dimNames[dim]}</span>
+        </label>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="pro-context">
+        <span><strong>${scenario.pro.name}</strong></span>
+        <span class="sep">·</span>
+        <span>${scenario.pro.trade}</span>
+        <span class="sep">·</span>
+        <span>${scenario.pro.location}</span>
+      </div>
+
+      <div class="card">
+        <div class="card-label">The Call</div>
+        <h2 class="card-title">Discovery transcript</h2>
+        <div class="transcript">${transcriptHtml}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Your Call</div>
+        <h2 class="question">Based on what ${firstName(scenario)} shared, is the AE ready to recommend a package?</h2>
+
+        <div class="yesno">
+          <button class="yesno-btn" data-choice="yes">Yes — recommend</button>
+          <button class="yesno-btn" data-choice="no">No — not yet</button>
+        </div>
+
+        <div class="followup" id="followup">
+          <div class="followup-prompt">What's still missing? Select all dimensions that weren't captured.</div>
+          <div class="dim-checkboxes">${checkboxesHtml}</div>
+          <button class="submit-btn" id="submitBtn" disabled>Submit</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="next-section" id="nextSection">
+        <button class="next-btn" id="nextBtn">
+          ${index < scenarios.length - 1 ? 'Next scenario →' : 'Complete practice →'}
+        </button>
+      </div>
+    `;
+
+    attachListeners(scenario);
+    updateProgress(index);
+  }
+
+  function attachListeners(scenario) {
+    const yesnoBtns = document.querySelectorAll('.yesno-btn');
+    const followup = document.getElementById('followup');
+    const feedbackEl = document.getElementById('feedback');
+    const nextSection = document.getElementById('nextSection');
+    const checkboxes = document.querySelectorAll('.dim-check input[type="checkbox"]');
+    const submitBtn = document.getElementById('submitBtn');
+
+    yesnoBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+
+        yesnoBtns.forEach(b => { b.classList.remove('selected'); b.disabled = true; });
+        btn.classList.add('selected');
+
+        if (scenario.truth === 'ready') {
+          // Ready scenario: Yes correct, No incorrect — no checkbox step needed
+          const fb = choice === 'yes' ? scenario.feedback.yesCorrect : scenario.feedback.noIncorrect;
+          showFeedback(fb);
+          nextSection.classList.add('show');
+        } else {
+          // Not-ready scenario
+          if (choice === 'yes') {
+            showFeedback(scenario.feedback.yesIncorrect);
+            nextSection.classList.add('show');
+          } else {
+            followup.classList.add('show');
+          }
+        }
+      });
+    });
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.dim-check').classList.toggle('checked', cb.checked);
+        submitBtn.disabled = !Array.from(checkboxes).some(c => c.checked);
+      });
+    });
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => handleSubmit(scenario));
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (currentIndex < scenarios.length - 1) {
+        currentIndex++;
+        renderScenario(currentIndex);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showCompletion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  function handleSubmit(scenario) {
+    const checkboxes = document.querySelectorAll('.dim-check input[type="checkbox"]');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextSection = document.getElementById('nextSection');
+
+    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    const truth = scenario.missingDimensions;
+
+    const caught = selected.filter(d => truth.includes(d));
+    const missed = truth.filter(d => !selected.includes(d));
+    const wrong = selected.filter(d => !truth.includes(d));
+
+    let fb;
+    if (caught.length === truth.length && wrong.length === 0) {
+      fb = scenario.feedback.noPerfect;
+    } else if (caught.length > 0) {
+      fb = renderPartial(scenario.feedback.noPartial, caught, missed, wrong);
+    } else {
+      fb = renderTemplated(scenario.feedback.noWrong, { wrong: listDims(wrong) });
+    }
+
+    showFeedback(fb);
+
+    checkboxes.forEach(c => c.disabled = true);
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitted';
+
+    nextSection.classList.add('show');
+  }
+
+  function renderPartial(template, caught, missed, wrong) {
+    let text = template.text;
+    text = text.replace('{{caught}}', listDims(caught));
+    text = text.replace('{{missedPart}}', missed.length > 0 ? ` You also missed ${listDims(missed)}.` : '');
+    const wrongWasWere = wrong.length === 1 ? 'was' : 'were';
+    text = text.replace('{{wrongPart}}', wrong.length > 0 ? ` And ${listDims(wrong)} ${wrongWasWere} actually captured.` : '');
+    return { header: template.header, tone: template.tone, text };
+  }
+
+  function renderTemplated(template, vars) {
+    let text = template.text;
+    Object.keys(vars).forEach(k => {
+      text = text.replace(new RegExp(`{{${k}}}`, 'g'), vars[k]);
+    });
+    return { header: template.header, tone: template.tone, text };
+  }
+
+  function showFeedback(fb) {
+    const el = document.getElementById('feedback');
+    el.className = 'feedback show ' + fb.tone;
+    el.innerHTML =
+      '<div class="feedback-header">' + fb.header + '</div>' +
+      '<div class="feedback-text">' + fb.text + '</div>';
+  }
+
+  function updateProgress(index) {
+    const dots = document.querySelectorAll('.progress-dot');
+    dots.forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i < index) d.classList.add('done');
+      else if (i === index) d.classList.add('active');
+    });
+    document.getElementById('progressLabel').textContent = `Scenario ${index + 1} of ${scenarios.length}`;
+  }
+
+  function showCompletion() {
+    document.querySelectorAll('.progress-dot').forEach(d => {
+      d.classList.remove('active');
+      d.classList.add('done');
+    });
+    document.getElementById('progressLabel').textContent = 'Complete';
+
+    document.getElementById('scenarioContainer').innerHTML = `
+      <div class="card complete-card">
+        <div class="card-label">Practice complete</div>
+        <h2 class="complete-title">Three calls, three different patterns.</h2>
+        <p class="complete-summary">
+          <strong>Aisha</strong> — two gaps, including one that looked captured but wasn't.<br>
+          <strong>Tyrone</strong> — all five captured. Ready to recommend.<br>
+          <strong>Linda</strong> — a single subtle gap (Growth Blocker) under a clean-sounding call.
+        </p>
+        <div class="complete-rule">
+          The exit condition stays the same regardless of pattern: all five dimensions answered from what the Pro said. If you can't name a specific quote for each, you're not ready.
+        </div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // INITIALIZE
+  // ============================================================
+
+  renderScenario(0);
+</script>
+
+</body>
+</html>
