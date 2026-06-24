@@ -26,6 +26,10 @@
     --rule-soft: #F3F4F6;
     --warn: #D97706;
     --warn-soft: #FEF3C7;
+    --good: #059669;
+    --good-soft: #D1FAE5;
+    --good-deep: #065F46;
+    --good-border: #6EE7B7;
     --shadow-sm: rgba(0, 0, 0, 0.04);
     --shadow-md: rgba(0, 31, 51, 0.06);
   }
@@ -374,6 +378,56 @@
     display: inline-block;
   }
 
+  /* Per-slot feedback (shown after Ready to recommend is clicked) */
+  .slot-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .slot-feedback-good {
+    background: var(--good-soft);
+    color: var(--good-deep);
+    border: 1px solid var(--good-border);
+  }
+
+  .slot-feedback-warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+    border: 1px solid #FCD34D;
+  }
+
+  .slot-feedback-icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+  }
+
+  /* Persistent border for slots with evaluation feedback (so the visual cue stays after the empty-warn pulse fades) */
+  .slot.has-feedback.feedback-good.filled {
+    border-color: var(--good-border);
+    border-style: solid;
+  }
+
+  .slot.has-feedback.feedback-warn.filled {
+    border-color: #FCD34D;
+    border-style: solid;
+  }
+
+  /* Empty slot, post-evaluation: amber tinted */
+  .empty-state-evaluated {
+    color: var(--warn) !important;
+    font-style: normal !important;
+    font-weight: 500;
+    font-size: 12.5px !important;
+  }
+
   /* === Exit condition === */
   .exit-area {
     padding: 16px 28px 24px;
@@ -425,9 +479,9 @@
   }
 
   .exit-feedback.success {
-    background: #D1FAE5;
-    color: #065F46;
-    border: 1px solid #6EE7B7;
+    background: var(--good-soft);
+    color: var(--good-deep);
+    border: 1px solid var(--good-border);
   }
 
   .exit-feedback strong { font-weight: 700; }
@@ -747,23 +801,47 @@
   /* ───────────────────────────────────────
    * Placeholder transcript — to be replaced
    * with stakeholder-written version before launch.
+   *
+   * Each turn carries an `evidence` array listing the specific sentence
+   * ranges within the turn that answer each dimension. The evaluator
+   * uses substring matching: a capture passes for slot N if the
+   * capture is a substring of one of dim N's evidence ranges, OR if
+   * one of dim N's evidence ranges is a substring of the capture.
+   *
+   * Filler portions of turns ("Pretty good overall", "Honestly?", etc.)
+   * are deliberately excluded from the evidence ranges so captures
+   * that grab only the filler don't pass.
    * ─────────────────────────────────────── */
   const transcript = [
-    { speaker: 'AE', text: "Hey Maria, thanks for jumping on. Before we get into anything specific, I'd love to hear a bit about your business. How are things going right now?" },
-    { speaker: 'Maria', text: "Pretty good overall. I've been doing this for six years now. Tuesdays and Thursdays I'm booked solid — those are my heavy recurring days. Mondays used to be too, but they've been slower the last few months." },
-    { speaker: 'AE', text: "That's helpful context. When you say slower — is that something seasonal, or is it the kind of thing where you're trying to figure out what changed?" },
-    { speaker: 'Maria', text: "I honestly don't know what changed. It's not seasonal — Mondays just feel emptier than they used to. My recurring clients are still there, my schedule's still mostly full. But new client flow has slowed and I can't really point to why." },
-    { speaker: 'AE', text: "Got it. Where do your new clients usually come from?" },
-    { speaker: 'Maria', text: "Word of mouth, basically all of it. My existing clients tell their friends, their neighbors. I've never done anything to bring new clients in actively — it's always just happened." },
-    { speaker: 'AE', text: "So no marketing, no online presence, nothing like that?" },
-    { speaker: 'Maria', text: "No, nothing. I have a phone number people can call. That's about it." },
-    { speaker: 'AE', text: "Have you ever tried a lead-gen platform?" },
-    { speaker: 'Maria', text: "Briefly, yeah. Maybe two years ago. I tried one — I don't even remember which one — and I think I got three leads in the first couple weeks. None of them turned into anything. I stopped paying before the month was up." },
-    { speaker: 'AE', text: "That makes sense. If we were to figure out a way to bring in new clients more reliably — what would a good month look like for you?" },
-    { speaker: 'Maria', text: "Honestly? I'd love to add two or three new recurring clients a month. Not one-time jobs. People who book me weekly or biweekly. That's what stabilizes my schedule." },
-    { speaker: 'AE', text: "Two or three recurring per month — got it. And does anyone else weigh in on a decision like this, or is it your call?" },
-    { speaker: 'Maria', text: "It's just me. No partner, no employees. I make all the decisions for the business." },
-    { speaker: 'AE', text: "Perfect. I've got what I need to put a thoughtful recommendation together." }
+    { speaker: 'AE', text: "Hey Maria, thanks for jumping on. Before we get into anything specific, I'd love to hear a bit about your business. How are things going right now?", evidence: [] },
+    { speaker: 'Maria', text: "Pretty good overall. I've been doing this for six years now. Tuesdays and Thursdays I'm booked solid — those are my heavy recurring days. Mondays used to be too, but they've been slower the last few months.", evidence: [
+      { text: "I've been doing this for six years now. Tuesdays and Thursdays I'm booked solid — those are my heavy recurring days. Mondays used to be too, but they've been slower the last few months.", dimension: 1 }
+    ]},
+    { speaker: 'AE', text: "That's helpful context. When you say slower — is that something seasonal, or is it the kind of thing where you're trying to figure out what changed?", evidence: [] },
+    { speaker: 'Maria', text: "I honestly don't know what changed. It's not seasonal — Mondays just feel emptier than they used to. My recurring clients are still there, my schedule's still mostly full. But new client flow has slowed and I can't really point to why.", evidence: [
+      { text: "It's not seasonal — Mondays just feel emptier than they used to. My recurring clients are still there, my schedule's still mostly full. But new client flow has slowed and I can't really point to why.", dimension: 1 }
+    ]},
+    { speaker: 'AE', text: "Got it. Where do your new clients usually come from?", evidence: [] },
+    { speaker: 'Maria', text: "Word of mouth, basically all of it. My existing clients tell their friends, their neighbors. I've never done anything to bring new clients in actively — it's always just happened.", evidence: [
+      { text: "Word of mouth, basically all of it. My existing clients tell their friends, their neighbors. I've never done anything to bring new clients in actively — it's always just happened.", dimension: 2 }
+    ]},
+    { speaker: 'AE', text: "So no marketing, no online presence, nothing like that?", evidence: [] },
+    { speaker: 'Maria', text: "No, nothing. I have a phone number people can call. That's about it.", evidence: [
+      { text: "I have a phone number people can call. That's about it.", dimension: 2 }
+    ]},
+    { speaker: 'AE', text: "Have you ever tried a lead-gen platform?", evidence: [] },
+    { speaker: 'Maria', text: "Briefly, yeah. Maybe two years ago. I tried one — I don't even remember which one — and I think I got three leads in the first couple weeks. None of them turned into anything. I stopped paying before the month was up.", evidence: [
+      { text: "Maybe two years ago. I tried one — I don't even remember which one — and I think I got three leads in the first couple weeks. None of them turned into anything. I stopped paying before the month was up.", dimension: 4 }
+    ]},
+    { speaker: 'AE', text: "That makes sense. If we were to figure out a way to bring in new clients more reliably — what would a good month look like for you?", evidence: [] },
+    { speaker: 'Maria', text: "Honestly? I'd love to add two or three new recurring clients a month. Not one-time jobs. People who book me weekly or biweekly. That's what stabilizes my schedule.", evidence: [
+      { text: "I'd love to add two or three new recurring clients a month. Not one-time jobs. People who book me weekly or biweekly. That's what stabilizes my schedule.", dimension: 3 }
+    ]},
+    { speaker: 'AE', text: "Two or three recurring per month — got it. And does anyone else weigh in on a decision like this, or is it your call?", evidence: [] },
+    { speaker: 'Maria', text: "It's just me. No partner, no employees. I make all the decisions for the business.", evidence: [
+      { text: "It's just me. No partner, no employees. I make all the decisions for the business.", dimension: 5 }
+    ]},
+    { speaker: 'AE', text: "Perfect. I've got what I need to put a thoughtful recommendation together.", evidence: [] }
   ];
 
   const slots = [
@@ -796,20 +874,42 @@
     container.innerHTML = '';
     slots.forEach(slot => {
       const div = document.createElement('div');
-      div.className = 'slot' + (slot.captured ? ' filled' : '');
+      const classes = ['slot'];
+      if (slot.captured) classes.push('filled');
+      if (slot.feedback) classes.push('has-feedback', `feedback-${slot.feedback.tone}`);
+      div.className = classes.join(' ');
       div.dataset.slotId = slot.id;
       const num = String(slot.id).padStart(2, '0');
+
+      // Content area: quote if captured; feedback message if empty + evaluated; otherwise default empty state
+      let contentHtml;
+      if (slot.captured) {
+        contentHtml = `<span class="captured-quote">${escapeHtml(slot.captured)}</span>`;
+      } else if (slot.feedback) {
+        // Empty slot post-evaluation — show the feedback message in place of the placeholder
+        contentHtml = `<span class="empty-state empty-state-evaluated">${escapeHtml(slot.feedback.text)}</span>`;
+      } else {
+        contentHtml = `<span class="empty-state">No quote yet</span>`;
+      }
+
+      // Feedback block (shown below the quote for captured slots only — empty slots show feedback in content area)
+      const feedbackHtml = (slot.captured && slot.feedback)
+        ? `<div class="slot-feedback slot-feedback-${slot.feedback.tone}">
+             ${slot.feedback.tone === 'good'
+               ? '<svg class="slot-feedback-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+               : '<svg class="slot-feedback-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="4.5" x2="8" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r="0.8" fill="currentColor"/></svg>'}
+             <span>${escapeHtml(slot.feedback.text)}</span>
+           </div>`
+        : '';
+
       div.innerHTML = `
         <div class="slot-header">
           <span class="slot-number">${num}</span>
           <span class="slot-name">${slot.name}</span>
         </div>
         <div class="slot-cues"><strong>Listen for:</strong> ${slot.cues}</div>
-        <div class="slot-content">
-          ${slot.captured
-            ? `<span class="captured-quote">${escapeHtml(slot.captured)}</span>`
-            : `<span class="empty-state">No quote yet</span>`}
-        </div>
+        <div class="slot-content">${contentHtml}</div>
+        ${feedbackHtml}
         <button class="slot-erase" data-erase-id="${slot.id}" aria-label="Clear this quote">Clear and re-capture</button>
       `;
       // Prevent click on erase button from also triggering the slot click (which would re-capture)
@@ -908,6 +1008,7 @@
 
     // Capture the text
     slot.captured = storedSelection.text;
+    slot.feedback = null; // re-capture clears prior feedback for this slot
 
     // Wrap the selected range in a captured span (persistent yellow highlight in transcript)
     let capturedSpan;
@@ -971,37 +1072,146 @@
 
     slot.captured = null;
     slot.span = null;
+    slot.feedback = null;
     renderSlots();
   }
 
   /* ───────────────────────────────────────
-   * Exit condition
+   * Exit condition + per-slot evaluation
+   *
+   * What the system can verify:
+   *   - Each slot has a non-empty capture
+   *   - The captured text overlaps with a sentence range that
+   *     actually answers the assigned dimension (substring match,
+   *     case- and whitespace-normalized, in either direction)
+   *
+   * What the system can't verify:
+   *   - Whether the specific words selected are the *strongest* evidence
+   *     for that dimension. That stays the AE's judgment.
+   *
+   * Match states per slot:
+   *   - empty:      no capture
+   *   - too-short:  capture is under 3 words (e.g., a single word like "solid")
+   *   - match:      capture overlaps with an evidence range for this dimension
+   *   - wrong-dim:  capture overlaps with an evidence range for a different dimension
+   *   - off-topic:  capture doesn't overlap with any dimension's evidence range
    * ─────────────────────────────────────── */
+  function normalizeText(text) {
+    return text
+      .toLowerCase()
+      .replace(/[\u2014\u2013]/g, '-')      // em/en dash → hyphen
+      .replace(/[\u2018\u2019]/g, "'")       // smart single quotes
+      .replace(/[\u201C\u201D]/g, '"')       // smart double quotes
+      .replace(/\s+/g, ' ')                  // collapse whitespace
+      .trim();
+  }
+
+  function wordCount(text) {
+    return normalizeText(text).split(' ').filter(w => w.length > 0).length;
+  }
+
+  // Bidirectional substring match: capture is in evidence, OR evidence is in capture
+  function overlapsEvidence(captureNorm, evidenceText) {
+    const evNorm = normalizeText(evidenceText);
+    return captureNorm.includes(evNorm) || evNorm.includes(captureNorm);
+  }
+
+  function evaluateSlot(slot) {
+    if (!slot.captured) return { state: 'empty' };
+    if (wordCount(slot.captured) < 3) return { state: 'too-short' };
+
+    const captureNorm = normalizeText(slot.captured);
+
+    // Check evidence for the assigned dimension first
+    for (const turn of transcript) {
+      for (const ev of turn.evidence) {
+        if (ev.dimension !== slot.id) continue;
+        if (overlapsEvidence(captureNorm, ev.text)) {
+          return { state: 'match' };
+        }
+      }
+    }
+
+    // Not a match — check whether the capture overlaps with another dimension's evidence
+    for (const turn of transcript) {
+      for (const ev of turn.evidence) {
+        if (ev.dimension === slot.id) continue;
+        if (overlapsEvidence(captureNorm, ev.text)) {
+          const otherSlot = slots.find(s => s.id === ev.dimension);
+          return { state: 'wrong-dim', actualDim: otherSlot ? otherSlot.name : null };
+        }
+      }
+    }
+
+    return { state: 'off-topic' };
+  }
+
+  function feedbackFor(slot, evaluation) {
+    const dim = slot.name.toLowerCase();
+    switch (evaluation.state) {
+      case 'empty':
+        return { tone: 'warn', text: `Still empty. What did Maria say about ${dim}?` };
+      case 'too-short':
+        return { tone: 'warn', text: `That's too short to be a direct quote. Try selecting a fuller piece of what Maria said about ${dim}.` };
+      case 'match':
+        return { tone: 'good', text: `That's from what Maria said about her ${dim}.` };
+      case 'wrong-dim':
+        return {
+          tone: 'warn',
+          text: evaluation.actualDim
+            ? `That's from what Maria said about ${evaluation.actualDim.toLowerCase()} — not ${dim}. Look back for where she talks about ${dim}.`
+            : `That doesn't quite answer ${dim}. Look back through the conversation.`
+        };
+      case 'off-topic':
+        return { tone: 'warn', text: `That part of the conversation doesn't answer ${dim}. Look for where Maria talks about it.` };
+    }
+  }
+
   document.getElementById('exit-btn').addEventListener('click', () => {
-    const empty = slots.filter(s => !s.captured);
+    // Evaluate every slot and store per-slot feedback
+    let matches = 0, mismatches = 0, empties = 0;
+    slots.forEach(slot => {
+      const ev = evaluateSlot(slot);
+      slot.feedback = feedbackFor(slot, ev);
+      if (ev.state === 'match') matches++;
+      else if (ev.state === 'empty') empties++;
+      else mismatches++;
+    });
+
+    // Render the slot-level feedback
+    renderSlots();
+
+    // Summary message at the bottom — calibrated about what the system did and didn't check
     const feedback = document.getElementById('exit-feedback');
     feedback.className = 'exit-feedback show';
 
-    if (empty.length === 0) {
+    if (matches === 5) {
       feedback.classList.add('success');
-      feedback.innerHTML = `<strong>Picture complete.</strong> All five dimensions captured from what Maria said. Ready to recommend.`;
-      document.getElementById('exit-btn').disabled = true;
+      feedback.innerHTML = `<strong>All five quotes are from where Maria discussed each dimension.</strong> Whether the specific words you chose are the strongest evidence is your call as the AE. You can move forward when you're ready.`;
+    } else if (empties > 0 && mismatches === 0) {
+      feedback.classList.add('warn');
+      feedback.innerHTML = empties === 1
+        ? `<strong>One slot is still empty.</strong> See the note inside it for what to look for.`
+        : `<strong>${empties} slots are still empty.</strong> See the notes inside them for what to look for.`;
+    } else if (empties === 0 && mismatches > 0) {
+      feedback.classList.add('warn');
+      feedback.innerHTML = mismatches === 1
+        ? `<strong>One slot may not match its dimension.</strong> See the note inside it, then clear and re-capture if needed.`
+        : `<strong>${mismatches} slots may not match their dimensions.</strong> See the notes inside them, then clear and re-capture if needed.`;
     } else {
       feedback.classList.add('warn');
-      const names = empty.map(s => s.name).join(', ');
-      feedback.innerHTML = empty.length === 1
-        ? `<strong>One dimension still empty:</strong> ${names}. What did Maria say about it?`
-        : `<strong>${empty.length} dimensions still empty:</strong> ${names}. The picture isn't complete yet.`;
-
-      // Highlight empty slots
-      document.querySelectorAll('.slot').forEach(el => {
-        const id = parseInt(el.dataset.slotId);
-        if (empty.find(s => s.id === id)) {
-          el.classList.add('empty-warn');
-          setTimeout(() => el.classList.remove('empty-warn'), 2000);
-        }
-      });
+      feedback.innerHTML = `<strong>Some slots are empty and some may not match.</strong> See the notes inside each slot.`;
     }
+
+    // Brief attention pulse on empty slots only — filled-but-wrong slots get persistent border via slot-feedback styling
+    document.querySelectorAll('.slot').forEach(el => {
+      const id = parseInt(el.dataset.slotId);
+      const slot = slots.find(s => s.id === id);
+      if (slot && !slot.captured) {
+        el.classList.add('empty-warn');
+        setTimeout(() => el.classList.remove('empty-warn'), 2000);
+      }
+    });
   });
 
   /* ───────────────────────────────────────
