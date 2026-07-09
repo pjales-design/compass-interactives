@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Asset 4 — Screen 2.2 — The Four-Part Structure (Interactive Walkthrough)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap');
+
+  :root {
+    --bg: #EAF6FA;
+    --surface: #FFFFFF;
+    --ink: #2F3033;
+    --ink-soft: #4B5563;
+    --ink-muted: #6B7280;
+    --ink-faint: #9CA3AF;
+    --accent: #009FD9;
+    --accent-deep: #007FAD;
+    --accent-soft: #B2EBFF;
+    --yellow: #FFDD80;
+    --yellow-bg: #FFF7E1;
+    --yellow-deep: #714601;
+    --rule: #E5E7EB;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    padding: 40px 16px 80px;
+  }
+
+  .card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 40px 48px 48px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,31,51,0.06);
+  }
+
+  /* ---------- Diagram ---------- */
+  .diagram-wrap {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    padding-bottom: 8px;
+    z-index: 5;
+  }
+
+  svg#concept-diagram { width: 100%; height: auto; display: block; overflow: visible; }
+
+  /* step circle base states */
+  .step-group circle.step-circle { transition: opacity .5s ease, fill .4s ease; }
+  .step-group text { transition: opacity .5s ease; }
+  .step-group.locked { opacity: 0.4; }
+  .step-group.locked .lock-badge { opacity: 1; }
+  .step-group .lock-badge { opacity: 0; transition: opacity .3s ease; }
+  .step-group .check-badge { opacity: 0; transform: scale(0.4); transform-origin: center; transition: opacity .3s ease, transform .3s ease; }
+  .step-group.complete .check-badge { opacity: 1; transform: scale(1); }
+  .step-group.complete circle.step-circle.neutral-fill { fill: var(--ink); }
+
+  .pulse-ring {
+    opacity: 0;
+    transform-origin: center;
+  }
+  .step-group.active .pulse-ring {
+    opacity: 1;
+    animation: pulseRing 1.8s ease-out infinite;
+  }
+  @keyframes pulseRing {
+    0%   { r: 33; opacity: .55; }
+    70%  { r: 44; opacity: 0; }
+    100% { r: 44; opacity: 0; }
+  }
+
+  .step-group { cursor: default; }
+  .step-group.unlocked-clickable { cursor: pointer; }
+  .step-group.unlocked-clickable:hover .step-circle { filter: brightness(0.97); }
+
+  /* discovery + callback arrow */
+  #discovery-source, #callback-arrow { opacity: 0.15; transition: opacity .6s ease; }
+  #discovery-source.revealed, #callback-arrow.revealed { opacity: 1; }
+
+  #callback-arrow path {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    transition: stroke-dashoffset .6s ease .15s;
+  }
+  #callback-arrow.revealed path { stroke-dashoffset: 0; }
+
+  #discovery-source rect.discovery-box {
+    transition: stroke .25s ease, stroke-width .25s ease;
+  }
+  #discovery-source.gold-pulse rect.discovery-box {
+    animation: goldPulse 900ms ease;
+  }
+  @keyframes goldPulse {
+    0%   { stroke: #FFDD80; stroke-width: 1; }
+    35%  { stroke: #B45F06; stroke-width: 3; }
+    100% { stroke: #FFDD80; stroke-width: 1; }
+  }
+
+  /* ---------- Panel ---------- */
+  .panel {
+    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+    min-height: 260px;
+  }
+
+  .panel-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 10px;
+  }
+
+  .panel h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .panel p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+
+  .example-line, .quote-line {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 0 0 16px;
+    font-style: italic;
+  }
+
+  .quote-line { border-left-color: var(--ink-faint); background: #F9FAFB; }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .dots span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--rule);
+  }
+  .dots span.done { background: var(--accent); }
+  .dots span.current { background: var(--ink); }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 6px 0 16px;
+  }
+
+  .choice-btn {
+    text-align: left;
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 13px 16px;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { border-color: #2E7D32; background: #EEF7EF; }
+  .choice-btn.incorrect { border-color: #B45F06; background: #FFF4E8; }
+
+  .feedback {
+    font-size: 14.5px;
+    line-height: 1.6;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin: 4px 0 18px;
+  }
+  .feedback.correct { background: #EEF7EF; color: #1E4620; border: 1px solid #BFE3C4; }
+  .feedback.incorrect { background: #FFF4E8; color: #714601; border: 1px solid #F3D9A8; }
+
+  .package-flag {
+    border: 1.5px dashed var(--yellow-deep);
+    background: var(--yellow-bg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--yellow-deep);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  .next-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .next-btn:hover { background: var(--accent-deep); }
+  .next-btn:disabled { background: var(--rule); color: var(--ink-faint); cursor: default; }
+
+  .closing-line {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    padding-top: 8px;
+    border-top: 2px solid var(--accent);
+    margin-top: 4px;
+  }
+
+  .revisit-hint {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-top: 14px;
+  }
+
+  .advance-hint {
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .advance-hint strong { color: var(--accent-deep); }
+
+  .review-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--rule);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="diagram-wrap">
+    <svg id="concept-diagram" viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+      <title>Concept 03 — Because You Said Structure (4 Parts)</title>
+
+      <!-- Title block (CONCEPT 03 eyebrow removed per review) -->
+      <g id="title">
+        <text x="0" y="26" font-size="18" font-weight="700" fill="#2F3033" letter-spacing="-0.3">"Because You Said" — 4-Part Structure</text>
+        <text x="0" y="48" font-size="12" fill="#6B7280">Same structure, always unique content. The anchor pulls from discovery.</text>
+      </g>
+
+      <!-- Discovery reference (the "behind" layer) -->
+      <g id="discovery-source" transform="translate(252, 100)">
+        <rect class="discovery-box" width="120" height="46" rx="6" fill="#FFF7E1" stroke="#FFDD80" stroke-width="1"/>
+        <text x="60" y="22" font-size="9" font-weight="700" fill="#714601" text-anchor="middle" letter-spacing="0.5">DISCOVERY</text>
+        <text x="60" y="35" font-size="9" fill="#714601" text-anchor="middle">5 captured quotes</text>
+      </g>
+
+      <!-- Dashed callback arrow from anchor to discovery -->
+      <g id="callback-arrow">
+        <path d="M 310 146 Q 310 175, 280 175" stroke="#FFDD80" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
+        <polygon points="280,172 273,175 280,178" fill="#FFDD80"/>
+      </g>
+
+      <!-- 4 steps in horizontal flow -->
+      <g id="steps" transform="translate(0, 160)">
+
+        <!-- Step 01: Paraphrase -->
+        <g id="step-01" class="step-group active" data-step="1">
+          <circle class="pulse-ring" cx="40" cy="40" r="33" fill="none" stroke="#009FD9" stroke-width="2"/>
+          <circle class="step-circle" cx="40" cy="40" r="32" fill="#FFFFFF" stroke="#2F3033" stroke-width="1.5"/>
+          <text x="40" y="36" font-size="9" font-weight="700" fill="#9CA3AF" text-anchor="middle" letter-spacing="0.6">01</text>
+          <text class="step-label" x="40" y="50" font-size="11" font-weight="700" fill="#2F3033" text-anchor="middle">PARAPHRASE</text>
+          <text x="40" y="92" font-size="10" fill="#6B7280" text-anchor="middle">Reflect. Hold.</text>
+          <g class="lock-badge" transform="translate(60,10)">
+            <circle r="9" fill="#9CA3AF"/>
+            <path d="M-3,-1 h6 v5 h-6 z M-2,-1 v-2 a2,2 0 0 1 4,0 v2" stroke="#FFFFFF" stroke-width="1.1" fill="none"/>
+          </g>
+          <g class="check-badge" transform="translate(60,10)">
+            <circle r="9" fill="#2F3033"/>
+            <path d="M-3.5,0 L-1,2.6 L4,-3" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+
+        <!-- Arrow 1→2 -->
+        <g id="arrow-1-2">
+          <line x1="80" y1="40" x2="178" y2="40" stroke="#6B7280" stroke-width="1.5"/>
+          <polygon points="178,36 186,40 178,44" fill="#6B7280"/>
+        </g>
+
+        <!-- Step 02: Anchor -->
+        <g id="step-02" class="step-group locked" data-step="2" transform="translate(198, 0)">
+          <circle class="pulse-ring" cx="40" cy="40" r="33" fill="none" stroke="#009FD9" stroke-width="2"/>
+          <circle class="step-circle" cx="40" cy="40" r="32" fill="#FFDD80" stroke="#2F3033" stroke-width="1.5"/>
+          <text x="40" y="36" font-size="9" font-weight="700" fill="#714601" text-anchor="middle" letter-spacing="0.6">02</text>
+          <text class="step-label" x="40" y="50" font-size="11" font-weight="700" fill="#2F3033" text-anchor="middle">ANCHOR</text>
+          <text x="40" y="92" font-size="10" fill="#6B7280" text-anchor="middle">"Because you said..."</text>
+          <g class="lock-badge" transform="translate(60,10)">
+            <circle r="9" fill="#9CA3AF"/>
+            <path d="M-3,-1 h6 v5 h-6 z M-2,-1 v-2 a2,2 0 0 1 4,0 v2" stroke="#FFFFFF" stroke-width="1.1" fill="none"/>
+          </g>
+          <g class="check-badge" transform="translate(60,10)">
+            <circle r="9" fill="#2F3033"/>
+            <path d="M-3.5,0 L-1,2.6 L4,-3" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+
+        <!-- Arrow 2→3 -->
+        <g id="arrow-2-3">
+          <line x1="278" y1="40" x2="376" y2="40" stroke="#6B7280" stroke-width="1.5"/>
+          <polygon points="376,36 384,40 376,44" fill="#6B7280"/>
+        </g>
+
+        <!-- Step 03: Frame -->
+        <g id="step-03" class="step-group locked" data-step="3" transform="translate(396, 0)">
+          <circle class="pulse-ring" cx="40" cy="40" r="33" fill="none" stroke="#009FD9" stroke-width="2"/>
+          <circle class="step-circle neutral-fill" cx="40" cy="40" r="32" fill="#FFFFFF" stroke="#2F3033" stroke-width="1.5"/>
+          <text class="step-num" x="40" y="36" font-size="9" font-weight="700" fill="#9CA3AF" text-anchor="middle" letter-spacing="0.6">03</text>
+          <text class="step-label" x="40" y="50" font-size="11" font-weight="700" fill="#2F3033" text-anchor="middle">FRAME</text>
+          <text x="40" y="92" font-size="10" fill="#6B7280" text-anchor="middle">Outcome before cost.</text>
+          <g class="lock-badge" transform="translate(60,10)">
+            <circle r="9" fill="#9CA3AF"/>
+            <path d="M-3,-1 h6 v5 h-6 z M-2,-1 v-2 a2,2 0 0 1 4,0 v2" stroke="#FFFFFF" stroke-width="1.1" fill="none"/>
+          </g>
+          <g class="check-badge" transform="translate(60,10)">
+            <circle r="9" fill="#FFFFFF"/>
+            <path d="M-3.5,0 L-1,2.6 L4,-3" stroke="#2F3033" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+
+        <!-- Arrow 3→4 -->
+        <g id="arrow-3-4">
+          <line x1="476" y1="40" x2="574" y2="40" stroke="#6B7280" stroke-width="1.5"/>
+          <polygon points="574,36 582,40 574,44" fill="#6B7280"/>
+        </g>
+
+        <!-- Step 04: Ask -->
+        <g id="step-04" class="step-group locked" data-step="4" transform="translate(594, 0)">
+          <circle class="pulse-ring" cx="40" cy="40" r="33" fill="none" stroke="#009FD9" stroke-width="2"/>
+          <circle class="step-circle" cx="40" cy="40" r="32" fill="#009FD9" stroke="#2F3033" stroke-width="1.5"/>
+          <text x="40" y="36" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.6">04</text>
+          <text class="step-label" x="40" y="50" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">ASK</text>
+          <text x="40" y="92" font-size="10" fill="#6B7280" text-anchor="middle">Name it. Close.</text>
+          <g class="lock-badge" transform="translate(60,10)">
+            <circle r="9" fill="#9CA3AF"/>
+            <path d="M-3,-1 h6 v5 h-6 z M-2,-1 v-2 a2,2 0 0 1 4,0 v2" stroke="#FFFFFF" stroke-width="1.1" fill="none"/>
+          </g>
+          <g class="check-badge" transform="translate(60,10)">
+            <circle r="9" fill="#FFFFFF"/>
+            <path d="M-3.5,0 L-1,2.6 L4,-3" stroke="#009FD9" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div id="panel" class="panel"></div>
+</div>
+
+<script>
+(function () {
+  const state = {
+    current: 1,
+    beat: 1, // for step 1's internal 3-beat sequence
+    completed: new Set(),
+    picks: {} // stepNumber -> { text, correct }
+  };
+
+  const panel = document.getElementById('panel');
+  const stepGroups = {
+    1: document.getElementById('step-01'),
+    2: document.getElementById('step-02'),
+    3: document.getElementById('step-03'),
+    4: document.getElementById('step-04')
+  };
+  const discoverySource = document.getElementById('discovery-source');
+  const callbackArrow = document.getElementById('callback-arrow');
+
+  function maxUnlocked() {
+    // you can always reach one step past your highest completed step
+    let highest = 0;
+    state.completed.forEach(n => { if (n > highest) highest = n; });
+    return Math.min(4, highest + 1);
+  }
+
+  function updateDiagram() {
+    const unlockCap = maxUnlocked();
+    for (let n = 1; n <= 4; n++) {
+      const g = stepGroups[n];
+      const isComplete = state.completed.has(n);
+      const isActive = n === state.current && !isComplete;
+      const isLocked = n > unlockCap && !isComplete;
+      const isClickable = n <= unlockCap || isComplete;
+
+      g.classList.toggle('complete', isComplete);
+      g.classList.toggle('active', isActive);
+      g.classList.toggle('locked', isLocked);
+      g.classList.toggle('unlocked-clickable', isClickable);
+    }
+
+    const discoveryShouldShow = unlockCap >= 2 || state.completed.has(1);
+    discoverySource.classList.toggle('revealed', discoveryShouldShow);
+    callbackArrow.classList.toggle('revealed', discoveryShouldShow);
+  }
+
+  function goldPulseDiscovery() {
+    discoverySource.classList.remove('gold-pulse');
+    // restart animation
+    void discoverySource.offsetWidth;
+    discoverySource.classList.add('gold-pulse');
+  }
+
+  function completeStep(n) {
+    state.completed.add(n);
+    updateDiagram();
+  }
+
+  function goToStep(n, opts) {
+    opts = opts || {};
+    state.current = n;
+    if (n === 1 && !opts.keepBeat) state.beat = 1;
+    updateDiagram();
+    renderPanel();
+  }
+
+  // ---------- Panel content per step ----------
+
+  function renderPanel() {
+    const n = state.current;
+    const isReview = state.completed.has(n);
+    if (n === 1) return renderStep1(isReview);
+    if (n === 2) return renderStep2(isReview);
+    if (n === 3) return renderStep3(isReview);
+    if (n === 4) return renderStep4(isReview);
+  }
+
+  function dotsHtml(active) {
+    let html = '<div class="dots">';
+    for (let i = 1; i <= 3; i++) {
+      let cls = '';
+      if (i < active) cls = 'done';
+      if (i === active) cls = 'current';
+      html += `<span class="${cls}"></span>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderStep1(isReview) {
+    const beat = isReview ? 3 : state.beat;
+    let html = `<div class="panel-eyebrow">Part 1 of 4</div><h3>Paraphrase</h3>`;
+    if (isReview) html += `<span class="review-tag">Completed &middot; tap to review</span>`;
+    html += dotsHtml(beat);
+
+    if (beat === 1) {
+      html += `
+        <p><strong>Reflect</strong> — put the Pro's situation back in your own words. Not a quote. Not a summary. A restatement that shows you understood.</p>
+        <div class="example-line">"So it sounds like your regular clients are solid, but new client flow has quietly slowed — and what you'd really want is a couple of new recurring clients a month, not one-off jobs."</div>
+        <div class="nav-row"><button class="next-btn" id="beat-next">Next →</button></div>
+      `;
+      panel.innerHTML = html;
+      document.getElementById('beat-next').onclick = () => { state.beat = 2; renderPanel(); };
+    } else if (beat === 2) {
+      html += `
+        <p><strong>Hold</strong> — stop and wait for the Pro's response before you continue. Don't move to the recommendation until they've reacted.</p>
+        <p>Skipping this step is the single most common miss in this structure — not because AEs don't paraphrase, but because they paraphrase and then keep talking before the Pro answers.</p>
+        <div class="nav-row"><button class="next-btn" id="beat-next">Next →</button></div>
+      `;
+      panel.innerHTML = html;
+      document.getElementById('beat-next').onclick = () => { state.beat = 3; renderPanel(); };
+    } else {
+      const already = isReview ? state.picks[1] : null;
+      html += `
+        <p><strong>Receive the correction.</strong> A Pro just corrected your paraphrase. What actually happened?</p>
+        <div class="choices" id="s1-choices">
+          ${choiceBtn('wrong', "You got it wrong — that's a bad sign.", already)}
+          ${choiceBtn('nothing', 'Nothing important — move on.', already)}
+          ${choiceBtn('learned', "You just learned something real that wasn't there before.", already)}
+        </div>
+        <div id="s1-feedback"></div>
+      `;
+      panel.innerHTML = html;
+      wireStep1Choices(already);
+    }
+  }
+
+  function choiceBtn(key, label, already) {
+    let cls = 'choice-btn';
+    let disabled = '';
+    if (already) {
+      disabled = 'disabled';
+      if (key === already.key) cls += already.correct ? ' correct' : ' incorrect';
+    }
+    return `<button class="${cls}" data-key="${key}" ${disabled}>${label}</button>`;
+  }
+
+  function wireStep1Choices(already) {
+    const feedbackEl = document.getElementById('s1-feedback');
+    if (already) {
+      showStep1Feedback(feedbackEl, already.correct);
+      return;
+    }
+    document.querySelectorAll('#s1-choices .choice-btn').forEach(btn => {
+      btn.onclick = () => {
+        const key = btn.dataset.key;
+        const correct = key === 'learned';
+        state.picks[1] = { key, correct };
+        document.querySelectorAll('#s1-choices .choice-btn').forEach(b => {
+          b.disabled = true;
+          if (b.dataset.key === key) b.classList.add(correct ? 'correct' : 'incorrect');
+        });
+        showStep1Feedback(feedbackEl, correct);
+      };
+    });
+  }
+
+  function showStep1Feedback(feedbackEl, correct) {
+    feedbackEl.innerHTML = `
+      <div class="feedback correct"><strong>A corrected paraphrase is more valuable than a confirmed one.</strong> The Pro just told you exactly where you misjudged them — real information you didn't have thirty seconds ago. Confirm it and continue from what they actually said.</div>
+      <div class="nav-row"><button class="next-btn" id="s1-continue">Continue to Anchor →</button></div>
+    `;
+    document.getElementById('s1-continue').onclick = () => {
+      completeStep(1);
+      goToStep(2);
+    };
+  }
+
+  function renderStep2(isReview) {
+    let html = `<div class="panel-eyebrow">Part 2 of 4</div><h3>Anchor</h3>`;
+    if (isReview) html += `<span class="review-tag">Completed &middot; tap to review</span>`;
+    html += `<p>Tie the recommendation to something specific the Pro said: <em>"because you said [exact thing]…"</em></p>`;
+    html += `<div class="quote-line">Rosa told you: "I don't want to grow past where I am — I just need two or three commercial accounts to cover December through February."</div>`;
+    html += `<p><strong>Which of these is an anchor?</strong></p>`;
+
+    const already = isReview ? state.picks[2] : null;
+    html += `<div class="choices" id="s2-choices">
+      ${choiceBtn('generic', 'Because most painters need more winter work…', already)}
+      ${choiceBtn('true-not-relevant', 'Because you said you’ve been painting for nine years…', already)}
+      ${choiceBtn('anchor', 'Because you said you need two or three commercial accounts to get through December to February…', already)}
+    </div>
+    <div id="s2-feedback"></div>`;
+
+    panel.innerHTML = html;
+    wireStep2Choices(already);
+  }
+
+  const S2_INCORRECT_FEEDBACK = {
+    generic: "Not this one — that line could apply to any painting business. It's not anchored to anything Rosa actually said. Try again.",
+    'true-not-relevant': "That's true — she did say that — but it's not what's driving this recommendation. An anchor has to be the specific detail that explains why *this* package, not just any real fact about her business. Try again."
+  };
+
+  function wireStep2Choices(already) {
+    const feedbackEl = document.getElementById('s2-feedback');
+    if (already) return showStep2Feedback(feedbackEl, already.correct, true);
+    document.querySelectorAll('#s2-choices .choice-btn').forEach(btn => {
+      btn.onclick = () => {
+        const key = btn.dataset.key;
+        const correct = key === 'anchor';
+        if (!correct) {
+          btn.classList.add('incorrect');
+          feedbackEl.innerHTML = `<div class="feedback incorrect">${S2_INCORRECT_FEEDBACK[key]}</div>`;
+          return;
+        }
+        state.picks[2] = { key, correct: true };
+        document.querySelectorAll('#s2-choices .choice-btn').forEach(b => { b.disabled = true; });
+        btn.classList.add('correct');
+        goldPulseDiscovery();
+        showStep2Feedback(feedbackEl, true, false);
+      };
+    });
+  }
+
+  function showStep2Feedback(feedbackEl, correct, skipAnim) {
+    if (!skipAnim) { /* pulse already triggered on click */ }
+    feedbackEl.innerHTML = `
+      <div class="feedback correct">That's an anchor — it's Rosa's own words, and it could only be about her. This is the sentence that makes the rest of the recommendation feel earned instead of generic.</div>
+      <div class="nav-row"><button class="next-btn" id="s2-continue">Continue to Frame →</button></div>
+    `;
+    document.getElementById('s2-continue').onclick = () => {
+      completeStep(2);
+      goToStep(3);
+    };
+  }
+
+  function renderStep3(isReview) {
+    let html = `<div class="panel-eyebrow">Part 3 of 4</div><h3>Frame</h3>`;
+    if (isReview) html += `<span class="review-tag">Completed &middot; tap to review</span>`;
+    html += `<p>Say what the investment makes possible for this Pro, before naming a price.</p>`;
+    html += `<div class="package-flag">⚠️ PACKAGE CONTENT — update this block when packages change</div>`;
+    html += `<p><strong>Which version leads better?</strong></p>`;
+
+    const already = isReview ? state.picks[3] : null;
+    html += `<div class="choices" id="s3-choices">
+      ${choiceBtn('price', 'Plus is $300 upfront and includes a 30-day Front Desk trial.', already)}
+      ${choiceBtn('outcome', 'Plus means you stop losing leads to whoever answers first — for 30 days, free, before you spend anything.', already)}
+    </div>
+    <div id="s3-feedback"></div>`;
+
+    panel.innerHTML = html;
+    wireStep3Choices(already);
+  }
+
+  function wireStep3Choices(already) {
+    const feedbackEl = document.getElementById('s3-feedback');
+    if (already) return showStep3Feedback(feedbackEl);
+    document.querySelectorAll('#s3-choices .choice-btn').forEach(btn => {
+      btn.onclick = () => {
+        const key = btn.dataset.key;
+        const correct = key === 'outcome';
+        if (!correct) {
+          btn.classList.add('incorrect');
+          feedbackEl.innerHTML = `<div class="feedback incorrect">Accurate, but backwards. Leading with the price before the Pro knows what it buys them turns the recommendation into a transaction. Try the other option.</div>`;
+          return;
+        }
+        state.picks[3] = { key, correct: true };
+        document.querySelectorAll('#s3-choices .choice-btn').forEach(b => { b.disabled = true; });
+        btn.classList.add('correct');
+        showStep3Feedback(feedbackEl);
+      };
+    });
+  }
+
+  function showStep3Feedback(feedbackEl) {
+    feedbackEl.innerHTML = `
+      <div class="feedback correct">Outcome before cost — this is what makes the recommendation feel like a fit instead of a transaction. The price supports the outcome; it doesn't replace it.</div>
+      <div class="nav-row"><button class="next-btn" id="s3-continue">Continue to Ask →</button></div>
+    `;
+    document.getElementById('s3-continue').onclick = () => {
+      completeStep(3);
+      goToStep(4);
+    };
+  }
+
+  function renderStep4(isReview) {
+    let html = `<div class="panel-eyebrow">Part 4 of 4</div><h3>Ask</h3>`;
+    if (isReview) html += `<span class="review-tag">Completed &middot; tap to review</span>`;
+    html += `<p>Name the product. Close directly. No hedging.</p>`;
+    html += `<p><strong>Which one is an actual ask?</strong></p>`;
+
+    const already = isReview ? state.picks[4] : null;
+    html += `<div class="choices" id="s4-choices">
+      ${choiceBtn('hedge', "I think Plus could maybe be a good fit, if you're interested?", already)}
+      ${choiceBtn('ask', "Based on what you've told me, Plus is the right fit — let's get you set up.", already)}
+    </div>
+    <div id="s4-feedback"></div>`;
+
+    panel.innerHTML = html;
+    wireStep4Choices(already, isReview);
+  }
+
+  function wireStep4Choices(already, isReview) {
+    const feedbackEl = document.getElementById('s4-feedback');
+    if (already) return showStep4Feedback(feedbackEl, isReview);
+    document.querySelectorAll('#s4-choices .choice-btn').forEach(btn => {
+      btn.onclick = () => {
+        const key = btn.dataset.key;
+        const correct = key === 'ask';
+        if (!correct) {
+          btn.classList.add('incorrect');
+          feedbackEl.innerHTML = `<div class="feedback incorrect">"I think," "maybe," and "if you're interested" are all automatic misses, no matter how good the anchor and frame were. Try the other option.</div>`;
+          return;
+        }
+        state.picks[4] = { key, correct: true };
+        document.querySelectorAll('#s4-choices .choice-btn').forEach(b => { b.disabled = true; });
+        btn.classList.add('correct');
+        showStep4Feedback(feedbackEl, false);
+      };
+    });
+  }
+
+  function showStep4Feedback(feedbackEl, isReview) {
+    feedbackEl.innerHTML = `
+      <div class="feedback correct">Direct, names the product, no qualifiers. This closes the loop the paraphrase opened.</div>
+      ${isReview ? closingBlockHtml() : `<div class="nav-row"><button class="next-btn" id="s4-finish">Finish →</button></div>`}
+    `;
+    if (!isReview) {
+      document.getElementById('s4-finish').onclick = () => {
+        completeStep(4);
+        renderFinalState();
+      };
+    }
+  }
+
+  function closingBlockHtml() {
+    return `
+      <div class="closing-line">Paraphrase. Anchor. Frame. Ask. Same four, every time.</div>
+      <div class="revisit-hint">All four steps are complete — tap any circle above to review it again.</div>
+      <div class="advance-hint">Take your time with this before moving on — when you're comfortable with the structure, click <strong>Continue</strong> in the bottom-right corner to advance.</div>
+    `;
+  }
+
+  function renderFinalState() {
+    panel.innerHTML = `
+      <div class="panel-eyebrow">Part 4 of 4</div><h3>Ask</h3>
+      <div class="feedback correct">Direct, names the product, no qualifiers. This closes the loop the paraphrase opened.</div>
+      ${closingBlockHtml()}
+    `;
+  }
+
+  // ---------- Step circle click handling ----------
+  Object.keys(stepGroups).forEach(key => {
+    const n = Number(key);
+    stepGroups[n].addEventListener('click', () => {
+      if (!stepGroups[n].classList.contains('unlocked-clickable')) return;
+      goToStep(n);
+    });
+  });
+
+  // ---------- Init ----------
+  updateDiagram();
+  renderPanel();
+})();
+</script>
+
+</body>
+</html>
