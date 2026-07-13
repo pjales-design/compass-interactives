@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Asset 4 — Screen 5.1 — Build It Yourself</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #EAF6FA;
+    --surface: #FFFFFF;
+    --ink: #2F3033;
+    --ink-soft: #4B5563;
+    --ink-muted: #6B7280;
+    --ink-faint: #9CA3AF;
+    --accent: #009FD9;
+    --accent-deep: #007FAD;
+    --accent-soft: #B2EBFF;
+    --accent-bg: #EAF6FA;
+    --highlight: #FFDD80;
+    --rule: #E5E7EB;
+    --warn: #D97706;
+    --warn-soft: #FEF3C7;
+    --good: #059669;
+    --good-soft: #D1FAE5;
+    --good-deep: #065F46;
+    --good-border: #6EE7B7;
+    --shadow-sm: rgba(0,0,0,0.04);
+    --shadow-md: rgba(0,31,51,0.06);
+
+    --base-primary: #6B7280;   --base-light: #F9FAFB;   --base-mid: #E5E7EB;
+    --plus-primary: #16855B;   --plus-light: #E1FDF3;   --plus-mid: #73E4A2;
+    --premium-primary: #4F54B2; --premium-light: #E8F1FD; --premium-mid: #96C2FF;
+    --enterprise-primary: #6637B6; --enterprise-light: #F5EFFF; --enterprise-mid: #C9ACFD;
+    --base: var(--base-primary); --plus: var(--plus-primary); --premium: var(--premium-primary); --enterprise: var(--enterprise-primary);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    padding: 40px 16px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 40px 44px 46px;
+    box-shadow: 0 1px 2px var(--shadow-sm), 0 12px 32px var(--shadow-md);
+  }
+
+  .eyebrow-top { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; text-align: center; }
+  .title-top { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 22px; }
+
+  .panel-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-deep); margin-bottom: 10px; }
+  .panel h3 { font-size: 20px; font-weight: 700; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .panel p { font-size: 15px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 14px; }
+
+  /* ================= STAGE 0: Discovery exchange + Notebook (ported from Asset 2) ================= */
+  .workspace { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; min-height: 480px; }
+  .ws-panel { display: flex; flex-direction: column; min-height: 0; }
+  .ws-panel-transcript { border-right: 1px solid var(--rule); }
+  .ws-panel-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); background: var(--surface); flex-shrink: 0; }
+  .ws-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-deep); margin-bottom: 3px; }
+  .ws-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .ws-hint { font-size: 11.5px; color: var(--ink-muted); line-height: 1.4; }
+  .ws-panel-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+
+  .turn { margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .turn:last-child { margin-bottom: 0; }
+  .turn-speaker { flex-shrink: 0; width: 40px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); padding-top: 2px; }
+  .turn-speaker.pro { color: var(--accent-deep); }
+  .turn-text { flex: 1; font-size: 13.5px; line-height: 1.6; color: var(--ink); user-select: text; }
+  .captured { background: var(--highlight); padding: 1px 3px; border-radius: 2px; }
+
+  .slots { display: flex; flex-direction: column; gap: 10px; }
+  .slot { border: 1.5px dashed var(--ink-faint); border-radius: 10px; padding: 12px 14px; background: var(--surface); transition: all 0.2s ease; cursor: default; }
+  .slot.active-target { border-color: var(--accent); border-style: solid; background: var(--accent-bg); cursor: pointer; box-shadow: 0 0 0 3px rgba(0,159,217,0.12); }
+  .slot.filled { border-color: var(--rule); border-style: solid; }
+  .slot.empty-warn { border-color: var(--warn); border-style: solid; background: var(--warn-soft); }
+  .slot-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+  .slot-number { font-size: 10.5px; font-weight: 700; color: var(--ink-faint); }
+  .slot.filled .slot-number { color: var(--accent); }
+  .slot-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .slot-cues { font-size: 11px; color: var(--ink-muted); margin-bottom: 6px; line-height: 1.4; }
+  .slot-cues strong { font-weight: 600; color: var(--ink-soft); }
+  .slot-content { font-size: 12.5px; line-height: 1.5; color: var(--ink); min-height: 20px; }
+  .slot-content .empty-state { color: var(--ink-faint); font-style: italic; font-size: 12px; }
+  .slot-content .captured-quote { background: var(--highlight); padding: 4px 8px; border-radius: 4px; font-style: normal; color: var(--ink); }
+  .slot-content .captured-quote::before { content: '\201C'; }
+  .slot-content .captured-quote::after { content: '\201D'; }
+  .slot-erase { display: none; margin-top: 8px; background: none; border: none; padding: 3px 0; font-family: inherit; font-size: 11px; font-weight: 500; color: var(--ink-muted); cursor: pointer; text-decoration: underline; }
+  .slot.filled .slot-erase { display: inline-block; }
+  .slot-feedback { display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; padding: 7px 9px; border-radius: 6px; font-size: 11.5px; line-height: 1.4; }
+  .slot-feedback-good { background: var(--good-soft); color: var(--good-deep); border: 1px solid var(--good-border); }
+  .slot-feedback-warn { background: var(--warn-soft); color: #92400E; border: 1px solid #FCD34D; }
+
+  .ws-footer { padding: 14px 20px; border-top: 1px solid var(--rule); flex-shrink: 0; }
+  .exit-btn, .stage-next-btn { width: 100%; padding: 12px 18px; border: none; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s ease; }
+  .exit-btn { background: var(--accent); color: var(--surface); }
+  .exit-btn:hover { background: var(--accent-deep); }
+  .stage-next-btn { background: var(--ink); color: var(--surface); margin-top: 10px; display: none; }
+  .stage-next-btn.show { display: block; }
+  .stage-next-btn:hover { background: #1A1B1D; }
+  .exit-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 12.5px; line-height: 1.5; display: none; }
+  .exit-feedback.show { display: block; }
+  .exit-feedback.warn { background: var(--warn-soft); color: #92400E; border: 1px solid #FCD34D; }
+  .exit-feedback.success { background: var(--good-soft); color: var(--good-deep); border: 1px solid var(--good-border); }
+
+  .selection-hint-inline { font-size: 12px; color: var(--accent-deep); font-weight: 600; text-align: center; padding: 8px; background: var(--accent-bg); border-radius: 6px; margin-bottom: 10px; }
+
+  /* ---------- Intro modal ---------- */
+  .intro-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(47, 48, 51, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: 20px;
+  }
+  .intro-modal-card {
+    background: var(--surface);
+    border-radius: 14px;
+    max-width: 440px;
+    width: 100%;
+    padding: 32px 32px 28px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .intro-modal-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-deep); margin-bottom: 10px; }
+  .intro-modal-title { font-size: 19px; font-weight: 700; margin-bottom: 12px; }
+  .intro-modal-body { font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 22px; }
+  .intro-modal-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 12px 28px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .intro-modal-btn:hover { background: var(--accent-deep); }
+
+  /* ---------- Highlighter cursor (mouse only, ported from Asset 2 build) ---------- */
+  .highlighter-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 90px;
+    height: 90px;
+    pointer-events: none;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.08s ease;
+    filter: drop-shadow(0 3px 6px rgba(0, 31, 51, 0.2));
+    will-change: transform;
+  }
+  .highlighter-cursor.show { opacity: 1; }
+  .highlighter-cursor svg { width: 100%; height: 100%; display: block; }
+  @media (hover: none) and (pointer: coarse) {
+    .highlighter-cursor { display: none; }
+  }
+
+  /* ================= Shared with later stages ================= */
+  .recap-fields { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 4px 14px; margin-bottom: 20px; }
+  .rf-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .rf-row:last-child { border-bottom: none; }
+  .rf-num { background: var(--ink); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .rf-body { flex: 1; min-width: 0; }
+  .rf-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+  .rf-quote { display: block; font-size: 13px; line-height: 1.55; color: var(--ink); background: var(--highlight); padding: 2px 6px; border-radius: 3px; font-style: italic; }
+  .rf-quote::before { content: '\201C'; }
+  .rf-quote::after { content: '\201D'; }
+  .rf-source-note { font-size: 11.5px; color: var(--ink-muted); font-style: italic; margin: -10px 0 18px; text-align: right; }
+
+  .cold-note { font-size: 12.5px; color: var(--ink-muted); font-style: italic; margin: -8px 0 20px; }
+
+  .mini-tracker { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  .mini-node { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--ink-faint); position: relative; }
+  .mini-node.anchor { background: var(--highlight); color: #714601; }
+  .mini-node.ask { background: var(--accent); color: #fff; }
+  .mini-node.current { box-shadow: 0 0 0 3px var(--accent-soft); }
+  .mini-line { width: 20px; height: 1.5px; background: var(--rule); }
+  .mini-node .mini-check { display: none; }
+  .mini-node.mdone .mini-check { display: block; }
+  .mini-node.mdone .mini-label { display: none; }
+
+  .dim-block { background: white; border: 1.5px solid var(--rule); border-radius: 10px; overflow: hidden; margin-bottom: 10px; transition: border-color 0.2s; }
+  .dim-block.has-selection { border-color: #9CA3AF; }
+  .dim-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #F9FAFB; border-bottom: 1px solid var(--rule); }
+  .dim-num { background: #2F3033; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .dim-block.has-selection .dim-num { background: var(--accent); }
+  .dim-name { font-size: 13px; font-weight: 700; }
+  .dim-q { font-size: 11px; color: var(--ink-muted); font-style: italic; margin-left: auto; }
+  .signal-btn-row { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px 0; }
+  .sig-btn { background: #F9FAFB; border: 1.5px solid var(--rule); border-radius: 20px; padding: 7px 13px; font-size: 12px; font-weight: 500; color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 7px; text-align: left; font-family: inherit; }
+  .sig-btn:hover { border-color: #9CA3AF; background: #F3F4F6; }
+  .sig-btn.selected { border-color: #2F3033; background: #2F3033; color: white; font-weight: 600; }
+  .sig-btn.selected .sig-pkg-indicators { display: none; }
+  .sig-pkg-indicators { display: flex; gap: 3px; flex-shrink: 0; }
+  .spi { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; opacity: 0.7; }
+  .spi-base { background: var(--base-light); color: var(--base); border: 1px solid var(--base-mid); }
+  .spi-plus { background: var(--plus-light); color: var(--plus); border: 1px solid var(--plus-mid); }
+  .spi-premium { background: var(--premium-light); color: var(--premium); border: 1px solid var(--premium-mid); }
+  .spi-enterprise { background: var(--enterprise-light); color: var(--enterprise); border: 1px solid var(--enterprise-mid); }
+  .signal-reveal { display: none; margin: 8px 14px 12px; background: var(--surface); border: 1px solid var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; gap: 10px; }
+  .signal-reveal.visible { display: flex; }
+  .reveal-arrow { font-size: 16px; color: var(--accent); flex-shrink: 0; }
+  .reveal-body { flex: 1; }
+  .reveal-pkg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+  .reveal-pkg-row .rl { font-size: 11px; color: var(--ink-muted); font-weight: 600; }
+  .rev-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 5px; margin-right: 4px; }
+  .rev-base { background: var(--base-light); color: var(--base); border: 1.5px solid var(--base-mid); }
+  .rev-plus { background: var(--plus-light); color: var(--plus); border: 1.5px solid var(--plus-mid); }
+  .rev-premium { background: var(--premium-light); color: var(--premium); border: 1.5px solid var(--premium-mid); }
+  .rev-enterprise { background: var(--enterprise-light); color: var(--enterprise); border: 1.5px solid var(--enterprise-mid); }
+  .reveal-why { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
+  .rb-nudge { margin: 6px 14px 12px; font-size: 12px; color: #B45F06; background: #FFF4E8; border: 1px solid #F3D9A8; border-radius: 8px; padding: 8px 12px; }
+  .rb-score-card { background: white; border: 1.5px solid var(--rule); border-radius: 10px; overflow: hidden; margin-top: 14px; }
+  .rb-card-header { background: #F9FAFB; border-bottom: 1px solid var(--rule); padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ink-muted); }
+  .rb-score-bars { padding: 12px 14px; }
+  .rb-score-row { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+  .rb-score-row:last-child { margin-bottom: 0; }
+  .rb-score-label { font-size: 11px; font-weight: 700; width: 68px; flex-shrink: 0; }
+  .rb-sl-base { color: var(--base); } .rb-sl-plus { color: var(--plus); } .rb-sl-premium { color: var(--premium); } .rb-sl-enterprise { color: var(--enterprise); }
+  .rb-score-track { flex: 1; height: 10px; background: #F3F4F6; border-radius: 5px; overflow: hidden; }
+  .rb-score-fill { height: 100%; border-radius: 5px; width: 0%; }
+  .rb-sf-base { background: var(--base); } .rb-sf-plus { background: var(--plus); } .rb-sf-premium { background: var(--premium); } .rb-sf-enterprise { background: var(--enterprise); }
+  .rb-score-num { font-size: 12px; font-weight: 700; width: 20px; text-align: right; }
+  .rb-score-reasoning { padding: 8px 14px 12px; border-top: 1px solid var(--rule); font-size: 11px; color: var(--ink-muted); line-height: 1.5; min-height: 32px; }
+  .rb-score-reasoning .rb-rec-highlight { font-weight: 700; }
+
+  .annotation-block { background: var(--bg); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; margin: 0 0 18px; font-style: italic; font-size: 15px; color: var(--accent-deep); }
+  .choices { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 16px; }
+  .choice-btn { text-align: left; background: var(--surface); border: 1.5px solid var(--rule); border-radius: 8px; padding: 13px 16px; font-family: inherit; font-size: 14.5px; color: var(--ink); cursor: pointer; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { border-color: #2E7D32; background: #EEF7EF; }
+  .choice-btn.incorrect { border-color: #B45F06; background: #FFF4E8; }
+  .feedback { font-size: 14.5px; line-height: 1.6; padding: 14px 16px; border-radius: 8px; margin: 4px 0 18px; }
+  .feedback.correct { background: #EEF7EF; color: #1E4620; border: 1px solid #BFE3C4; }
+  .feedback.incorrect { background: #FFF4E8; color: #714601; border: 1px solid #F3D9A8; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .next-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 11px 22px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .next-btn:hover { background: var(--accent-deep); }
+
+  .completion-box { text-align: center; padding: 24px 0 4px; }
+  .completion-box .check-big { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .completion-box h3 { margin-bottom: 6px; }
+  .completion-box p { color: var(--ink-muted); font-size: 14px; }
+  .pro-package-pill { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+  .pill-plus { color: var(--plus-primary); background: var(--plus-mid); }
+  .advance-hint { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+  .advance-hint strong { color: var(--accent-deep); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="title-top">Build it yourself</div>
+  <div id="panel" class="panel"></div>
+</div>
+
+<script>
+(function () {
+
+  var CHECK_SVG_WHITE = '<svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 10.5 L8 14.5 L16 5.5" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CHECK_SVG_DARK = '<svg width="12" height="12" viewBox="0 0 20 20"><path d="M4 10.5 L8 14.5 L16 5.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CHECK_SVG_GOOD = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var WARN_SVG = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="4.5" x2="8" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r="0.8" fill="currentColor"/></svg>';
+
+  // Highlighter cursor asset — ported verbatim from the uploaded highlighter.svg /
+  // the Asset 2 build. Chisel tip lands at ~(31,149) after the -30deg rotation.
+  var HIGHLIGHTER_SVG = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#2F3033">' +
+    '<title>Highlighter</title>' +
+    '<g transform="rotate(-30, 100, 100)">' +
+      '<polygon points="16 108, 30 92, 42 92, 42 108" fill="#FFDD80" stroke="currentColor"/>' +
+      '<polygon points="42 92, 58 80, 58 120, 42 108" fill="#FFFFFF" stroke="currentColor"/>' +
+      '<rect x="58" y="80" width="102" height="40" rx="3" fill="#FFDD80" stroke="currentColor"/>' +
+      '<g><rect x="92" y="80" width="26" height="40" fill="#FFFFFF" stroke="currentColor"/><line x1="98" y1="100" x2="112" y2="100" stroke="currentColor"/></g>' +
+      '<rect x="160" y="84" width="20" height="32" rx="2" fill="currentColor" stroke="currentColor"/>' +
+      '<line x1="164" y1="84" x2="164" y2="116" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>' +
+      '<line x1="62" y1="84" x2="156" y2="84" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>' +
+    '</g>' +
+  '</svg>';
+
+  var panel = document.getElementById('panel');
+  var state = { stage: 0, buildStep: 1 };
+
+  /* =========================================================
+     STAGE 0 — Discovery exchange + five-slot capture.
+     Ported directly from Asset 2 (reading-the-pro-all.html):
+     drag-select text, click a slot to capture, evaluate on
+     "I have the full picture" against embedded evidence tags.
+     ========================================================= */
+
+  var TRANSCRIPT = [
+    { speaker: 'AE', text: 'Hey, thanks for hopping on. Tell me a bit about how business is going right now.', evidence: [] },
+    { speaker: 'Pro', text: 'Pretty good, honestly. It’s me and one other guy — we do mobile detailing, so we go to people’s homes and offices instead of them coming to us. Monday through Friday we’re steady, predictable. Weekends are a different story — we’re so packed we’re turning people away most Saturdays.', evidence: [
+      { dimension: 1, text: 'it’s me and one other guy' },
+      { dimension: 1, text: 'monday through friday we’re steady, predictable' },
+      { dimension: 1, text: 'we’re so packed we’re turning people away most saturdays' }
+    ]},
+    { speaker: 'AE', text: 'Turning people away — what’s behind that?', evidence: [] },
+    { speaker: 'Pro', text: 'It’s not that we’re short on business. If anything it’s the opposite on weekends — we just don’t have enough hands or slots to say yes to everyone who wants a Saturday or Sunday. Weekdays we could probably take on more, honestly.', evidence: [
+      { dimension: 2, text: 'it’s not that we’re short on business' },
+      { dimension: 2, text: 'we just don’t have enough hands or slots to say yes to everyone' }
+    ]},
+    { speaker: 'AE', text: 'If you could fix one thing, what would it look like?', evidence: [] },
+    { speaker: 'Pro', text: 'Honestly? Three or four solid weekend regulars — people who book every couple weeks on a Saturday. That alone would stop the turning-people-away thing and make the schedule feel a lot less chaotic.', evidence: [
+      { dimension: 3, text: 'three or four solid weekend regulars' },
+      { dimension: 3, text: 'people who book every couple weeks on a saturday' }
+    ]},
+    { speaker: 'AE', text: 'Have you tried anything to bring in more business, especially for weekends?', evidence: [] },
+    { speaker: 'Pro', text: 'A little. I boosted a couple of our Instagram posts once — maybe two hundred bucks total. Got some likes, a couple comments, but not one actual booking came out of it. Haven’t touched paid marketing since.', evidence: [
+      { dimension: 4, text: 'i boosted a couple of our instagram posts once' },
+      { dimension: 4, text: 'not one actual booking came out of it' },
+      { dimension: 4, text: 'haven’t touched paid marketing since' }
+    ]},
+    { speaker: 'AE', text: 'And is this a decision you’d make on your own, or is there someone else involved?', evidence: [] },
+    { speaker: 'Pro', text: 'Nope, it’s all me. My business partner just does the actual detailing with me — he’s not involved in anything like this.', evidence: [
+      { dimension: 5, text: 'nope, it’s all me' },
+      { dimension: 5, text: 'he’s not involved in anything like this' }
+    ]},
+    { speaker: 'AE', text: 'Got it — that’s what I needed.', evidence: [] }
+  ];
+
+  var SLOT_TEMPLATE = [
+    { id: 1, name: 'Current Business State', cues: 'lead volume, revenue, seasonal patterns, current mix of work' },
+    { id: 2, name: 'Growth Blocker', cues: 'too few leads, wrong type of leads, competition, capacity' },
+    { id: 3, name: 'Definition of Success', cues: 'more jobs, revenue target, leads per week' },
+    { id: 4, name: 'Lead Gen History & Investment', cues: 'platforms tried, what they’ve spent, what worked' },
+    { id: 5, name: 'Decision Maker', cues: 'on the call, spouse/partner, co-owner' }
+  ];
+
+  var slots = SLOT_TEMPLATE.map(function (s) { return Object.assign({}, s, { captured: null, feedback: null }); });
+  var storedSelection = null;
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function introModalHtml() {
+    return '' +
+      '<div class="intro-modal-overlay" id="intro-modal-overlay">' +
+        '<div class="intro-modal-card">' +
+          '<div class="intro-modal-eyebrow">Read the exchange</div>' +
+          '<div class="intro-modal-title">Capture the five dimensions yourself</div>' +
+          '<div class="intro-modal-body">A Pro you haven’t met — a mobile detailing business. Same skill you practiced in a previous course: select what they said, then click the slot it belongs to.</div>' +
+          '<button class="intro-modal-btn" id="intro-modal-btn">Got it</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderStage0() {
+    panel.innerHTML = introModalHtml() + '<div id="workspace-holder"></div>';
+    document.getElementById('intro-modal-btn').onclick = function () {
+      var overlay = document.getElementById('intro-modal-overlay');
+      if (overlay) overlay.remove();
+      renderWorkspace();
+    };
+  }
+
+  function renderWorkspace() {
+    var html = '<div class="workspace">';
+    html += '<div class="ws-panel ws-panel-transcript"><div class="ws-panel-header"><div class="ws-eyebrow">Discovery exchange</div><div class="ws-title">Your conversation with this Pro</div><div class="ws-hint">Select what they said — then click the slot it belongs to.</div></div>';
+    html += '<div class="ws-panel-body" id="transcript-body"></div></div>';
+    html += '<div class="ws-panel"><div class="ws-panel-header"><div class="ws-eyebrow">Notebook</div><div class="ws-title">A fresh page</div><div class="ws-hint">Each slot takes a direct quote from what they said.</div></div>';
+    html += '<div class="ws-panel-body"><div id="selection-hint-inline" class="selection-hint-inline" style="display:none;">Click a slot to capture this quote</div><div class="slots" id="slots-container"></div></div>';
+    html += '<div class="ws-footer"><button class="exit-btn" id="exit-btn">I have the full picture</button><button class="stage-next-btn" id="stage-next-btn">Continue to Package Routing →</button><div class="exit-feedback" id="exit-feedback"></div></div>';
+    html += '</div></div>';
+    html += '<div id="highlighter-cursor" class="highlighter-cursor" aria-hidden="true">' + HIGHLIGHTER_SVG + '</div>';
+    document.getElementById('workspace-holder').innerHTML = html;
+
+    renderTranscript();
+    renderSlots();
+
+    var transcriptBodyEl = document.getElementById('transcript-body');
+    transcriptBodyEl.addEventListener('mouseup', function () { setTimeout(captureSelection, 0); });
+
+    wireHighlighterCursor();
+    wireExitButton();
+  }
+
+  // ---------- Highlighter cursor (mouse only) ----------
+  // Ported from Asset 2's build: follows the cursor while the mouse is down
+  // inside the transcript, giving drag-selection a "highlighting" feel.
+  var TIP_PX_X = 13.95;
+  var TIP_PX_Y = 67.05;
+  var TIP_LIFT = 6;
+  var isDownInTranscript = false;
+  var isHighlighterVisible = false;
+
+  function wireHighlighterCursor() {
+    var highlighter = document.getElementById('highlighter-cursor');
+    var transcriptBodyEl = document.getElementById('transcript-body');
+    if (!highlighter || !transcriptBodyEl) return;
+
+    function positionHighlighter(e) {
+      var x = e.clientX - TIP_PX_X;
+      var y = e.clientY - TIP_PX_Y - TIP_LIFT;
+      highlighter.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+
+    transcriptBodyEl.addEventListener('mousedown', function () {
+      isDownInTranscript = true;
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!isDownInTranscript) return;
+      positionHighlighter(e);
+      if (!isHighlighterVisible) {
+        highlighter.classList.add('show');
+        isHighlighterVisible = true;
+      }
+    });
+
+    document.addEventListener('mouseup', function () {
+      if (isDownInTranscript) {
+        isDownInTranscript = false;
+        if (isHighlighterVisible) {
+          highlighter.classList.remove('show');
+          isHighlighterVisible = false;
+        }
+      }
+    });
+  }
+
+  function renderTranscript() {
+    var body = document.getElementById('transcript-body');
+    body.innerHTML = '';
+    TRANSCRIPT.forEach(function (turn) {
+      var div = document.createElement('div');
+      div.className = 'turn';
+      var isPro = turn.speaker !== 'AE';
+      div.innerHTML = '<span class="turn-speaker' + (isPro ? ' pro' : '') + '">' + escapeHtml(turn.speaker) + '</span>' +
+        '<span class="turn-text">' + escapeHtml(turn.text) + '</span>';
+      body.appendChild(div);
+    });
+  }
+
+  function renderSlots() {
+    var container = document.getElementById('slots-container');
+    container.innerHTML = '';
+    slots.forEach(function (slot) {
+      var div = document.createElement('div');
+      var classes = ['slot'];
+      if (slot.captured) classes.push('filled');
+      div.className = classes.join(' ');
+      div.dataset.slotId = slot.id;
+      var num = String(slot.id).padStart ? String(slot.id).padStart(2, '0') : ('0' + slot.id);
+
+      var contentHtml;
+      if (slot.captured) contentHtml = '<span class="captured-quote">' + escapeHtml(slot.captured) + '</span>';
+      else if (slot.feedback) contentHtml = '<span class="empty-state">' + escapeHtml(slot.feedback.text) + '</span>';
+      else contentHtml = '<span class="empty-state">No quote yet</span>';
+
+      var feedbackHtml = '';
+      if (slot.captured && slot.feedback) {
+        feedbackHtml = '<div class="slot-feedback slot-feedback-' + (slot.feedback.tone === 'good' ? 'good' : 'warn') + '">' +
+          (slot.feedback.tone === 'good' ? CHECK_SVG_GOOD : WARN_SVG) +
+          '<span>' + escapeHtml(slot.feedback.text) + '</span></div>';
+      }
+
+      div.innerHTML =
+        '<div class="slot-header"><span class="slot-number">' + num + '</span><span class="slot-name">' + slot.name + '</span></div>' +
+        '<div class="slot-cues"><strong>Listen for:</strong> ' + slot.cues + '</div>' +
+        '<div class="slot-content">' + contentHtml + '</div>' +
+        feedbackHtml +
+        '<button class="slot-erase" data-erase-id="' + slot.id + '">Clear and re-capture</button>';
+
+      var eraseBtn = div.querySelector('.slot-erase');
+      eraseBtn.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+      eraseBtn.addEventListener('click', function (e) { e.stopPropagation(); handleErase(slot.id); });
+      div.addEventListener('click', function () { handleSlotClick(slot.id); });
+      container.appendChild(div);
+    });
+  }
+
+  function getSelectionInTranscript() {
+    var sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+    var text = sel.toString().trim();
+    if (text.length < 3) return null;
+    var range = sel.getRangeAt(0);
+    var transcriptBody = document.getElementById('transcript-body');
+    if (!transcriptBody.contains(range.commonAncestorContainer)) return null;
+    return { text: text, range: range.cloneRange() };
+  }
+
+  function captureSelection() {
+    var sel = getSelectionInTranscript();
+    if (sel) { storedSelection = sel; updateSelectionUI(); }
+  }
+
+  function updateSelectionUI() {
+    var slotsEls = document.querySelectorAll('.slot');
+    var hint = document.getElementById('selection-hint-inline');
+    if (storedSelection) {
+      slotsEls.forEach(function (el) {
+        var slot = slots.find(function (s) { return s.id === parseInt(el.dataset.slotId, 10); });
+        if (!slot.captured) el.classList.add('active-target');
+      });
+      if (hint) hint.style.display = 'block';
+    } else {
+      slotsEls.forEach(function (el) { el.classList.remove('active-target'); });
+      if (hint) hint.style.display = 'none';
+    }
+  }
+
+  function handleSlotClick(slotId) {
+    var slot = slots.find(function (s) { return s.id === slotId; });
+    if (!storedSelection) return;
+    if (slot.captured) return;
+
+    slot.captured = storedSelection.text;
+    slot.feedback = null;
+
+    try {
+      var range = storedSelection.range;
+      var span = document.createElement('span');
+      span.className = 'captured';
+      range.surroundContents(span);
+    } catch (e) { /* selection spans multiple nodes — capture still recorded */ }
+
+    window.getSelection().removeAllRanges();
+    storedSelection = null;
+    updateSelectionUI();
+    renderSlots();
+    document.getElementById('stage-next-btn').classList.remove('show');
+  }
+
+  function handleErase(slotId) {
+    var slot = slots.find(function (s) { return s.id === slotId; });
+    slot.captured = null;
+    slot.feedback = null;
+    renderTranscript(); // drop the yellow <span class="captured"> wrapper by re-rendering clean
+    renderSlots();
+    document.getElementById('stage-next-btn').classList.remove('show');
+  }
+
+  function normalizeText(text) {
+    return text.toLowerCase().replace(/[—–]/g, '-').replace(/[''']/g, "'").replace(/[""]/g, '"').replace(/\s+/g, ' ').trim();
+  }
+  function wordCount(text) { return normalizeText(text).split(' ').filter(function (w) { return w.length > 0; }).length; }
+  function overlapsEvidence(captureNorm, evidenceText) {
+    var evNorm = normalizeText(evidenceText);
+    return captureNorm.indexOf(evNorm) !== -1 || evNorm.indexOf(captureNorm) !== -1;
+  }
+
+  function evaluateSlot(slot) {
+    if (!slot.captured) return { state: 'empty' };
+    if (wordCount(slot.captured) < 3) return { state: 'too-short' };
+    var captureNorm = normalizeText(slot.captured);
+    for (var i = 0; i < TRANSCRIPT.length; i++) {
+      var turn = TRANSCRIPT[i];
+      for (var j = 0; j < turn.evidence.length; j++) {
+        var ev = turn.evidence[j];
+        if (ev.dimension !== slot.id) continue;
+        if (overlapsEvidence(captureNorm, ev.text)) return { state: 'match' };
+      }
+    }
+    for (var i2 = 0; i2 < TRANSCRIPT.length; i2++) {
+      var turn2 = TRANSCRIPT[i2];
+      for (var j2 = 0; j2 < turn2.evidence.length; j2++) {
+        var ev2 = turn2.evidence[j2];
+        if (ev2.dimension === slot.id) continue;
+        if (overlapsEvidence(captureNorm, ev2.text)) {
+          var otherSlot = SLOT_TEMPLATE.find(function (s) { return s.id === ev2.dimension; });
+          return { state: 'wrong-dim', actualDim: otherSlot ? otherSlot.name : null };
+        }
+      }
+    }
+    return { state: 'off-topic' };
+  }
+
+  function feedbackFor(slot, evaluation) {
+    var dim = slot.name.toLowerCase();
+    switch (evaluation.state) {
+      case 'empty': return { tone: 'warn', text: 'Still empty. What did this Pro say about ' + dim + '?' };
+      case 'too-short': return { tone: 'warn', text: 'That’s too short to be a direct quote. Try selecting a fuller piece of what they said about ' + dim + '.' };
+      case 'match': return { tone: 'good', text: 'That’s from what they said about ' + dim + '.' };
+      case 'wrong-dim': return { tone: 'warn', text: evaluation.actualDim ? 'That’s from what they said about ' + evaluation.actualDim.toLowerCase() + ' — not ' + dim + '. Look back for where they talk about ' + dim + '.' : 'That doesn’t quite answer ' + dim + '. Look back through the conversation.' };
+      case 'off-topic': return { tone: 'warn', text: 'That part of the conversation doesn’t answer ' + dim + '. Look for where they talk about it.' };
+    }
+  }
+
+  function wireExitButton() {
+    document.getElementById('exit-btn').addEventListener('click', function () {
+      var matches = 0, mismatches = 0, empties = 0;
+      slots.forEach(function (slot) {
+        var ev = evaluateSlot(slot);
+        slot.feedback = feedbackFor(slot, ev);
+        if (ev.state === 'match') matches++;
+        else if (ev.state === 'empty') empties++;
+        else mismatches++;
+      });
+      renderSlots();
+
+      var feedback = document.getElementById('exit-feedback');
+      feedback.className = 'exit-feedback show';
+
+      if (matches === 5) {
+        feedback.classList.add('success');
+        feedback.innerHTML = '<strong>All five quotes captured.</strong> That’s the same skill from a previous course, applied cold. Ready to route the package.';
+        document.getElementById('stage-next-btn').classList.add('show');
+      } else if (empties > 0 && mismatches === 0) {
+        feedback.classList.add('warn');
+        feedback.innerHTML = empties === 1 ? '<strong>One slot is still empty.</strong> See the note inside it for what to look for.' : '<strong>' + empties + ' slots are still empty.</strong> See the notes inside them for what to look for.';
+      } else if (empties === 0 && mismatches > 0) {
+        feedback.classList.add('warn');
+        feedback.innerHTML = mismatches === 1 ? '<strong>One slot may not match its dimension.</strong> See the note inside it, then clear and re-capture if needed.' : '<strong>' + mismatches + ' slots may not match their dimensions.</strong> See the notes inside them, then clear and re-capture if needed.';
+      } else {
+        feedback.classList.add('warn');
+        feedback.innerHTML = '<strong>Some slots are empty and some may not match.</strong> See the notes inside each slot.';
+      }
+
+      document.querySelectorAll('.slot').forEach(function (el) {
+        var id = parseInt(el.dataset.slotId, 10);
+        var slot = slots.find(function (s) { return s.id === id; });
+        if (slot && !slot.captured) el.classList.add('empty-warn');
+      });
+    });
+
+    document.getElementById('stage-next-btn').addEventListener('click', function () {
+      state.stage = 1;
+      render();
+    });
+  }
+
+  /* =========================================================
+     STAGE 1 — Package Routing Guide, fed by the learner's OWN
+     captured quotes (not pre-authored copy).
+     ========================================================= */
+
+  var DIMENSIONS = [
+    { num: 1, name: 'Current Business State', q: 'How is the Pro’s business performing right now?', options: [
+      { label: 'Solo / just starting out', pkgs: ['base', 'plus'], why: 'Solo operators are still building their client base — Base or Plus gives them a foothold without overcommitting.' },
+      { label: 'Established crew, specific job focus', pkgs: ['plus', 'premium'], why: 'An established crew with a defined niche is past the starting-out phase — they need volume and the tools to scale it.' },
+      { label: 'Large operation, diverse services', pkgs: ['premium', 'enterprise'], why: 'Large operations need lead volume and support infrastructure that Base and Plus aren’t built for.' }
+    ]},
+    { num: 2, name: 'Growth Blocker', q: 'What’s preventing the Pro from growing?', options: [
+      { label: 'Not enough leads coming in', pkgs: ['base', 'plus'], why: 'The blocker is lead volume — they just need more coming in. Base or Plus directly addresses this.' },
+      { label: 'Slow to respond / losing jobs to faster competitors', pkgs: ['plus', 'premium', 'enterprise'], why: 'Slow response is a conversion problem, not a lead problem. Front Desk is the direct solution.' },
+      { label: 'Getting leads but wrong type of customer', pkgs: ['plus', 'premium'], why: 'Getting leads but the wrong type or timing means they need better targeting and support — that’s a Plus/Premium conversation.' }
+    ]},
+    { num: 3, name: 'Definition of Success', q: 'What is the Pro trying to achieve?', options: [
+      { label: 'Modest goal — 2 to 4 more jobs per week', pkgs: ['plus', 'premium'], why: 'A modest growth goal is achievable with Plus or Premium — no need to push Enterprise when the target is measured.' },
+      { label: 'Aggressive goal — 5 or more jobs per week', pkgs: ['premium', 'enterprise'], why: '5+ jobs per week requires the lead volume and support infrastructure that only Premium and Enterprise are built for.' },
+      { label: 'Wants to scale significantly', pkgs: ['enterprise'], why: 'Wanting to scale significantly means they’ve outgrown a one-size package.' }
+    ]},
+    { num: 4, name: 'Lead Gen History & Investment', q: 'What has the Pro tried? What have they spent?', options: [
+      { label: 'No marketing budget / word of mouth only', pkgs: ['base', 'plus'], why: 'No ongoing investment means paid lead gen is new for them — Base or Plus is the right entry point.' },
+      { label: 'Has a budget, tried other platforms', pkgs: ['plus', 'premium'], why: 'Prior investment experience means they know what ROI looks like — Plus or Premium can show them something better.' },
+      { label: 'Tracks ROI, sophisticated marketer', pkgs: ['premium', 'enterprise'], why: 'Tracking ROI closely means they’ll evaluate this seriously.' }
+    ]}
+  ];
+  var PKG_NAMES = { base: 'Base', plus: 'Plus', premium: 'Premium', enterprise: 'Enterprise' };
+  var PKG_ORDER = ['base', 'plus', 'premium', 'enterprise'];
+  var REV_CLS = { base: 'rev-base', plus: 'rev-plus', premium: 'rev-premium', enterprise: 'rev-enterprise' };
+  var CORRECT_SIGNAL = [1, 2, 0, 0]; // -> Plus
+
+  var NUDGES = [
+    { 0: 'They mentioned it’s them and one other guy — that’s a two-person team, not a solo operation.', 2: 'A two-person mobile detailing business isn’t a large, diverse operation.' },
+    { 0: 'They’re turning away work on weekends — that’s not a lead-shortage problem. It’s a scheduling mismatch: too little weekend capacity, not too few leads overall.', 1: 'Nothing here suggests they’re losing jobs to slow response times.' },
+    { 1: 'Three or four more weekend regulars is a small, specific ask — not the 5-or-more-jobs-a-week level this option describes.', 2: 'They’re not asking to scale the whole business — just to add a few weekend regulars.' },
+    { 1: 'They did boost a couple posts — but it was one $200 test that got zero bookings, not an ongoing budget. One failed experiment doesn’t add up to an active budget.', 2: 'There’s nothing here about tracking costs or evaluating platforms carefully.' }
+  ];
+
+  function recapFromCapturesHtml() {
+    var order = [1, 2, 3, 4, 5];
+    var labels = ['Current Business State', 'Growth Blocker', 'Definition of Success', 'Lead Gen History & Investment', 'Decision Maker'];
+    var rows = order.map(function (id, i) {
+      var slot = slots.find(function (s) { return s.id === id; });
+      var text = slot && slot.captured ? slot.captured : '(no capture)';
+      return '<div class="rf-row"><div class="rf-num">' + id + '</div><div class="rf-body">' +
+        '<span class="rf-label">' + labels[i] + '</span>' +
+        '<span class="rf-quote">' + escapeHtml(text) + '</span></div></div>';
+    }).join('');
+    return '<div class="recap-fields">' + rows + '</div>' +
+      '<div class="rf-source-note">— your own captures from the notebook page you just filled in.</div>';
+  }
+
+  function renderRoutingBuilder(onComplete) {
+    var rb = { answered: {}, d5done: false };
+
+    function computeCounts() {
+      var counts = { base: 0, plus: 0, premium: 0, enterprise: 0 };
+      Object.keys(rb.answered).forEach(function (d) { DIMENSIONS[d].options[rb.answered[d]].pkgs.forEach(function (p) { counts[p]++; }); });
+      return counts;
+    }
+    function computeRec(counts) {
+      var total = Object.values(counts).reduce(function (a, b) { return a + b; }, 0);
+      if (total === 0) return null;
+      var top = Math.max.apply(null, Object.values(counts));
+      for (var i = PKG_ORDER.length - 1; i >= 0; i--) { if (counts[PKG_ORDER[i]] === top) return PKG_ORDER[i]; }
+      return null;
+    }
+
+    function renderAll() {
+      var html = '<div class="panel-eyebrow">Step 1 of 5</div><h3>Route the package</h3>';
+      html += recapFromCapturesHtml();
+      html += '<p>Click the signal that matches what this Pro actually told you, one per dimension.</p>';
+      html += '<div id="rb-dims">';
+      DIMENSIONS.forEach(function (dim, di) {
+        var answeredIdx = rb.answered[di];
+        html += '<div class="dim-block' + (answeredIdx !== undefined ? ' has-selection' : '') + '" data-dim="' + di + '">';
+        html += '<div class="dim-header"><div class="dim-num">' + dim.num + '</div><div class="dim-name">' + dim.name + '</div><div class="dim-q">' + dim.q + '</div></div>';
+        html += '<div class="signal-btn-row">';
+        dim.options.forEach(function (opt, oi) {
+          var isSelected = answeredIdx === oi;
+          var pkgIndicators = opt.pkgs.map(function (p) { return '<span class="spi spi-' + p + '">' + PKG_NAMES[p] + '</span>'; }).join('');
+          html += '<button class="sig-btn' + (isSelected ? ' selected' : '') + '" data-di="' + di + '" data-oi="' + oi + '">' + (isSelected ? '' : '<span class="sig-pkg-indicators">' + pkgIndicators + '</span>') + opt.label + '</button>';
+        });
+        html += '</div>';
+        if (answeredIdx !== undefined) {
+          var opt2 = dim.options[answeredIdx];
+          var badges = opt2.pkgs.map(function (p) { return '<span class="rev-badge ' + REV_CLS[p] + '">' + PKG_NAMES[p] + '</span>'; }).join('');
+          html += '<div class="signal-reveal visible"><div class="reveal-arrow">↳</div><div class="reveal-body"><div class="reveal-pkg-row"><span class="rl">Points to:</span>' + badges + '</div><div class="reveal-why">' + opt2.why + '</div></div></div>';
+        }
+        html += '<div class="rb-nudge-slot" id="rb-nudge-' + di + '"></div></div>';
+      });
+      html += '<div class="dim-block' + (rb.d5done ? ' has-selection' : '') + '"><div class="dim-header"><div class="dim-num">5</div><div class="dim-name">Decision Maker</div><div class="dim-q">Who makes the final call? Are they on this call?</div></div>' +
+        '<div class="signal-btn-row"><button class="sig-btn' + (rb.d5done ? ' selected' : '') + '" data-d5="1">✓&nbsp; Decision maker is on this call — proceed to recommendation</button></div>';
+      if (rb.d5done) html += '<div class="signal-reveal visible" style="background:#F0F9FF;border-color:#BAE6FD;"><div class="reveal-arrow" style="color:#0284C7;">✓</div><div class="reveal-body"><div class="reveal-why" style="color:#0C4A6E;">Decision maker confirmed. No routing impact — proceed to your recommendation.</div></div></div>';
+      html += '</div></div>';
+
+      var counts = computeCounts();
+      var rec = computeRec(counts);
+      var maxCount = Math.max(1, counts.base, counts.plus, counts.premium, counts.enterprise);
+      html += '<div class="rb-score-card"><div class="rb-card-header">Package score</div><div class="rb-score-bars">';
+      PKG_ORDER.forEach(function (p) {
+        var pct = Math.round(counts[p] / maxCount * 100);
+        html += '<div class="rb-score-row"><div class="rb-score-label rb-sl-' + p + '">' + PKG_NAMES[p] + '</div><div class="rb-score-track"><div class="rb-score-fill rb-sf-' + p + '" style="width:' + pct + '%"></div></div><div class="rb-score-num">' + counts[p] + '</div></div>';
+      });
+      html += '</div><div class="rb-score-reasoning">';
+      if (rec) {
+        var dimCount = Object.keys(rb.answered).length;
+        html += '<span class="rb-rec-highlight" style="color:var(--' + rec + ');">' + PKG_NAMES[rec] + '</span> appeared in ' + counts[rec] + ' of ' + dimCount + ' dimension' + (dimCount !== 1 ? 's' : '') + ' — that’s your direction.';
+      } else {
+        html += '<span style="color:#D1D5DB;font-style:italic;">Score updates as you select signals above</span>';
+      }
+      html += '</div></div>';
+
+      var allDone = Object.keys(rb.answered).length === 4 && rb.d5done;
+      if (allDone) html += '<div class="nav-row"><button class="next-btn" id="rb-continue">Build the recommendation →</button></div>';
+
+      panel.innerHTML = html;
+
+      panel.querySelectorAll('.sig-btn[data-di]').forEach(function (btn) {
+        btn.onclick = function () {
+          var di = Number(btn.dataset.di), oi = Number(btn.dataset.oi);
+          if (CORRECT_SIGNAL[di] === oi) { rb.answered[di] = oi; renderAll(); }
+          else {
+            var slot = document.getElementById('rb-nudge-' + di);
+            var msg = (NUDGES[di] && NUDGES[di][oi]) || 'That’s not what this Pro told you — check your captured quotes above.';
+            if (slot) slot.innerHTML = '<div class="rb-nudge">' + msg + '</div>';
+          }
+        };
+      });
+      var d5btn = panel.querySelector('.sig-btn[data-d5]');
+      if (d5btn) d5btn.onclick = function () { rb.d5done = true; renderAll(); };
+      var contBtn = document.getElementById('rb-continue');
+      if (contBtn) contBtn.onclick = function () { onComplete(); };
+    }
+
+    renderAll();
+  }
+
+  /* ============ Shared helpers for Stages 2-5 ============ */
+  function choiceBtn(key, label, already) {
+    var cls = 'choice-btn';
+    var disabled = '';
+    if (already) { disabled = 'disabled'; if (key === already.key) cls += already.correct ? ' correct' : ' incorrect'; }
+    return '<button class="' + cls + '" data-key="' + key + '" ' + disabled + '>' + label + '</button>';
+  }
+  function renderChoiceStep(cfg) {
+    var html = '';
+    if (cfg.eyebrow) html += '<div class="panel-eyebrow">' + cfg.eyebrow + '</div>';
+    if (cfg.title) html += '<h3>' + cfg.title + '</h3>';
+    if (cfg.extraHtml) html += cfg.extraHtml;
+    if (cfg.prompt) html += '<p><strong>' + cfg.prompt + '</strong></p>';
+    html += '<div class="choices" id="cs-choices">';
+    cfg.choices.forEach(function (c) { html += choiceBtn(c.key, c.label, null); });
+    html += '</div><div id="cs-feedback"></div>';
+    panel.innerHTML = html;
+    document.querySelectorAll('#cs-choices .choice-btn').forEach(function (btn) {
+      btn.onclick = function () {
+        var key = btn.dataset.key;
+        var choice = cfg.choices.filter(function (c) { return c.key === key; })[0];
+        if (!choice.correct) { btn.classList.add('incorrect'); document.getElementById('cs-feedback').innerHTML = '<div class="feedback incorrect">' + choice.feedback + '</div>'; return; }
+        document.querySelectorAll('#cs-choices .choice-btn').forEach(function (b) { b.disabled = true; });
+        btn.classList.add('correct');
+        document.getElementById('cs-feedback').innerHTML = '<div class="feedback correct">' + choice.feedback + '</div><div class="nav-row"><button class="next-btn" id="cs-continue">' + (cfg.continueLabel || 'Continue →') + '</button></div>';
+        document.getElementById('cs-continue').onclick = cfg.onAdvance;
+      };
+    });
+  }
+  function trackerNode(cls, label, isCurrent, isDone) {
+    var classes = 'mini-node ' + cls;
+    if (isCurrent) classes += ' current';
+    if (isDone) classes += ' mdone';
+    return '<div class="' + classes + '"><span class="mini-label">' + label + '</span><span class="mini-check">' + CHECK_SVG_DARK + '</span></div>';
+  }
+  function renderMiniTracker(currentPart, doneParts) {
+    var parts = ['paraphrase', 'anchor', 'frame', 'ask'];
+    var labels = { paraphrase: 'P', anchor: 'A', frame: 'F', ask: 'A' };
+    var clsMap = { paraphrase: '', anchor: 'anchor', frame: '', ask: 'ask' };
+    var html = '<div class="mini-tracker">';
+    parts.forEach(function (p, i) {
+      html += trackerNode(clsMap[p], labels[p], p === currentPart, doneParts.indexOf(p) !== -1);
+      if (i < parts.length - 1) html += '<div class="mini-line"></div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function step1Routing() { renderRoutingBuilder(function () { state.buildStep = 2; renderBuild(); }); }
+
+  function step2Paraphrase() {
+    var t = renderMiniTracker('paraphrase', []);
+    renderChoiceStep({
+      eyebrow: 'Step 2 of 5', title: 'Paraphrase', prompt: 'Paraphrase this Pro’s situation, then hold for their response.',
+      choices: [
+        { key: 'correct', label: 'So weekdays are steady, but weekends are packed enough that you’re turning people away — and a few more weekend regulars would fix that.', correct: true, feedback: 'That reflects exactly what they said — the weekday/weekend split and the specific ask. Hold here for their confirmation before moving on.' },
+        { key: 'invented', label: 'So it sounds like you’re thinking about hiring a third detailer soon, expanding into a second market, and maybe even offering mobile oil changes too to fill out the schedule.', correct: false, feedback: 'Slow down — nothing here mentions hiring a third person, a second market, or a new service line. That’s an inference, not a paraphrase. Stick to what was actually said.' },
+        { key: 'narrow', label: 'So the Instagram posts didn’t really pan out for you.', correct: false, feedback: 'That’s one detail, not the situation. A paraphrase captures the shape of what they’re trying to do — the weekend capacity problem — not just the last thing mentioned.' }
+      ],
+      continueLabel: 'Continue to Anchor →', onAdvance: function () { state.buildStep = 3; renderBuild(); }
+    });
+    panel.insertAdjacentHTML('afterbegin', t);
+  }
+
+  function step3Anchor() {
+    var t = renderMiniTracker('anchor', ['paraphrase']);
+    renderChoiceStep({
+      eyebrow: 'Step 3 of 5 — build the recommendation', title: 'Anchor', prompt: 'Which line anchors the recommendation to what this Pro actually said?',
+      choices: [
+        { key: 'anchor', label: 'Because you said you’d take three or four more weekend regulars if you could…', correct: true, feedback: 'That’s their number, in their words. This is what makes the recommendation about this Pro, not a template.' },
+        { key: 'generic', label: 'Because most detailing businesses want more weekend bookings…', correct: false, feedback: 'Generic — this sentence never touches anything this specific Pro actually said. Anchor to their number, not an assumption about the category.' },
+        { key: 'true-irrelevant', label: 'Because you mentioned it’s just you and one other guy running things right now…', correct: false, feedback: 'That’s true — they did say that — but it’s not what’s driving this recommendation. An anchor has to be the detail that explains why this package, not just any real fact about the business.' }
+      ],
+      continueLabel: 'Continue to Frame →', onAdvance: function () { state.buildStep = 4; renderBuild(); }
+    });
+    panel.insertAdjacentHTML('afterbegin', t);
+  }
+
+  function step4Frame() {
+    var t = renderMiniTracker('frame', ['paraphrase', 'anchor']);
+    renderChoiceStep({
+      title: 'Frame', prompt: 'Which version leads better?',
+      choices: [
+        { key: 'outcome', label: 'Plus includes a Front Desk trial, so you’re not losing a shot at a new weekend regular to whoever answers first while you’re out on a job.', correct: true, feedback: 'Outcome before cost, and it’s tied to their actual problem — capacity on weekends, and not missing the leads that could fill it.' },
+        { key: 'price', label: 'Plus costs $300 upfront, comes with a fifty-dollar earned lead credit once a lead converts, includes a full thirty-day Front Desk trial, and comes with thirty days of AE support to help you get started.', correct: false, feedback: 'Accurate, but backwards. Leading with the price and the feature list before they know what it buys them turns this into a transaction.' },
+        { key: 'vague', label: 'Plus would probably help you get a few more bookings here and there.', correct: false, feedback: 'This isn’t tied to anything this Pro actually said — it could be said to any Pro about any package. Say what it makes possible for them specifically.' }
+      ],
+      continueLabel: 'Continue to Ask →', onAdvance: function () { state.buildStep = 5; renderBuild(); }
+    });
+    panel.insertAdjacentHTML('afterbegin', t);
+  }
+
+  function step5Ask() {
+    var t = renderMiniTracker('ask', ['paraphrase', 'anchor', 'frame']);
+    renderChoiceStep({
+      title: 'Ask', prompt: 'Which is a direct ask?',
+      choices: [
+        { key: 'ask', label: 'Based on what you’ve told me, Plus is the right fit — let’s get your account set up.', correct: true, feedback: 'Direct, names the product, no qualifiers. This closes the loop the paraphrase opened.' },
+        { key: 'hedge', label: 'I think Plus might work for you — let me know what you think whenever you’re ready.', correct: false, feedback: '"I think," "might," and "whenever you’re ready" all hand the decision back without actually asking. Name the product and ask directly.' },
+        { key: 'rambly', label: 'Plus is honestly going to be such a great fit, and I think you’re going to love finally not having to turn people away on weekends anymore!', correct: false, feedback: 'This is enthusiastic, but it never actually asks for anything — no clear next step, no close. Enthusiasm isn’t the same as a direct ask.' }
+      ],
+      continueLabel: 'Finish →',
+      onAdvance: function () {
+        var doneTracker = renderMiniTracker(null, ['paraphrase', 'anchor', 'frame', 'ask']);
+        panel.innerHTML = doneTracker + completionHtml();
+      }
+    });
+    panel.insertAdjacentHTML('afterbegin', t);
+  }
+
+  function completionHtml() {
+    return '<div class="completion-box"><div class="check-big">' + CHECK_SVG_WHITE + '</div>' +
+      '<h3>You built this one without a familiar Pro to lean on.</h3>' +
+      '<p>Routed to <span class="pro-package-pill pill-plus">Plus</span> · anchored to what they actually said — starting with the discovery you captured yourself.</p>' +
+      '<div class="advance-hint">That’s the actual transfer check. When you’re ready, click <strong>Continue</strong> in the bottom-right corner to move on.</div></div>';
+  }
+
+  function renderBuild() {
+    if (state.buildStep === 1) return step1Routing();
+    if (state.buildStep === 2) return step2Paraphrase();
+    if (state.buildStep === 3) return step3Anchor();
+    if (state.buildStep === 4) return step4Frame();
+    if (state.buildStep === 5) return step5Ask();
+  }
+
+  function render() {
+    if (state.stage === 0) { renderStage0(); return; }
+    if (state.stage === 1) { renderBuild(); return; }
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
